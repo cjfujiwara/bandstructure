@@ -1,4 +1,4 @@
-function [outputArg1,outputArg2] = differential_swave_shift(B,U)
+function differential_swave_shift(B,U)
 
 out     = constants;
 a0      = out.a0;
@@ -7,6 +7,7 @@ U       = 200;
 
 % Band gap
 Delta   = sqrt(4*U)*fr;
+Delta   = [122529.554801461];
 
 % Harmonic oscillator length scale
 aho=harmonic_length(U)/a0;
@@ -153,6 +154,8 @@ legend({'$U_{97}$','$U_{97}$ linear','$U_{95}$','$U_{95}$ linear'},'interpreter'
 
 %%
 
+data=load('G:\.shortcut-targets-by-id\17Vhjo1DGvmYRlwZkru9Q6dHcECulimTQ\Lattice Shared\SharedData\2021.09.29 Composite S-wave\analyzed_data.mat')
+
 hF2=figure(2);
 clf
 
@@ -186,6 +189,8 @@ plot(Bvec,(U_95-U_97)*1e-3,'k-','linewidth',2)
 hold on
 plot(Bvec,(U_95_linear-U_97_linear)*1e-3,'k--','linewidth',2)
 
+plot(data.B_fit,data.f_double,'o','markerfacecolor',co(1,:),'markeredgecolor',co(1,:)*.5,...
+    'linewidth',2,'markersize',8)
 
 xlim([203 222]);
 ylim([25 100]);
