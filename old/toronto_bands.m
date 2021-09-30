@@ -3,6 +3,8 @@ K=linspace(-1,1,501);
 numStates=21;
 numBands=5;
 
+
+
 bandsStatic0=zeros(length(K),numStates);       % static bands
 bandsFold=zeros(length(K),numStates);
 
