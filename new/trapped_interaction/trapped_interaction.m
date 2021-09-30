@@ -6,7 +6,7 @@ a = @(E) (sqrt(2)*gamma(-E/2+3/4)./gamma(-E/2+1/4)).^(-1);
 
 
 Ebounds = [-20 0.5:2:10.5];
-Np=1e5;
+Np=5e5;
 
 
 aMat = zeros(length(Ebounds)-1,Np);

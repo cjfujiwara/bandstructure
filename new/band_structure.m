@@ -257,7 +257,7 @@ legStr={['$' num2str(depth) '~E_R$, linear'],['$' num2str(depth) '~E_R$, saturat
 legend(legStr,'interpreter','latex','location','southeast');
 %}
 %%
-doSave=1;
+doSave=0;
 if doSave
     disp('saving figures ...');    
     figs=get(groot,'children');
