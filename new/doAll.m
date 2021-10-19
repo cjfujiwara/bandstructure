@@ -5,9 +5,25 @@ disp(repmat('-',1,60));disp([mfilename '.m']);disp(repmat('-',1,60));
 curpath = fileparts(mfilename('fullpath'));
 addpath(curpath);addpath(genpath(curpath))    
 
+%% Comment on Units
+% This code calculates values paramtrized by the lattice momentum hbar*k_L
+% so that adopt the dimensionless position and momentum 
+%
+% X:=k_L*x, P:=p/(hbar*k_L) ==> [X,P]=i
+%
+% So that the dimensionless Hamiltonian takes the form
+%
+% h = U_0\cos^2(X)+P^2
+%
+% Where the lattice depth U_0 is parametrized with the recoil energy
+%
+% Er:= hbar^2*k_L^2/(2*m)
+%
+% In this form the lattice spacing is pi and the FBZ spans [-1,1]
 %%
 
 close all
+
 
 npt=constants;
 npt.depth=200;
@@ -15,6 +31,10 @@ npt.depth=200;
 [npt,hF1]=getBandStructure(npt);
 [npt,hF2]=calculateGapTunneling(npt);
 [npt,hF3]=wannier(npt);
+
+%% Overlap Integrals
+
+npt = wannier_overlap(npt);
 
 %% Feshbach Resonance
 % Plot the feshbach resonance in free space

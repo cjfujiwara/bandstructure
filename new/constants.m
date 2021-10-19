@@ -25,12 +25,13 @@ out.Er=Er;
 out.fr=fr;
 
 %% Numerical parameters
-out.numStates=301;
+out.numStates=201;
 out.numK=51;
-out.numX=1001;
+
+% out.numStates=25;
+% out.numK=51;
 
 out.K=linspace(-1,1,out.numK);
-out.X=linspace(-.5*pi,.5*pi,out.numX);
 
 end
 

@@ -32,8 +32,7 @@ function [npt,hF_W_probability] = wannier(npt)
 % of the plan wave cofficients c(l,k).
 
 % Band index
-bands=[1 2 3];
-npt.Bands = bands;
+bands=[1 2 3 4];
 
 % Quasimomentum vector
 K=npt.K;
@@ -63,9 +62,6 @@ X = linspace(-1/(2*dK),1/(2*dK),length(K_eff));
 
 % Convert 2*pi*k*x FT convention to k*x
 X = 2*pi*X;
-
-%
-dX = X(2)-X(1);
 
 % Assign output X vector
 npt.numX = length(X);
@@ -110,10 +106,14 @@ for nn=1:length(bands)
 
     % Perform FFT to get spatial domain
     Yfft = fftshift(ifft(Y));
-   
-    % Remove momentum associated with the sampling frequency
-    Yfft = Yfft.*exp(-1i*pi/dX*X');
+    
+    T = 2*(X(2)-X(1));
+    T=.03;
+    keyboard
+%     Yfft = Yfft.*sin(2*pi/T*X');
 
+    
+%     Yfft = abs(Yfft); % remove sampling error
     
     % Normalize to one
     Yfft = Yfft/sqrt(sum(Yfft.*conj(Yfft)));    
@@ -163,7 +163,7 @@ for nn=1:length(bands)
     rho_wannier_k = psi_wannier_k.*conj(psi_wannier_k);
     rho_wannier_k = rho_wannier_k/max(rho_wannier_k);
     
-    plot(K_eff,rho_wannier_k,'-','linewidth',1);
+    plot(K_eff,rho_wannier_k,'-','linewidth',2);
     xlabel('momentum ($\hbar k_L$)','interpreter','latex');
     str=['$|w_' num2str(bands(nn)) '(k)|^2$'];
     text(.01,.98,str,'units','normalized','interpreter','latex',...
@@ -177,7 +177,7 @@ for nn=1:length(bands)
     rho_wannier = psi_wannier.*conj(psi_wannier);
     rho_wannier = rho_wannier/max(rho_wannier);
     
-    plot(X/pi,rho_wannier,'-','linewidth',1);
+    plot(X/pi,rho_wannier,'-','linewidth',2);
     xlabel('position (site)','interpreter','latex');
     str=['$|w_' num2str(bands(nn)) '(x)|^2$'];
 
@@ -191,9 +191,7 @@ for nn=1:length(bands)
     psi_harmonic_x = wannier_x_harmonic{nn};
     rho_ho = psi_harmonic_x.*conj(psi_harmonic_x);
     rho_ho = rho_ho/max(rho_ho);
-%     plot(X/pi,rho_ho,'k--','linewidth',1);    
-    plot(X/pi,rho_ho,'-','linewidth',2,'color',[.3 .3 .3 .7]);  
-
+    plot(X/pi,rho_ho,':','linewidth',2);    
 end
 
 %% Wavefunction Plot
@@ -209,9 +207,9 @@ for nn=1:length(bands)
     subplot(2,length(bands),nn)
     psi_wannier_k = wannier_k{nn};
     
-    plot(K_eff,real(psi_wannier_k),'-','linewidth',1);
+    plot(K_eff,real(psi_wannier_k),'-','linewidth',2);
     hold on
-    plot(K_eff,imag(psi_wannier_k),'-','linewidth',1);
+    plot(K_eff,imag(psi_wannier_k),'-','linewidth',2);
 
     xlabel('momentum ($\hbar k_L$)','interpreter','latex');
     str=['$w_' num2str(bands(nn)) '(k)$'];
@@ -225,9 +223,9 @@ for nn=1:length(bands)
     psi_wannier_x = wannier_x{nn};
 
     
-    plot(X/pi,real(psi_wannier_x),'-','linewidth',1);
+    plot(X/pi,real(psi_wannier_x),'-','linewidth',2);
     hold on
-    plot(X/pi,imag(psi_wannier_x),'-','linewidth',1);
+    plot(X/pi,imag(psi_wannier_x),'-','linewidth',2);
 
     xlabel('position (site)','interpreter','latex');
     str=['$w_' num2str(bands(nn)) '(x)$'];
@@ -238,9 +236,11 @@ for nn=1:length(bands)
         'fontsize',8,'yticklabel',{});
     xlim([-.5 .5]);
     hold on    
-    
-    psi_harmonic_x = wannier_x_harmonic{nn};
-    plot(X/pi,psi_harmonic_x,'-','linewidth',2,'color',[.3 .3 .3 .7]);  
+%     
+%     psi_harmonic_x = wannier_x_harmonic{nn};
+%     rho_ho = psi_harmonic_x.*conj(psi_harmonic_x);
+%     rho_ho = rho_ho/max(rho_ho);
+%     plot(X/pi,rho_ho,':','linewidth',2);  
 end
 %%
 %{
