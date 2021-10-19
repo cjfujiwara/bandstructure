@@ -7,7 +7,7 @@ U       = 200;
 
 % Band gap
 Delta   = sqrt(4*U)*fr;
-Delta   = [122529.554801461];
+% Delta   = [122529.554801461];
 
 % Harmonic oscillator length scale
 aho=harmonic_length(U)/a0;
@@ -23,7 +23,17 @@ aVec = linspace(-10,10,1e4);
 [funcs] = trapped_interaction;
 int_func=funcs{2};
 
-mLin = int_func(.05)/.05;
+aLinVec = linspace(-.05,.05,100);
+myfit=fittype('A*x','independent','x','coefficient','A');
+opt=fitoptions(myfit);
+opt.StartPoint = sqrt(2/pi);
+fout1 = fit(aLinVec',int_func(aLinVec'),myfit,opt);
+mLin = fout1.A;
+
+
+% mLin = int_func(.05)/.05;
+
+% keyboard
 
 % Get the feshbach resonance
 a97 = feshbach_97(Bvec+dB);
@@ -32,16 +42,24 @@ a95 = feshbach_95(Bvec+dB);
 U_97 = Delta*int_func(a97/aho);
 U_95 = Delta*int_func(a95/aho);
 
-U_97_linear = Delta*(a97/aho)*sqrt(2/pi);
-U_95_linear = Delta*(a95/aho)*sqrt(2/pi);
+mLin = fout1.A;
+mLin = sqrt(2/pi);
 
+% U_97_linear = Delta*(a97/aho)*sqrt(2/pi);
+% U_95_linear = Delta*(a95/aho)*sqrt(2/pi);
+
+U_97_linear = Delta*(a97/aho)*mLin;
+U_95_linear = Delta*(a95/aho)*mLin;
+
+
+
+%% THeoery
+%{
 hF=figure(1);
 clf
 
 set(gcf,'color','w');
 hF.Position=[50 50 800 800];
-
-%% THeoery
 
 subplot(221);
 % pFree=plot(aVec,aVec*sqrt(2/pi),'k--','linewidth',2);
@@ -150,17 +168,17 @@ ylabel('s-wave shift (kHz)');
 
 legend({'$U_{97}$','$U_{97}$ linear','$U_{95}$','$U_{95}$ linear'},'interpreter','latex',...
     'fontsize',9,'location','southeast');
-
+%}
 
 %%
 
-data=load('G:\.shortcut-targets-by-id\17Vhjo1DGvmYRlwZkru9Q6dHcECulimTQ\Lattice Shared\SharedData\2021.09.29 Composite S-wave\analyzed_data.mat')
+data=load('G:\.shortcut-targets-by-id\17Vhjo1DGvmYRlwZkru9Q6dHcECulimTQ\Lattice Shared\SharedData\2021.09.29 Composite S-wave\analyzed_data.mat');
 
 hF2=figure(2);
 clf
 
 set(gcf,'color','w');
-hF2.Position=[600 50 800 350];
+hF2.Position=[1400 50 500 250];
 
 subplot(121);
 co=get(gca,'colororder');
@@ -174,7 +192,7 @@ plot(Bvec,U_95_linear*1e-3,'--','linewidth',2,'color',co(2,:))
 
 xlim([203 222]);
 ylim([-75 75]);
-set(gca,'box','on','linewidth',1,'xgrid','on','ygrid','on','fontname','times','fontsize',12);
+set(gca,'box','on','linewidth',1,'xgrid','on','ygrid','on','fontname','times','fontsize',10);
 
 xlabel('magnetic field (G)');
 ylabel('s-wave shift (kHz)');
@@ -194,7 +212,7 @@ plot(data.B_fit,data.f_double,'o','markerfacecolor',co(1,:),'markeredgecolor',co
 
 xlim([203 222]);
 ylim([25 100]);
-set(gca,'box','on','linewidth',1,'xgrid','on','ygrid','on','fontname','times','fontsize',12);
+set(gca,'box','on','linewidth',1,'xgrid','on','ygrid','on','fontname','times','fontsize',10);
 
 xlabel('magnetic field (G)');
 ylabel('differential s-wave shift (kHz)');

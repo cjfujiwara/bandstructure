@@ -16,14 +16,15 @@ dK=K(2)-K(1);
 
 % Basis and display size
 numStates=npt.numStates;
-numBands=5;
+numBands=3;
 
 % Data Vectors
 bandsStatic0=zeros(length(K),numStates);       
 vecStatic0=zeros(numStates,numStates,length(K));
 
 %% Calculate the band structure at each quasimomentum
-fprintf('computing static band structure...');
+fprintf('Computing static band structure...');
+t1=now;
 for ii=1:length(K)     
     nfo=struct;
     nfo.depth=depth;
@@ -32,18 +33,18 @@ for ii=1:length(K)
     
     H0=makeHmatrix(nfo);                % Hamiltonian
     [vS0,eng0]=eig(H0);                 % Solve
-    bandsStatic0(ii,:)=diag(eng0);      % Assign energies
-            
+    bandsStatic0(ii,:)=diag(eng0);      % Assign energies   
+    
     % Rotate each vectors to have real positive coefficient of exp(2 i phi)
-    for cc=1:size(vS0,2)
-        vS0(:,cc)=vS0(:,cc)*exp(-1i * angle(vS0(2,cc)));
-    end    
-    
-    vecStatic0(:,:,ii)=vS0;             % Assign eigenvectors
-    
-    
+    % or 1, (parity of band)
+    for cc=1:size(vS0,2)   
+        ind = 2-mod(cc,2);
+        vS0(:,cc)=vS0(:,cc)*exp(-1i * angle(vS0(ind,cc)));
+    end          
+    vecStatic0(:,:,ii)=vS0;             % Assign eigenvectors        
 end
-disp('done');
+t2=now;
+disp(['done (' num2str(round((t2-t1)*24*60*60,3)) ' s)']);
 
 % Add the computed band structure to the output
 npt.bandEigenValue=bandsStatic0;
@@ -60,13 +61,13 @@ fprintf('Plotting static bands with transitions...');
 hF=figure(222);
 set(hF,'Name','band_structure','color','w');
 clf;
-hF.Position=[10 50 300 400];
+hF.Position=[0 50 250 400];
 
 % Initialize the axis
 ax1=axes;
 cla
 co=get(gca,'colororder');
-set(ax1,'fontsize',14,'box','on','linewidth',1,'fontname','times');
+set(ax1,'fontsize',10,'box','on','linewidth',1,'fontname','times');
 xlabel('quasimomentum ($\hbar k_L$)','interpreter','latex');
 ylabel('energy ($E_R$)','interpreter','latex');
 xlim([min(K) max(K)]);

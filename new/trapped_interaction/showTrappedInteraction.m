@@ -7,7 +7,7 @@ hFw=figure;
 clf
 % plot(aVec,funcs{1}(aVec))
 set(gcf,'color','w');
-hFw.Position=[200 200 300 300];
+hFw.Position=[1150 50 250 250];
 hFw.Name='interaction_saturation';
 
 pFree=plot(aVec,aVec*sqrt(2/pi),'k--','linewidth',2);
@@ -19,8 +19,10 @@ for kk=1:4
     hold on
 end
 
-legStr={'bound','first unbound','linear'};
-legend([ps(1:2) pFree],legStr,'location','southwest');
+% legStr={'bound','first unbound','linear'};
+% legend([ps(1:2) pFree],legStr,'location','southwest');
+
+legend([pFree],'$\sqrt{2/\pi}$','location','southwest','interpreter','latex');
 
 ylim([-3 3]);
 xlim([-2 2]);

@@ -12,7 +12,8 @@ Np=5e5;
 aMat = zeros(length(Ebounds)-1,Np);
 funcs={};
 for jj=1:length(Ebounds)-1
-    Evec=linspace(Ebounds(jj)+1E-4,Ebounds(jj+1)-1E-4,Np);
+    Evec=linspace(Ebounds(jj)+1E-5,Ebounds(jj+1)-1E-5,Np);
+
     a_out = a(Evec);
     foo = @(a_in) interp1(a_out,Evec-1.5,a_in);
     funcs{jj}=foo;    

@@ -6,7 +6,7 @@ U=linspace(.1,200,501);
 U=U';
 
 numStates=npt.numStates;
-
+numStates=25;
 
 BW=zeros(length(U),numStates);
 Eds_0=zeros(length(U),1);
@@ -14,7 +14,8 @@ Eds_pi=zeros(length(U),1);
 Eps_0=zeros(length(U),1);
 Eps_pi=zeros(length(U),1);
 %%%%%%%%%%%% calculate static lattice bands %%%%%%%%%%%%
-fprintf('computing static band structure...');
+fprintf('Computing eigenvalues at edge and center of zone ...');
+t1=now;
 for ii=1:length(U)     
     nfo=struct;
     nfo.depth=U(ii);
@@ -40,8 +41,9 @@ for ii=1:length(U)
     Eps_0(ii) = eng0(2,2)-eng0(1,1);
     Eps_pi(ii) = engpi(2,2)-engpi(1,1);
 end
-disp('done');
-
+t2=now;
+disp(['done (' num2str(round((t2-t1)*24*60*60,3)) 's)']);
+ 
 %% Apend to output
 bandwidth=struct;
 bandwidth.depth=U;
@@ -60,7 +62,7 @@ npt.bandgap=bandgap;
 
 hF=figure(224);
 set(hF,'color','w','name','tunneling');
-hF.Position=[740 50 300 250];
+hF.Position=[250 50 300 200];
 clf
 
 pS=plot(U,abs(BW(:,1))*npt.fr/4,'LineWidth',2); 
@@ -73,14 +75,14 @@ ylim([0 1000]);
 xlabel('lattice depth (E_R)');
 ylabel('tunneling rate (Hz)');
 legend([pS,pP],{'$+\Delta_s/4$','$-\Delta_p/4$'},'interpreter','latex',...
-    'fontsize',14);
+    'fontsize',10);
 set(gca,'box','on','linewidth',1,'xgrid','on','ygrid','on');
 
 xlim([0 20]);
 % Plot the probability density
 hF4=figure(225);
 set(hF4,'color','w','name','ds_gap');
-hF4.Position=[1150 50 300 250];
+hF4.Position=[550 50 300 200];
 clf
 
 pS=plot(U,Eds_0*npt.fr*1e-3,'k-','LineWidth',2); 
@@ -92,14 +94,14 @@ pHO=plot(U,2*sqrt(4*U),'k--','LineWidth',2);
 xlabel('lattice depth (E_R)');
 ylabel('energy (kHz)');
 legend([pS,pP],{'$E_{ds}(0)$','$E_{ds}(\pi)$'},'interpreter','latex',...
-    'fontsize',14,'location','southeast');
+    'fontsize',10,'location','southeast');
 set(gca,'box','on','linewidth',1,'xgrid','on','ygrid','on');
 xlim([0 20]);
 
 % Plot the probability density
 hF4b=figure(230);
 set(hF4b,'color','w','name','ps_gap');
-hF4b.Position=[1150 50 300 250];
+hF4b.Position=[850 50 300 200];
 clf
 
 pS=plot(U,Eps_0*npt.fr*1e-3,'k-','LineWidth',2); 

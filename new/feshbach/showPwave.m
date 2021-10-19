@@ -4,16 +4,16 @@ function hF = showPwave
 Bvec=linspace(195,202,1000);
 hF=figure(231);
 set(hF,'color','w','name','feshbach_resonance_77');
-hF.Position=[10 540 450 300];
+hF.Position=[575 455 575 250];
 clf
 
 [V0,V1]=feshbach_77(Bvec);
 
-p7=plot(Bvec,V0,'-','LineWidth',2); 
+p7=plot(Bvec,V0*1e-6,'-','LineWidth',2); 
 hold on
-p5=plot(Bvec,V1,'-','LineWidth',2); 
+p5=plot(Bvec,V1*1e-6,'-','LineWidth',2); 
 
-ylim([-2e8 2e8]);
+ylim([-2e2 2e2]);
 
 xlim([197 200]);
 
@@ -36,7 +36,7 @@ t=uicontrol('style','text','string',sL,'backgroundcolor','w',...
 t.Position=[2 2 100 15];
 
 xlabel('magnetic field (G)');
-ylabel('scattering length (a_0)');
+ylabel('scattering length (100 a_0)^3');
 
 drawnow;
 
