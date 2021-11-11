@@ -1,0 +1,24 @@
+f = 122.5E3; % Trap freqency in Hz
+
+% Fundamental constants
+a0 = 5.29177210903E-11;
+amu = 1.66053906660E-27;
+h = 6.62607004E-34;
+hbar = h/(2*pi);
+
+% useful parameters
+omega = 2*pi*f;
+E0 = hbar*omega;
+
+% 
+eng2V = @(eng,dz) dz^3/eq34(eng,1);
+
+eng_2_dB_m1(eng2V(eng,dz),eng*hbar*omega);
+
+
+funcs = eng_2_d3a3;
+
+Evec = linspace(-1,-.5,100);
+
+
+eq34(eng,1)
