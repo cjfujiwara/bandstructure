@@ -1,4 +1,4 @@
-function npt = wannier_overlap(npt)
+function npt = wannier_overlap_s(npt)
 %WANNIER_OVERLAP Summary of this function goes here
 %   Detailed explanation goes here
 %
@@ -49,20 +49,31 @@ function npt = wannier_overlap(npt)
 disp('Calculating wannier function overlap integrals');
 
 %% Check the Harmonic Integrals
-disp('Checking s-band overlap integrals');
 
-for kk=1:length(npt.Bands)
-    if npt.Bands(kk)==1
+OverlapS = struct;
+OverlapS.depth = npt.depth;
+
+Is_ho_mat = zeros(length(npt.Bands),length(npt.depth));
+Is_ho_th_mat = zeros(length(npt.Bands),length(npt.depth));
+Is_wn_mat = zeros(length(npt.Bands),length(npt.depth));
+
+U_ho_mat = zeros(length(npt.Bands),length(npt.depth));
+U_ho_th_mat = zeros(length(npt.Bands),length(npt.depth));
+U_wn_mat = zeros(length(npt.Bands),length(npt.depth));
+
+disp('Checking s-band overlap integrals');
+for ii=1:length(npt.depth)
+    depth = npt.depth(ii);
+    for nn=1:length(npt.Bands)
         % Grab the position vector
         x = npt.X;dx = x(2) - x(1);
-        
+
         % Harmonic oscillattor length scale (to truncate integration)
-        l_ho = pi*npt.Harmonic_Length;   
+        l_ho = pi*npt.Harmonic_Length(ii);   
 
         % Grab the wavefunctions and scale
-        y_ho = npt.Wannier_X_Harmonic{kk}/sqrt(dx);
-        y_wn = npt.Wannier_X{kk}/sqrt(dx);
-
+        y_ho = npt.Wannier_X_Harmonic(:,nn,ii)/sqrt(dx);
+        y_wn = npt.Wannier_X(:,nn,ii)/sqrt(dx);
 
         % Sanity check normalization
         %        fun = @(x_in) interp1(x,y.^2,x_in);
@@ -75,14 +86,33 @@ for kk=1:length(npt.Bands)
         Is_ho = integral(fun_ho,-10*l_ho,10*l_ho);
         Is_wn = integral(fun_wn,-10*l_ho,10*l_ho);
 
-        % Check answer with theory
-        disp([' Harmonic Theory  : ' num2str(npt.depth^(1/4)/sqrt(2*pi))]);
-        disp([' Harmonic Numeric : ' num2str(Is_ho)]);
-        disp([' Wannier Numeric  : ' num2str(Is_wn)]);
- 
+        Is_ho_th = depth^(1/4)/sqrt(2*pi);
+
+        Is_ho_mat(nn,ii) = Is_ho;
+        Is_ho_th_mat(nn,ii) = Is_ho_th;
+        Is_wn_mat(nn,ii) = Is_wn;
+
+        U_ho_mat(nn,ii) = depth^(-1/4) * 8*pi * Is_ho^3;
+        U_ho_th_mat(nn,ii) = depth^(-1/4) * 8*pi * Is_ho_th^3;
+        U_wn_mat(nn,ii) = depth^(-1/4) * 8*pi * Is_wn^3;
+
+        str = [num2str(depth) ' Er : ' ...
+            'HO Theory = ' num2str(round(Is_ho_th,3)) ',' ...
+            'HO Numeric = ' num2str(round(Is_ho,3)) ',' ...
+            'Wannier = ' num2str(round(Is_wn,3))];
+        disp(str);
     end
 end
 
+OverlapS.Is_Harmonic = Is_ho_mat;
+OverlapS.Is_Wannier = Is_wn_mat;
+OverlapS.Is_Harmonic_Theory = Is_ho_th_mat;
 
+OverlapS.U_Harmonic_Er = U_ho_mat;
+OverlapS.U_Wannier_Er = U_wn_mat;
+OverlapS.U_Harmonic_Theory_Er = U_ho_th_mat;
+
+
+npt.OverlapS = OverlapS;
 end
 

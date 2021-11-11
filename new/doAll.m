@@ -23,23 +23,28 @@ addpath(curpath);addpath(genpath(curpath))
 %%
 
 close all
-
+opts = struct;
+opts.doPlot = 0;
 
 npt=constants;
-npt.depth=200;
+npt.depth=10:10:205;
 
-[npt,hF1]=getBandStructure(npt);
+[npt,hF1]=getBandStructure(npt,opts);
 [npt,hF2]=calculateGapTunneling(npt);
-[npt,hF3]=wannier(npt);
+%% Wannier Calculation
+opts.doPlot=0;
+[npt,hF3]=wannier(npt,opts);
+opts.doPlot = 1;
 
 %% Overlap Integrals
+npt = wannier_overlap_s(npt);
 
-npt = wannier_overlap(npt);
+hFa = showSwave(npt);
 
 %% Feshbach Resonance
 % Plot the feshbach resonance in free space
-hF4=showSwave;
-hF7=showPwave;
+hF4=showSwaveFesh;
+hF7=showPwaveFesh;
 
 % Shift due to zero point energy
 hF = show_lattice_shift_s;
@@ -50,11 +55,7 @@ hF5=showTrappedInteraction;
 
 %% Data RF
 
-differential_swave_shift;
-
-%% Data Ideal
-s_wave_shift;
-
+differential_swave_shift2;
 %%
 doSave=0;
 if doSave

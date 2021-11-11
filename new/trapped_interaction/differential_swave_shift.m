@@ -1,4 +1,4 @@
-function differential_swave_shift(B,U)
+function differential_swave_shift
 
 out     = constants;
 a0      = out.a0;
@@ -174,11 +174,17 @@ legend({'$U_{97}$','$U_{97}$ linear','$U_{95}$','$U_{95}$ linear'},'interpreter'
 
 data=load('G:\.shortcut-targets-by-id\17Vhjo1DGvmYRlwZkru9Q6dHcECulimTQ\Lattice Shared\SharedData\2021.09.29 Composite S-wave\analyzed_data.mat');
 
+data2=struct;
+data2.f_single = 44.379059736430;
+data2.f_double= -31.82;
+data2.B_fit = 199.31;
+
 hF2=figure(2);
 clf
 
 set(gcf,'color','w');
-hF2.Position=[1400 50 500 250];
+hF2.Position=[1000 50 800 250];
+hF2.Name = 'data_differential_swave';
 
 subplot(121);
 co=get(gca,'colororder');
@@ -209,15 +215,17 @@ plot(Bvec,(U_95_linear-U_97_linear)*1e-3,'k--','linewidth',2)
 
 plot(data.B_fit,data.f_double,'o','markerfacecolor',co(1,:),'markeredgecolor',co(1,:)*.5,...
     'linewidth',2,'markersize',8)
+plot(data2.B_fit,data2.f_double,'o','markerfacecolor',co(2,:),'markeredgecolor',co(2,:)*.5,...
+    'linewidth',2,'markersize',8)
 
-xlim([203 222]);
-ylim([25 100]);
+xlim([195 222]);
+ylim([-100 100]);
 set(gca,'box','on','linewidth',1,'xgrid','on','ygrid','on','fontname','times','fontsize',10);
 
 xlabel('magnetic field (G)');
 ylabel('differential s-wave shift (kHz)');
 
 legend({'$U_{97}-U_{95}$','$U_{97}-U_{95}$ linear'},'interpreter','latex',...
-    'fontsize',9,'location','north');
+    'fontsize',9,'location','southeast');
 end
 

@@ -49,6 +49,7 @@ data=load('G:\.shortcut-targets-by-id\17Vhjo1DGvmYRlwZkru9Q6dHcECulimTQ\Lattice 
 
 hF2=figure(3);
 clf
+hF2.Name = 'data_absolute_swave';
 
 set(gcf,'color','w');
 hF2.Position=[1150 300 750 250];

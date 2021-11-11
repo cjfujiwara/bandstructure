@@ -1,9 +1,9 @@
-function hF = showSwave
+function hF = showSwaveFesh
 %% Resonance
 
 Bvec=linspace(190,225,1000);
 hF=figure(226);
-set(hF,'color','w','name','feshbach_resonance');
+set(hF,'color','w','name','feshbach_s_resonance');
 hF.Position=[0 455 575 250];
 clf
 co=get(gca,'colororder');

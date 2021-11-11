@@ -1,9 +1,9 @@
-function hF = showPwave
+function hF = showPwaveFesh
 %% Resonance
 
 Bvec=linspace(195,202,1000);
 hF=figure(231);
-set(hF,'color','w','name','feshbach_resonance_77');
+set(hF,'color','w','name','feshbach_p_resonance');
 hF.Position=[575 455 575 250];
 clf
 

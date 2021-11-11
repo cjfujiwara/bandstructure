@@ -3,13 +3,15 @@ function hF = show_lattice_shift_s
 U=linspace(1,500,1000);
 
 hF=figure(512);
-set(hF,'color','w','name','lattice_shift_79');
+set(hF,'color','w','name','lattice_shift_s');
 hF.Position=[0 710 575 250];
 clf
 
 
 [dB1,~]=lattice_shift_79(U,U,U);
 [dB2,~]=lattice_shift_95(U,U,U);
+
+
 
 % subplot(121);
 p1=plot(U,1e3*dB1,'-','LineWidth',2); 

@@ -8,7 +8,7 @@ clf
 % plot(aVec,funcs{1}(aVec))
 set(gcf,'color','w');
 hFw.Position=[1150 50 250 250];
-hFw.Name='interaction_saturation';
+hFw.Name='saturation_harmonic_interaction';
 
 pFree=plot(aVec,aVec*sqrt(2/pi),'k--','linewidth',2);
 hold on

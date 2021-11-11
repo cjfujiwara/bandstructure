@@ -15,6 +15,7 @@ function a= feshbach_95(B)
 
 % Ludewig CC
 Delta = 7.2;%Delta=7.6;
+% Delta = 9.7;
 B0 = 224.2;
 a_bg = 167.3;
 

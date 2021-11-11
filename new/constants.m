@@ -3,7 +3,7 @@ function out = constants
 out=struct;
 
 %% Physical Constants
-h = 6.626E-34;                              % Planck's constant [J s]
+h = 6.62607004E-34;                              % Planck's constant [J s]
 hbar = h/(2*pi);                            % Reduced Planck's constant [J s]
 a0=5.29177210903E-11;                       % Bohr Radius
 
@@ -31,7 +31,7 @@ out.numK=51;
 % out.numStates=25;
 % out.numK=51;
 
-out.K=linspace(-1,1,out.numK);
+out.K=linspace(-1,1,out.numK)';
 
 end
 
