@@ -30,16 +30,19 @@ npt=constants;
 npt.depth=10:10:205;
 
 [npt,hF1]=getBandStructure(npt,opts);
+[npt,hF1_a]=calculateAMCoupling(npt,opts);
+
+
 [npt,hF2]=calculateGapTunneling(npt);
 %% Wannier Calculation
-opts.doPlot=0;
-[npt,hF3]=wannier(npt,opts);
-opts.doPlot = 1;
-
-%% Overlap Integrals
-npt = wannier_overlap_s(npt);
-
-hFa = showSwave(npt);
+% opts.doPlot=0;
+% [npt,hF3]=wannier(npt,opts);
+% opts.doPlot = 1;
+% 
+% %% Overlap Integrals
+% npt = wannier_overlap_s(npt);
+% 
+% hFa = showSwave(npt);
 
 %% Feshbach Resonance
 % Plot the feshbach resonance in free space
@@ -55,9 +58,14 @@ hF5=showTrappedInteraction;
 
 %% Data RF
 
-differential_swave_shift2;
+% differential_swave_shift2;
+% differential_swave_shift3;
+
+differential_swave_shift4;
+
+differential_swave_shift5;
 %%
-doSave=0;
+doSave=1;
 if doSave
     disp('saving figures ...');    
     figs=get(groot,'children');

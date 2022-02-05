@@ -1,4 +1,4 @@
-function a= feshbach_95(B)
+function [a,params] = feshbach_95(B)
 %FESHBACH_79 Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -18,6 +18,11 @@ Delta = 7.2;%Delta=7.6;
 % Delta = 9.7;
 B0 = 224.2;
 a_bg = 167.3;
+
+params = struct;
+params.a_bg = a_bg;
+params.Delta = Delta;
+params.B0 = B0;
 
 a = a_bg * (1 - Delta./(B-B0));
 end

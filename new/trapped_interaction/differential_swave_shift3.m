@@ -1,5 +1,4 @@
-function differential_swave_shift2
-
+function differential_swave_shift3
 out     = constants;
 a0      = out.a0;
 fr      = out.fr;
@@ -66,7 +65,7 @@ B = [198 200 198.5 205.5 204 204.5 205]+.11;
 data4.f_double = f2-f1;
 data4.B_fit = B;
 
-hF2=figure(2);
+hF2=figure;
 clf
 
 set(gcf,'color','w');
@@ -107,17 +106,18 @@ co=get(gca,'colororder');
 % 97
 plot(Bvec,U_97*1e-3,'-','linewidth',2,'color',co(1,:))
 hold on
-plot(Bvec,U_97_linear*1e-3,'--','linewidth',2,'color',co(1,:))
+% plot(Bvec,U_97_linear*1e-3,'--','linewidth',2,'color',co(1,:))
+% 
+% % 95
+% plot(Bvec,U_95*1e-3,'-','linewidth',2,'color',co(2,:))
+% plot(Bvec,U_95_linear*1e-3,'--','linewidth',2,'color',co(2,:))
 
-% 95
-plot(Bvec,U_95*1e-3,'-','linewidth',2,'color',co(2,:))
-plot(Bvec,U_95_linear*1e-3,'--','linewidth',2,'color',co(2,:))
+xlim([198 223]);
+% ylim([-60 150]);
+ylim([-80 130]);
 
-xlim([197 223]);
-ylim([-75 140]);
-ylim([-150 160]);
-
-set(gca,'box','on','linewidth',1,'xgrid','on','ygrid','on','fontsize',14);
+set(gca,'box','on','linewidth',1,'xgrid','on','ygrid','on','fontsize',12,...
+    'fontname','helvetica');
 
 xlabel('magnetic field (G)');
 ylabel('s-wave shift (kHz)');
@@ -132,24 +132,30 @@ U_95_data_ideal2 = Delta*int_func(a95_data_ideal2/aho);
 a95_data_ideal3 = feshbach_95(data3.B_fit-dB);
 U_95_data_ideal3 = Delta*int_func(a95_data_ideal3/aho);
 
-plot(data.B_fit,U_95_data_ideal*1e-3-data.f_double,'o','markerfacecolor',co(1,:),'markeredgecolor',co(1,:)*.5,...
+p1=plot(data.B_fit,U_95_data_ideal*1e-3-data.f_double,'o','markerfacecolor',co(1,:),'markeredgecolor',co(1,:)*.5,...
     'linewidth',2,'markersize',8)
 
-plot(data2.B_fit,U_95_data_ideal2*1e-3-data2.f_double,'o','markerfacecolor',co(2,:),'markeredgecolor',co(2,:)*.5,...
+plot(data2.B_fit,U_95_data_ideal2*1e-3-data2.f_double,'o','markerfacecolor',co(1,:),'markeredgecolor',co(1,:)*.5,...
     'linewidth',2,'markersize',8)
 % 
-plot(data3.B_fit,U_95_data_ideal3*1e-3-data3.f_double,'o','markerfacecolor',co(3,:),'markeredgecolor',co(3,:)*.5,...
+plot(data3.B_fit,U_95_data_ideal3*1e-3-data3.f_double,'o','markerfacecolor',co(1,:),'markeredgecolor',co(1,:)*.5,...
     'linewidth',2,'markersize',8)
 
-plot(data4.B_fit,data4.f_double,'o','markerfacecolor',co(4,:),'markeredgecolor',co(4,:)*.5,...
+p4=plot(data4.B_fit,data4.f_double,'o','markerfacecolor',co(4,:),'markeredgecolor',co(4,:)*.5,...
     'linewidth',2,'markersize',8)
 
-legend({'$U_{97}$','$U_{97}$ linear','$U_{95}$','$U_{95}$ linear'},'interpreter','latex',...
+legend([p1 p4],{'RF','Raman'},'interpreter','latex',...
     'fontsize',12,'location','southeast');
+
+% 
+% legend({'$U_{97}$','$U_{97}$ linear','$U_{95}$','$U_{95}$ linear'},'interpreter','latex',...
+%     'fontsize',12,'location','southeast');
 
 
 % legend({'$U_{97}$','$U_{95}$'},'interpreter','latex',...
 %     'fontsize',12,'location','southeast');
+
+
 
 end
 
