@@ -30,7 +30,7 @@ npt=constants;
 npt.depth=10:10:205;
 
 [npt,hF1]=getBandStructure(npt,opts);
-[npt,hF1_a]=calculateAMCoupling(npt,opts);
+% [npt,hF1_a]=calculateAMCoupling(npt,opts);
 
 
 [npt,hF2]=calculateGapTunneling(npt);
@@ -65,7 +65,7 @@ differential_swave_shift4;
 
 differential_swave_shift5;
 %%
-doSave=1;
+doSave=0;
 if doSave
     disp('saving figures ...');    
     figs=get(groot,'children');

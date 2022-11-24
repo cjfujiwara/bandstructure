@@ -3,9 +3,10 @@ out     = constants;
 a0      = out.a0;
 fr      = out.fr;
 U       = 200;
+% U=100;
 
 % Band gap
-% Delta   = sqrt(4*U)*fr
+Delta   = sqrt(4*U)*fr
 Delta   = [122529.554801461];
 
 % Harmonic oscillator length scale
