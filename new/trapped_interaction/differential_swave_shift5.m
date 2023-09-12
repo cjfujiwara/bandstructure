@@ -5,7 +5,6 @@ fr      = out.fr;
 U       = 200;
 
 % Band gap
-% Delta   = sqrt(4*U)*fr
 Delta   = [122529.554801461];
 
 % Harmonic oscillator length scale

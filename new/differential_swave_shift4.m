@@ -6,8 +6,11 @@ U       = 200;
 % U=100;
 
 % Band gap
-Delta   = sqrt(4*U)*fr
+Delta   = sqrt(4*U)*fr;
+
 Delta   = [122529.554801461];
+
+U=100;Delta=sqrt(4*U)*fr;
 
 % Harmonic oscillator length scale
 aho=harmonic_length(U)/a0;

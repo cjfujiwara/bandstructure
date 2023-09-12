@@ -21,7 +21,7 @@ addpath(curpath);addpath(genpath(curpath))
 %
 % In this form the lattice spacing is pi and the FBZ spans [-1,1]
 %%
-
+tic
 close all
 opts = struct;
 opts.doPlot = 0;
@@ -36,13 +36,13 @@ npt.depth=10:10:205;
 [npt,hF2]=calculateGapTunneling(npt);
 %% Wannier Calculation
 % opts.doPlot=0;
-% [npt,hF3]=wannier(npt,opts);
-% opts.doPlot = 1;
-% 
-% %% Overlap Integrals
-% npt = wannier_overlap_s(npt);
-% 
-% hFa = showSwave(npt);
+ [npt,hF3]=wannier(npt,opts);
+ opts.doPlot = 1;
+ 
+ %% Overlap Integrals
+ npt = wannier_overlap_s(npt);
+ 
+ hFa = showSwave(npt);
 
 %% Feshbach Resonance
 % Plot the feshbach resonance in free space

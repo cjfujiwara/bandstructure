@@ -12,13 +12,15 @@ hbar=cc.hbar;
 fr=cc.fr;
 
 R=-65*a0;
+% R=-98*a0;
 
+% Zero Point energy 1/2*hbar*omega_x+1/2*hbar*omega_y+1/2*hbar*omega_z
 E0=0.5*(sqrt(4*Ux)+sqrt(4*Uy)+sqrt(4*Uz))*h*fr;
-gap_avg=E0*2/3;
 
 
 
-dB=Delta./(1-2*hbar^2./(3*mu*R*gap_avg*a_bg*a0));
+
+dB=Delta./(1-2*hbar^2./(mu*R*E0*a_bg*a0));
 B = B0 + dB;
 
 end
