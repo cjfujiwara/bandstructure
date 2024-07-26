@@ -20,13 +20,23 @@ dK=K(2)-K(1);
 
 % Basis and display size
 numStates=npt.numStates;
-numBands=3;
+numBands=4;
 
 % Data Vectors
 % bandsStatic0=zeros(length(K),numStates);   
 bandsStatic0=zeros(numStates,length(K));       
 
 vecStatic0=zeros(numStates,numStates,length(K));
+
+nfo=struct;
+nfo.depth=1;
+nfo.numStates=numStates;
+nfo.k = 0;
+
+[~,pmat]=makeHmatrix(nfo); 
+
+npt.PMatrix = pmat;
+
 
 %% Calculate the band structure at each quasimomentum
 clear myFigs
@@ -40,23 +50,24 @@ for nn = 1:length(npt.depth)
         'Nstates = ' num2str(npt.numStates) ') ...']);
     t1=now;     
     
-    for ii=1:length(K)     
-        nfo=struct;
-        nfo.depth=depth;
-        nfo.numStates=numStates;
+    for ii=1:length(K)    
         nfo.k=K(ii);
-
-        H0=makeHmatrix(nfo);                % Hamiltonian
+        nfo.depth=depth;
+        [H0,~]=makeHmatrix(nfo);                % Hamiltonian
         [vS0,eng0]=eig(H0);                 % Solve
-        bandsStatic0(:,ii)=diag(eng0);      % Assign energies   
+        bandsStatic0(:,ii)=diag(eng0);      % Assign energies           
 
-        % Rotate each vectors to have real positive coefficient of exp(2 i phi)
-        % or 1, (parity of band)
-        for cc=1:size(vS0,2)   
-            ind = 2-mod(cc,2);
-            vS0(:,cc)=vS0(:,cc)*exp(-1i * angle(vS0(ind,cc)));
-        end          
-        vecStatic0(:,:,ii)=vS0;             % Assign eigenvectors        
+      for cc=1:size(vS0,2)  
+            if mod(cc,2) % even parity band
+                vS0(:,cc)=vS0(:,cc)*exp(-1i * angle(vS0(1,cc)));
+            else % odd parity band
+                vS0(:,cc)=vS0(:,cc)*exp(-1i * angle(vS0(cc,cc)));
+
+                vS0(:,cc)=1i*vS0(:,cc);
+                vS0(:,cc)=(-1)^(cc/2+1)*vS0(:,cc);
+            end
+      end   
+        vecStatic0(:,:,ii)=vS0;             % Assign eigenvectors     
     end
     t2=now;
     fprintf([' done (' num2str(round((t2-t1)*24*60*60,3)) ' s)']);
@@ -65,6 +76,7 @@ for nn = 1:length(npt.depth)
     npt.bandEigenValue(:,:,nn)=bandsStatic0;
     npt.bandEigenVectors(:,:,:,nn)=vecStatic0;
 
+    % keyboard
 
     %% Plot Band structure
     

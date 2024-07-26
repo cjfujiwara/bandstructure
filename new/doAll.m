@@ -27,11 +27,11 @@ opts = struct;
 opts.doPlot = 0;
 
 npt=constants;
-npt.depth=10:10:205;
+npt.depth=[2.5]; 
 
 [npt,hF1]=getBandStructure(npt,opts);
 % [npt,hF1_a]=calculateAMCoupling(npt,opts);
-
+npt = calculateTunneling(npt);
 
 [npt,hF2]=calculateGapTunneling(npt);
 %% Wannier Calculation

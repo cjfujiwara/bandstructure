@@ -1,4 +1,4 @@
-function h_mat=makeHmatrix(nfo)
+function [h_mat,p_mat]=makeHmatrix(nfo)
 
 % Parameters of hamiltonian
 if nargin==0
@@ -46,18 +46,18 @@ end
 %
 % where n = +- {1,2,3,4,...}
 %
-% Momentum operator
+% Momentum operator (diagonal)
 % p|n> = -i d/dphi exp(2n i phi)/sqrt(pi)
 % p|n> = 2n exp(2n i phi)/sqrt(pi)
 % p|n> = 2n |n>
 %
-% Cosine operator
+% Cosine operator (off diagonal)
 % cos(2 phi)    = 0.5*(exp(+2 i phi) + exp(-2 i phi))
 % cos(2 phi)|n> = 0.5*(exp(+2 i phi) + exp(-2 i phi)) exp(2 n i phi)/sqrt(pi)
 % cos(2 phi)|n> = 0.5 (exp(2 (n+1) i phi) + exp(2 (n-1) i phi))/sqrt(pi)
 % cos(2 phi)|n> = 0.5 (|n+1> + |n-1>)
 %
-% Potential operator
+% Potential operator (offdiagonal)
 % - v0/2(cos(2 phi)+1) |n> = -v0/4(|n+1>+|n-1>) - v0/2 |n>
 %                      
 % Basis ordering 
@@ -70,7 +70,7 @@ end
 nMax=(numStates-1)/2;
 
 % identity matrix
-I_mat = speye(numStates);
+I_mat = eye(numStates);
 
 % momentum matrix/operator
 nV = zeros(numStates,1);
@@ -80,6 +80,7 @@ for ii=2:2:(numStates-1)
 end
 p_mat = diag(nV);
 
+U_mat = zeros(numStates,numStates);
 % potential energy matrix
 for n=-nMax:1:nMax
    
@@ -128,8 +129,15 @@ end
 % Truncate
 U_mat = U_mat(1:numStates,1:numStates);
 
+U_mat(numStates-1,numStates-1) = 3/4;
+U_mat(numStates,numStates) = 3/4;
+
 % Form the hamiltonian
 h_mat = (p_mat + k*I_mat)^2 - U_mat*depth;
+
+% keyboard
+
+% h_mat = (p_mat + abs(k)*I_mat)^2 - U_mat*depth;
 
 end
 
