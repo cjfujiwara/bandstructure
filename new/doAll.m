@@ -16,7 +16,7 @@ addpath(curpath);addpath(genpath(curpath))
 % h = U_0\cos^2(X)+P^2
 %
 % Where the lattice depth U_0 is parametrized with the recoil energy
-%
+%5
 % Er:= hbar^2*k_L^2/(2*m)
 %
 % In this form the lattice spacing is pi and the FBZ spans [-1,1]
@@ -27,7 +27,7 @@ opts = struct;
 opts.doPlot = 0;
 
 npt=constants;
-npt.depth=10:10:205;
+npt.depth=.5:.5:20;
 
 [npt,hF1]=getBandStructure(npt,opts);
 % [npt,hF1_a]=calculateAMCoupling(npt,opts);

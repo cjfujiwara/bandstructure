@@ -26,7 +26,7 @@ out.fr=fr;
 
 %% Numerical parameters
 out.numStates=201;
-out.numK=51;
+out.numK=201;
 
 % out.numStates=25;
 % out.numK=51;
