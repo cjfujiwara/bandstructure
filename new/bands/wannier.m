@@ -33,7 +33,7 @@ function [npt,hF_W_probability] = wannier(npt,opts)
 
 
 bands = opts.bands;
-npt.Bands = bands;
+% npt.Bands = bands;
 
 %% Extended k-space vector
 

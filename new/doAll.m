@@ -27,8 +27,8 @@ opts = struct;
 opts.doPlot = 0;
 
 npt=constants;
-npt.depth=[2.5]; 
-
+npt.depth=[1:1:15]; 
+opts.bands = [1 2 3];
 [npt,hF1]=getBandStructure(npt,opts);
 % [npt,hF1_a]=calculateAMCoupling(npt,opts);
 npt = calculateTunneling(npt);
