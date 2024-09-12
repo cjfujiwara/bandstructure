@@ -1,4 +1,4 @@
-function [npt,hF_W_probability] = wannier(npt,opts)
+function [npt] = wannier(npt,opts)
 %% Wannier Function
 % The wannier function is a position basis description of states in the
 % lattice potential.  They are constructed by an fourier transform of the

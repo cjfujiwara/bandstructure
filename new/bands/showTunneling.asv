@@ -1,0 +1,23 @@
+function [outputArg1,outputArg2] = showTunneling(npt,opts)
+
+hF=figure;
+hF.Color='w';
+
+if ~isfield(opts,'bands')
+opts.bands = 1;
+end
+
+U = [npt.depth];
+for band_index=1:length(bands)
+    for site_index=1:5
+        band_number = opts.bands(band_index);
+        site_number = site_index;
+        T = npt.Tunneling(band_number,site_number,:);
+        T=T(:);
+
+        plot(U,npt.Tunneling(jj,mm,band_index
+    end
+end
+
+end
+

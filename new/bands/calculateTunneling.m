@@ -1,5 +1,5 @@
-function [npt,hF] = calculateTunneling(npt)
-    
+function npt = calculateTunneling(npt)
+%% Tunneling Matrix Element
 dk = npt.K(2)-npt.K(1);
 deltaImax = 101;
 tunneling = zeros(size(npt.bandEigenValue,1),deltaImax,size(npt.bandEigenValue,3));
@@ -26,6 +26,7 @@ npt.bandEigenValueAverage = Ebar;
 
 
 %% Band Curvature
+% Useful for band mass
 
 % Band curavture at Gamma point (center of FBZ)
 npt.BandCurvatureG = zeros(size(npt.bandEigenValue,1),size(npt.bandEigenValue,3));

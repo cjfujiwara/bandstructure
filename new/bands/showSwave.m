@@ -1,8 +1,8 @@
-function [hF] = showSwave(npt)
+function [hF] = showSwave(npt,opts)
 
 %% Interaction Saturation
 [funcs] = trapped_interaction;
-aVec=linspace(-2,4,1000);
+aVec=linspace(-2,10,1000);
 
 hF=figure;
 clf

@@ -1,4 +1,4 @@
-function npt = wannier_overlap_s(npt)
+function npt = wannier_overlap_s(npt,opts)
 %WANNIER_OVERLAP Summary of this function goes here
 %   Detailed explanation goes here
 %
@@ -47,26 +47,29 @@ function npt = wannier_overlap_s(npt)
 % U = (a/l_ho) sqrt(2/pi) * (hbar*omega)
 
 disp('Calculating wannier function overlap integrals');
-
+opts.Bands=opts.bands;
 %% Check the Harmonic Integrals
 
 OverlapS = struct;
 OverlapS.depth = npt.depth;
 
-Is_ho_mat = zeros(length(npt.Bands),length(npt.depth));
-Is_ho_th_mat = zeros(length(npt.Bands),length(npt.depth));
-Is_wn_mat = zeros(length(npt.Bands),length(npt.depth));
+Is_ho_mat = zeros(length(opts.Bands),length(npt.depth));
+Is_ho_th_mat = zeros(length(opts.Bands),length(npt.depth));
+Is_wn_mat = zeros(length(opts.Bands),length(npt.depth));
 
-U_ho_mat = zeros(length(npt.Bands),length(npt.depth));
-U_ho_th_mat = zeros(length(npt.Bands),length(npt.depth));
-U_wn_mat = zeros(length(npt.Bands),length(npt.depth));
+U_ho_mat = zeros(length(opts.Bands),length(npt.depth));
+U_ho_th_mat = zeros(length(opts.Bands),length(npt.depth));
+U_wn_mat = zeros(length(opts.Bands),length(npt.depth));
 
 disp('Checking s-band overlap integrals');
 for ii=1:length(npt.depth)
     depth = npt.depth(ii);
-    for nn=1:length(npt.Bands)
+    for nn=1:length(opts.Bands)
         % Grab the position vector
-        x = npt.X;dx = x(2) - x(1);
+        % x = npt.X;
+                x=pi*npt.X_extended;
+
+        dx = x(2) - x(1);
 
         % Harmonic oscillattor length scale (to truncate integration)
         l_ho = pi*npt.Harmonic_Length(ii);   
