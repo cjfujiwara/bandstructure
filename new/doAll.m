@@ -62,6 +62,7 @@ npt=wannier(npt,opts);
 if opts.doPlot;showWannier(npt,opts);end
  
  %% Interaction Integrals
+ % Calculate contact interaction hamiltonian
  npt = wannier_overlap_s(npt,opts);
  
  hFa = showSwave(npt,opts);
