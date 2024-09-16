@@ -1,18 +1,20 @@
-function npt = wannier_overlap_s(npt,opts)
+function npt = wannier_overlap(npt,opts)
 %WANNIER_OVERLAP Summary of this function goes here
 %   Detailed explanation goes here
 %
 %
+% INCOMPLETE FROM CORA STILL< THINKINGA ABOUT HOW TO MAKE THE PROBLEM
+% TRACTABLE
 % Some useful transformations
 %
 % a_L      = pi/k_L = lambda/2
 % l_ho/a_L = 1/(k_L*depth^(1/4))
 %          = (1/depth)^(1/4)*1/pi
 %
-% To first order the interaction energy for two fermions in the lowest band
-% interacting with an s-wave scattering length a is given by:
+% The on-site interaction of two atoms with band indeces m and n 
+% which interact with a contact interaction is given by :
 %
-% U := g Integral |w(x)|^4 d^3x = g \prod_i |w(x_i)|^4 dx_i
+% U_{m,n} := g Integral |w_m(x)|^2|w_n(x)|^2 d^3x = g \prod_i |w(x_i)|^4 dx_i
 %
 % where g = 4*pi*a*hbar^2/m
 %
@@ -45,19 +47,8 @@ function npt = wannier_overlap_s(npt,opts)
 % And we recover the linear expectation
 %
 % U = (a/l_ho) sqrt(2/pi) * (hbar*omega)
-%
-
 
 disp('Calculating wannier function overlap integrals');
-%% Effective trap frequency
-
-% In kokklemans, there is an effective hamornic trap frequency defined via
-%
-% E_{HO,eff}/Er = 2*pi (Integral |w(x)|^4 dr/k_L)^2
-%               = 2*pi*k_L^2 (Integral |w(x)|^4 dx)^6
-%               = 2*pi (Integral |w(X)|^4 d^3x/k_L)^6
-%
-
 opts.Bands=opts.bands;
 %% Check the Harmonic Integrals
 
@@ -109,7 +100,7 @@ for ii=1:length(npt.depth)
         U_ho_mat(nn,ii) = depth^(-1/4) * 8*pi * Is_ho^3;
         U_ho_th_mat(nn,ii) = depth^(-1/4) * 8*pi * Is_ho_th^3;
         U_wn_mat(nn,ii) = depth^(-1/4) * 8*pi * Is_wn^3;
-        
+
         str = [num2str(depth) ' Er : ' ...
             'HO Theory = ' num2str(round(Is_ho_th,3)) ',' ...
             'HO Numeric = ' num2str(round(Is_ho,3)) ',' ...

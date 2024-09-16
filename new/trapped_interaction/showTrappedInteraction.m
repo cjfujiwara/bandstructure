@@ -36,6 +36,7 @@ set(gca,'xgrid','on','ygrid','on','fontsize',14,'box','on',...
 
 xlabel('scattering length $(a_\mathrm{HO})$','interpreter','latex');
 ylabel('energy ($\hbar \omega$)','interpreter','latex');
+title('3d hamornic + contact s-wave')
 
 end
 
