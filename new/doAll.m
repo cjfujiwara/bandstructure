@@ -16,7 +16,7 @@ addpath(curpath);addpath(genpath(curpath))
 % h = U_0\cos^2(X)+P^2
 %
 % Where the lattice depth U_0 is parametrized with the recoil energy
-%
+%5
 % Er:= hbar^2*k_L^2/(2*m)
 %
 % In this form the lattice spacing is pi and the FBZ spans [-1,1]
@@ -37,18 +37,16 @@ close all
 opts.doPlot = 0;
 [npt,hF1]=getBandStructure(npt,opts);
 
-%% Interaction
-disp([repmat('-',1,20) ' BUSCH ' repmat('-',1,20)])
-
-showTrappedInteraction;
 
 %% Calculate Tunneling Matrix Elements\
 disp([repmat('-',1,20) ' TUNNELING ' repmat('-',1,20)])
-
 % [npt,hF1_a]=calculateAMCoupling(npt,opts);
-
 npt = calculateTunneling(npt);
 showTunneling(npt,opts);
+
+%% Interaction
+disp([repmat('-',1,20) ' BUSCH ' repmat('-',1,20)])
+showTrappedInteraction;
 
 %% Gaps
 % [npt,hF2]=calculateGapTunneling(npt);
@@ -65,7 +63,9 @@ if opts.doPlot;showWannier(npt,opts);end
  % Calculate contact interaction hamiltonian
  npt = wannier_overlap_s(npt,opts);
  
+
  hFa = showSwave(npt,opts);
+
 
 
 %% Feshbach Resonance
