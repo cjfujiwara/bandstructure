@@ -24,7 +24,7 @@ addpath(curpath);addpath(genpath(curpath))
 %% Initialize Settings
 disp([repmat('-',1,20) ' SETTINGS ' repmat('-',1,20)])
 npt=constants;
-npt.depth=[2.5 5 7.5 10 15 20]; 
+npt.depth=[4 8 12 16 20]; 
 %% Options
 
 opts = struct;
@@ -66,6 +66,7 @@ if opts.doPlot;showWannier(npt,opts);end
 
  hFa = showSwave(npt,opts);
 
+ hFb = showSInteraction(npt,opts);
 
 
 %% Feshbach Resonance

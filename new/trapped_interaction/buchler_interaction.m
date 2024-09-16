@@ -1,4 +1,4 @@
-function out=buchler_interaction
+function [out,outEr]=buchler_interaction
 %BUCHLER_INTERACTION Summary of this function goes here
 %   Detailed explanation goes here
 %PhysRevLett.104.090402
@@ -36,14 +36,20 @@ W_HO = @(u0,as) 2^(7/2)/pi^2.*(4*u0).^(-3/4).*as;
 
 W_HO = @(u0,as) 2^(7/2)/pi^2.*(4*u0).^(-3/4).*as;
 
-
+W_Er = @(as) (8/pi)*as;
 
 out.U_04 = @(as) w02(1).*W_HO(u0(1),as)./(1+W_HO(u0(1),as)*gamma_HO(1));
 out.U_08 = @(as) w02(2).*W_HO(u0(2),as)./(1+W_HO(u0(2),as)*gamma_HO(2));
 out.U_12 = @(as) w02(3).*W_HO(u0(3),as)./(1+W_HO(u0(3),as)*gamma_HO(3));
 out.U_16 = @(as) w02(4).*W_HO(u0(4),as)./(1+W_HO(u0(4),as)*gamma_HO(4));
 out.U_20 = @(as) w02(5).*W_HO(u0(5),as)./(1+W_HO(u0(5),as)*gamma_HO(5));
+%%
 
+outEr.U_04 = @(as) w02(1)*W_Er(as)./(1+W_Er(as)*gamma(1));
+outEr.U_08 = @(as) w02(2)*W_Er(as)./(1+W_Er(as)*gamma(2));
+outEr.U_12 = @(as) w02(3)*W_Er(as)./(1+W_Er(as)*gamma(3));
+outEr.U_16 = @(as) w02(4)*W_Er(as)./(1+W_Er(as)*gamma(4));
+outEr.U_20 = @(as) w02(5)*W_Er(as)./(1+W_Er(as)*gamma(5));
 
 end
 

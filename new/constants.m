@@ -25,8 +25,8 @@ out.Er=Er;
 out.fr=fr;
 
 %% Numerical parameters
-out.numStates=201;
-out.numK=201;
+out.numStates=51;
+out.numK=301;
 
 
 % out.numStates=25;

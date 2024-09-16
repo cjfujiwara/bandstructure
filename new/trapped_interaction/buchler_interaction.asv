@@ -1,4 +1,4 @@
-function out=buchler_interaction
+function [out,out=buchler_interaction
 %BUCHLER_INTERACTION Summary of this function goes here
 %   Detailed explanation goes here
 %PhysRevLett.104.090402
@@ -28,7 +28,15 @@ u0 = [4 8 12 16 20];                    % in units of Er
 % gamma in units not of 1/Er but in 1/hbar*omega
 gamma_HO = gamma.*sqrt(4*u0);
 
+gamma_HO = gamma_HO;
+
 W_HO = @(u0,as) 0.5*u0.^(-3/4).*as;
+
+W_HO = @(u0,as) 2^(7/2)/pi^2.*(4*u0).^(-3/4).*as;
+
+W_HO = @(u0,as) 2^(7/2)/pi^2.*(4*u0).^(-3/4).*as;
+
+
 
 out.U_04 = @(as) w02(1).*W_HO(u0(1),as)./(1+W_HO(u0(1),as)*gamma_HO(1));
 out.U_08 = @(as) w02(2).*W_HO(u0(2),as)./(1+W_HO(u0(2),as)*gamma_HO(2));
