@@ -168,7 +168,7 @@ for ii = 1:length(npt.depth)
         fprintf(' plotting ... ');
         tstart=now;
 
-        hF_W_probability=figure(10000);
+        hF_W_probability=figure(10000+ii);
         hF_W_probability.Color='w';
         hF_W_probability.Position=[250 50 800 400];
         hF_W_probability.Name = 'wannier_probability';

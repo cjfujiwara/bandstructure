@@ -27,7 +27,7 @@ opts = struct;
 opts.doPlot = 0;
 
 npt=constants;
-npt.depth=.5:.5:20;
+npt.depth=[4 8 12 16 20];
 
 [npt,hF1]=getBandStructure(npt,opts);
 % [npt,hF1_a]=calculateAMCoupling(npt,opts);
@@ -42,7 +42,7 @@ npt.depth=.5:.5:20;
  %% Overlap Integrals
  npt = wannier_overlap_s(npt);
  
- hFa = showSwave(npt);
+hFa = showSwave(npt);
 
 %% Feshbach Resonance
 % Plot the feshbach resonance in free space

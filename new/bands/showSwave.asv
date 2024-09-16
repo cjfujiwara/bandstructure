@@ -43,18 +43,13 @@ pBusch=plot(aVec,busch_harmonic_energy{1}(aVec),'k-','linewidth',1);
 pBusch=plot(aVec,busch_harmonic_energy{3}(aVec),'k-','linewidth',1);
 pBusch=plot(aVec,busch_harmonic_energy{2}(aVec),'k-','linewidth',1);
 
-% for nn=1:length(U_Wannier)
-%     da = 0.01;
-%     E_ho_small = busch_harmonic_energy{2}(da);
-%     
-%     U_wannier_HO = U_Wannier(nn)/(sqrt(4*npt.OverlapS.depth(nn)));
-%     E_wannier_small = U_wannier_HO*da;
-%     
-%     R = E_wannier_small/E_ho_small;
-%  
-%     pBuschWannier=plot(aVec,R*busch_harmonic_energy{2}(aVec),'-','linewidth',1,'color',co(nn,:));
-% 
-% end
+for nn=1:length(U_Wannier)
+    E_ho = busch_harmonic_energy{2}(aVec)
+    
+    U_HO_slope 
+    pBusch=plot(aVec,busch_harmonic_energy{2}(aVec),'k-','linewidth',1);
+
+end
 
 hold on
 % legStr={'bound','first unbound','linear'};
@@ -64,11 +59,11 @@ hold on
 
  out=buchler_interaction;
 
-ps(end+1)=plot(aVec,out.U_04(aVec),'--','linewidth',1,'color',co(1,:));legStr{end+1}='buchler 4Er';
-ps(end+1)=plot(aVec,out.U_08(aVec),'--','linewidth',1,'color',co(2,:));legStr{end+1}='buchler 8Er';
-ps(end+1)=plot(aVec,out.U_12(aVec),'--','linewidth',1,'color',co(3,:));legStr{end+1}='buchler 12Er';
-ps(end+1)=plot(aVec,out.U_16(aVec),'--','linewidth',1,'color',co(4,:));legStr{end+1}='buchler 16Er';
-ps(end+1)=plot(aVec,out.U_20(aVec),'--','linewidth',1,'color',co(5,:));legStr{end+1}='buchler 20Er';
+ps(end+1)=plot(aVec,out.U_04(aVec),'--','linewidth',2,'color',co(1,:));legStr{end+1}='buchler 4Er';
+ps(end+1)=plot(aVec,out.U_08(aVec),'--','linewidth',2,'color',co(2,:));legStr{end+1}='buchler 8Er';
+ps(end+1)=plot(aVec,out.U_12(aVec),'--','linewidth',2,'color',co(3,:));legStr{end+1}='buchler 12Er';
+ps(end+1)=plot(aVec,out.U_16(aVec),'--','linewidth',2,'color',co(4,:));legStr{end+1}='buchler 16Er';
+ps(end+1)=plot(aVec,out.U_20(aVec),'--','linewidth',2,'color',co(5,:));legStr{end+1}='buchler 20Er';
 
 
 ylim([0 1]);

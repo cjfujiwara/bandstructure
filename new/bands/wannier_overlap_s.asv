@@ -53,8 +53,8 @@ disp('Calculating wannier function overlap integrals');
 
 % In kokklemans, there is an effective hamornic trap frequency defined via
 %
-% E_{HO,eff}/Er = 2*pi (Integral |w(x)|^4 dr/k_L)^2
-%               = 2*pi*k_L^2 (Integral |w(x)|^4 dx)^6
+% E_{HO,eff}/Er = 2*pi (Integral |w(x)|^4 d^3x/k_L)^2
+%               = 2*pi (Integral |w(x)|^4 d^3x/k_L)^6
 %               = 2*pi (Integral |w(X)|^4 d^3x/k_L)^6
 %
 %% Check the Harmonic Integrals
@@ -104,7 +104,7 @@ for ii=1:length(npt.depth)
         U_ho_mat(nn,ii) = depth^(-1/4) * 8*pi * Is_ho^3;
         U_ho_th_mat(nn,ii) = depth^(-1/4) * 8*pi * Is_ho_th^3;
         U_wn_mat(nn,ii) = depth^(-1/4) * 8*pi * Is_wn^3;
-        
+
         str = [num2str(depth) ' Er : ' ...
             'HO Theory = ' num2str(round(Is_ho_th,3)) ',' ...
             'HO Numeric = ' num2str(round(Is_ho,3)) ',' ...
