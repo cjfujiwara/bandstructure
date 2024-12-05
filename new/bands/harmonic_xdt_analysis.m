@@ -1,121 +1,74 @@
-%% Caclulate band strcuture, tunneling, and wannier
-% opts = struct;
-% opts.doPlot = 0;
-% npt=constants;
-% npt.numStates=51;
-% npt.numK=1001;
-% npt.K=linspace(-1,1,npt.numK)';
-% dK = mode(diff(npt.K));
-% npt.K = [-1:dK:1]';
-% if npt.K(end)~=1
-%     npt.K=[npt.K; 1];
-% end
-% npt.numK = length(npt.K);
-% npt.depth=[.1:.1:10]; 
-% npt = getBandStructure(npt,opts);   % calculate band structure
-% npt = calculateTunneling(npt);      % calculate tunneling elements
-% showTunnelingDepth(npt)
-
-%% Caclulate band strcuture, tunneling, and wannier
-opts = struct;
-opts.doPlot = 0;
-npt=constants;
-npt.numStates=51;
-npt.numK=1001;
-npt.K=linspace(-1,1,npt.numK)';
-dK = mode(diff(npt.K));
-npt.K = [-1:dK:1]';
-if npt.K(end)~=1
-    npt.K=[npt.K; 1];
-end
-npt.numK = length(npt.K);
-npt.depth=[60:5:150]; 
-npt = getBandStructure(npt,opts);   % calculate band structure
-npt = calculateTunneling(npt);      % calculate tunneling elements
-showTunnelingDepth(npt)
-
-%% Caclulate band strcuture, tunneling, and wannier
-opts = struct;
-opts.doPlot = 1;
-
+%% Introduction
 npt=constants;
 npt.depth=[2.5]; 
-npt = getBandStructure(npt,opts);   % calculate band structure
+
+%% Caclulate Band Properties
+
+npt = calculateBandStructure(npt);   % calculate band structure
+
+% Plot the band structure
+show_band_opts = struct;
+show_band_opts.Bands = 1:3;
+hF_band = showBandStructure(npt,show_band_opts);
+
+%% Calculate Tunneling Properties
 npt = calculateTunneling(npt);      % calculate tunneling elements
 
-wannier_opts.bands = [1:4];
-npt = wannier(npt,wannier_opts);           % calculate wannier function
-npt = calculateWannierMoments(npt);
-npt = calculateWannierHarmonicCoupling(npt);
-%% Wannier Plotting
-doShowWannier = 1;
-doAnimateWannier = 0;
+% showTunnelingDepth(npt)
 
-if doShowWannier
-[hF_wannier] = showWannier(npt,wannier_opts);           % calculate wannier function    
-    if doAnimateWannier
-        tempfile = fullfile(tempdir,'animate.gif');
-        for kk=1:length(hF_wannier)    
-            frame = getframe(hF_wannier(kk));
-            im = frame2im(frame);
-            [A,map] = rgb2ind(im,256);  
-            if kk == 1
-                imwrite(A,map,tempfile,'gif','LoopCount',Inf,'DelayTime',1);
+
+%% Calculate Wannier
+wannier_opts = struct;
+wannier_opts.Bands = [1:3];
+npt.WannierBands = wannier_opts.Bands;
+
+npt = wannier(npt,wannier_opts);                % Calculate wannier function
+npt = calculateWannierMoments(npt);             % Dipole matrix elements in wannier basis
+
+% Show the Wannier function
+hF_wannier = showWannier(npt,wannier_opts);           % calculate wannier function 
+
+%% Wannier Animation
+doAnimateWannier = 0;
+if doAnimateWannier
+    tempfile = fullfile(tempdir,'animate.gif');
+    for kk=1:length(hF_wannier)    
+        frame = getframe(hF_wannier(kk));
+        im = frame2im(frame);
+        [A,map] = rgb2ind(im,256);  
+        if kk == 1
+            imwrite(A,map,tempfile,'gif','LoopCount',Inf,'DelayTime',1);
+        else
+            if kk==length(hF_wannier)
+                imwrite(A,map,tempfile,'gif','WriteMode','append','DelayTime',1);
             else
-                if kk==length(hF_wannier)
-                    imwrite(A,map,tempfile,'gif','WriteMode','append','DelayTime',1);
-                else
-                    imwrite(A,map,tempfile,'gif','WriteMode','append','DelayTime',.1);
-                end
-            end        
-        end
-        copyfile(tempfile,'wannier.gif','f');
+                imwrite(A,map,tempfile,'gif','WriteMode','append','DelayTime',.1);
+            end
+        end        
     end
+    copyfile(tempfile,'wannier.gif','f');
 end
+
+%% Harmonic Coupling
+
+ npt = calculateWannierHarmonicCoupling(npt);
 
 %% Calculate 1D spectrum with Harmonic Confinement
 
-% physical constants
-amu = 1.66053907e-27;
-h =6.626e-34;
-m= 40*amu;
-aL = 527e-9;
-
-%
-
-f_x_latt = 40;
-f_y_latt = 40;
-f_z_latt = 30;
-
-fx_xdt = 42.5;
-fy_xdt = 30.9;
-fz_xdt = 224;
-
-f_radial = sqrt((f_x_latt*f_y_latt) +(fx_xdt*fy_xdt)+ (f_z_latt)^2);
-f_vertical = sqrt(f_x_latt^2+f_y_latt^2+fz_xdt^2);
-
-
 % calculation parameters
 harmonic_opts = struct;
-harmonic_opts.NumSites =501;
+harmonic_opts.NumSites =301;
 harmonic_opts.MaxTunnelingOrder = 51;
-harmonic_opts.NumBands = 4;
-
-%42.5 ± 0.3 xdt trap freq 04/2024
-%30.9 ± 0.6*
-
-
+harmonic_opts.NumBands = 3;
 
 % XY Lattice
-harmonic_opts.omega = 2*pi*65;
-% harmonic_opts.omega=2*pi*1;
-% harmonic_opts.omega = npt.fr/10;
-harmonic_opts.Omega = 0.5*m*harmonic_opts.omega^2*aL^2/h;
+harmonic_opts.omega = 2*pi*60;
+harmonic_opts.Omega = 0.5*npt.m*harmonic_opts.omega^2*(npt.lambda/2)^2/npt.h;
 [npt,harmonic_output_H] = calculateLatticeHarmonicSpectrum(npt,harmonic_opts);
 
 % Z Direction
 harmonic_opts.omega = 2*pi*230; % XDT Vertical trap frequency
-harmonic_opts.Omega = 0.5*m*harmonic_opts.omega^2*aL^2/h;
+harmonic_opts.Omega = 0.5*npt.m*harmonic_opts.omega^2*(npt.lambda/2)^2/npt.h;
 [npt,harmonic_output_V] = calculateLatticeHarmonicSpectrum(npt,harmonic_opts);
 
 %% Fit Lowest Band Energy to linear DOS (ie. best harmonic approximation)
@@ -124,22 +77,126 @@ harmonic_output_V = fitHOtoFirstBand(harmonic_output_V);
 
 %%
 
-showLatticeHarmonic(harmonic_output_H,npt);
-showLatticeHarmonic(harmonic_output_V,npt);
+hF_x=showLatticeHarmonic(harmonic_output_H,npt);
+xlim([0 50]);
+ylim(-6500 + [0 3000])
+
+hF_z=showLatticeHarmonic(harmonic_output_V,npt);
+xlim([0 20]);
+ylim(-6500 + [0 3000])
+hF_z.Position(1) = hF_x.Position(1)+hF_x.Position(3)+5;
+
+%% Show Differential Energy
+out=harmonic_output_H;
+
+
+hF_eng_diff = figure(1010);
+clf
+hF_eng_diff.Color='w';
+
+
+
+uu=1;
+
+ax1 = axes;
+% Actual Energy Data
+[~,dominateBandIndex] = max(out.BandProjection(:,:,uu),[],2);
+co=get(gca,'colororder');
+colors = co(mod(dominateBandIndex-1,7)+1,:);
+inds = 1:size(out.EigenValues(:,uu));
+E_min = min(out.EigenValues(:,uu));
+nstates = out.NumSites*out.NumBands;
+eng = out.EigenValues(:,uu);
+
+E0=eng(1);
+pData=scatter(eng(1:end-1)-E0,diff(eng),2,colors(1:end-1,:),'linewidth',2,...
+    'parent',ax1);
+ylim([0 130])
+xlim([0 20]*563);
+ylabel('${E}_{n+1}-{E}_{n}$ [Hz]','interpreter','latex')
+hold on
+
+t=563;
+T=[1 2 3 4 5 6 7 8]*t;
+f_vec=linspace(0,30*t,100);
+
+myc = jet(length(T));
+set(gca,'box','on','linewidth',1,'fontsize',12)
+
+xlabel('$E_n-E_0$ [Hz]','interpreter','latex')
+ax2 = axes;
+ax2.Position=ax1.Position;
+
+clear ps
+for nn=1:length(T)
+    ps(nn)=plot(f_vec,exp(-f_vec/T(nn)),'-','color',[myc(nn,:) .5]);
+    strs{nn}=['T/t = ' num2str(T(nn)/t)];
+    hold on
+end
+ylim([0 1])
+xlim([0 20]*t)
+set(ax2,'Visible','off')
+linkaxes([ax1 ax2],'x');
+
+legend([ps(1) ps(end)],strs([1 length(T)]),'location','southeast');
 
 %%
-showBandProjections(harmonic_output_H)
-showBandProjections(harmonic_output_V)
+% showBandProjections(harmonic_output_H)
+% showBandProjections(harmonic_output_V)
 
 %% 
-% opts=struct;
-% opts.Indeces = 'auto';
-% opts.Indeces = [1 2 46 47 110 111 112 113 354 355];
-% showLatticeHarmonicWavefunction(npt,harmonic_output_H,opts);
+opts=struct;
+opts.Indeces = 'auto';
+opts.Indeces = [1 2 46 47 70 71 122 123];
+% opts.Indeces = [1:100];
 
+showLatticeHarmonicWavefunction(npt,harmonic_output_H,opts);
+%%
+opts.Indeces = [1:150];
+wfs = calculateLatticeHarmonicWavefunction(npt,harmonic_output_H,opts);
+%%
+D=zeros(size(wfs,2),size(wfs,2));
+for rr=1:size(wfs,2)
+    for cc = 1:size(wfs,2)
+        D(rr,cc)=trapz(conj(wfs(:,rr)).*wfs(:,cc).*x);
+    end
+end
+%%
+
+
+N=size(wfs,2);
+
+out=harmonic_output_H;
+[~,dominateBandIndex] = max(out.BandProjection(:,:,uu),[],2);
+co=get(gca,'colororder');
+colors = co(mod(dominateBandIndex-1,7)+1,:);
+inds = 1:size(out.EigenValues(:,uu));
+E_min = min(out.EigenValues(:,uu));
+nstates = out.NumSites*out.NumBands;
+eng = out.EigenValues(:,uu);
+
+
+figure(999);
+
+subplot(1,2,1)
+imagesc(abs(real(D)));set(gca,'YDir','normal');colorbar
+set(gca,'fontsize',10);
+xlabel('eigen index');
+ylabel('eigen index');
+axis equal tight
+title('$|\langle \psi_m|x|\psi_n\rangle|$','interpreter','latex','fontsize',18)
+
+subplot(1,2,2)
+% plot(harmonic_output_H.EigenValues(1:200))
+
+pData=scatter(inds(1:N),eng(1:N)-eng(1),2,colors(1:N,:),'linewidth',2);
+set(gca,'box','on','linewidth',1,'fontsize',12)
+xlabel('eigenindex');
+ylabel('energy - E_0 [Hz]');
+title('eigenspectrum 2.5 Er + 60 Hz HO')
 %% Thermodynamical Analysis
 
-calculateThermodynamics(npt,harmonic_output_H,harmonic_output_H,harmonic_output_V);
+% calculateThermodynamics(npt,harmonic_output_H,harmonic_output_H,harmonic_output_V);
 
 
 

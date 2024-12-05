@@ -329,7 +329,6 @@ legend([pS, pEF, pMu pBW pP],{strS strEF strMu strBW strP},...
 
 %%
 
-keyboard
 
 
 

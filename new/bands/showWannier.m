@@ -1,6 +1,6 @@
 function [hF_W_psi] = showWannier(npt,opts)
 
-    bands = opts.bands;
+    bands = opts.Bands;
 
 for uu=1:length(npt.depth)
     tstart=now;
@@ -10,7 +10,7 @@ for uu=1:length(npt.depth)
     %% Wavefunction Plot
     hF_W_psi(uu)=figure(10000+uu);
     hF_W_psi(uu).Color='w';
-    hF_W_psi(uu).Position=[260 50 1200 400];
+    hF_W_psi(uu).Position=[260 50 600 400];
     hF_W_psi(uu).Name = 'wannier_wavefunction';
     clf
     % t=uicontrol('style','text','string',[num2str(depth) 'Er'],...

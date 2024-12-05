@@ -58,11 +58,11 @@ for kk=1:length(opts.Indeces)
         text(xL(1),kk,num2str(opts.Indeces(kk)))
         % plot(wx,imag(psi)/abs(max(psi))+kk,'-')
 
-    % keyboard
 
     hold on
 end
-    xlim([-50 50])
+xlabel('position (site)')
+    xlim([-70 70])
 
 end
 

@@ -6,7 +6,7 @@ nI = 21;                        % Max site number to couple
 
 iVec = -nI:1:nI;
 
-nB = length(npt.Bands);         % number of bands
+nB = length(npt.WannierBands);         % number of bands
 nU = size(npt.bandEigenValue,3); % lattice depth vector
 
 curveMat = zeros(nB,nB,2*nI+1,nU);

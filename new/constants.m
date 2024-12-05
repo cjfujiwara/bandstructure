@@ -25,12 +25,8 @@ out.Er=Er;
 out.fr=fr;
 
 %% Numerical parameters
-out.numStates=201;
-out.numK=201;
-
-
-% out.numStates=25;
-% out.numK=51;
+out.numStates=51;
+out.numK=501;
 
 out.K=linspace(-1,1,out.numK)';
 dK = mode(diff(out.K));
@@ -42,18 +38,16 @@ out.numK = length(out.K);
 
 %% Unitary Transformation Matrix
 
-U = zeros(out.numStates,out.numStates);
-
-U(1,1)=1;
-
-for nn=2:2:(out.numStates-1)
-    U(nn,nn)=1/sqrt(2);
-    U(nn+1,nn)=1i/sqrt(2);
-    U(nn,nn+1)=1/sqrt(2);
-    U(nn+1,nn+1)=-1i/sqrt(2);
-end
-
-out.U_exp2cossin = U;
+% U = zeros(out.numStates,out.numStates);
+% U(1,1)=1;
+% 
+% for nn=2:2:(out.numStates-1)
+%     U(nn,nn)=1/sqrt(2);
+%     U(nn+1,nn)=1i/sqrt(2);
+%     U(nn,nn+1)=1/sqrt(2);
+%     U(nn+1,nn+1)=-1i/sqrt(2);
+% end
+% out.U_exp2cossin = U;
 
 end
 
