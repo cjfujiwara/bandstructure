@@ -59,7 +59,7 @@ end
 harmonic_opts = struct;
 harmonic_opts.NumSites =301;
 harmonic_opts.MaxTunnelingOrder = 51;
-harmonic_opts.NumBands = 3;
+harmonic_opts.NumBands = 1;
 
 % XY Lattice
 harmonic_opts.omega = 2*pi*60;
