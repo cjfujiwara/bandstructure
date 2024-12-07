@@ -57,7 +57,7 @@ for uu=1:length(input.Depth)
     pHO=plot([1 nstates],foo_ho([1 nstates]),'-','linewidth',2,...
         'color',[.3 .3 .3]);
     hold on
-    strHO = ['$\epsilon_\mathrm{HO} =nh\times' num2str(input.omega/(2*pi)) '\mathrm{Hz}$'];
+    strHO = ['$nh\times' num2str(input.omega/(2*pi)) '\mathrm{Hz}$'];
     legStr{end+1}=strHO;
     plist(end+1)=pHO;
 
@@ -67,7 +67,7 @@ for uu=1:length(input.Depth)
         nmax = nmax-1;
         pHOFit=plot([1 nmax],[0 (nmax-1)]*m+min(input.EigenValues),':','linewidth',2,...
             'color',[.3 .3 .3]);
-        strHOFit = ['$\epsilon_\mathrm{HO} =nh\times' num2str(round(m,1)) '\mathrm{Hz}$'];
+        strHOFit = ['$nh\times' num2str(round(m,1)) '\mathrm{Hz}$'];
         legStr{end+1}=strHOFit;
         plist(end+1)=pHOFit;
     end
@@ -88,17 +88,28 @@ for uu=1:length(input.Depth)
     e0 = npt.fr*min(npt.bandEigenValue(1,:));
     e1 = npt.fr*max(npt.bandEigenValue(1,:));
     i1 = find(eng>=e0,1);
+    i1=1;
     i2 = find(eng>=e1,1);  
 
     if ~isempty(i1) && ~isempty(i2)  && ~isequal(i1,i2)
-        omega_band = sqrt(npt.BandCurvatureG(1))*input.omega;
-        foo_ho_1_band = @(ind) (ind-1)*omega_band/(2*pi)+0.5*input.omega/(2*pi);
-        pBandHO=plot([i1:1:i2],foo_ho_1_band([i1:1:i2])+e0,'.-','linewidth',1,...
+        omega_band = sqrt(npt.BandCurvatureG(1))*input.omega;  
+        f_band = omega_band/(2*pi);
+        
+%         foo_ho_1_band = @(ind) (ind-1)*f_band+0.5*input.omega/(2*pi); 
+%         pBandHO=plot([i1:1:i2],foo_ho_1_band([i1:1:i2])+e0,'.-','linewidth',1,...
+%             'color',[.3 .3 .3]);
+        
+        foo_ho_1_band = @(ind) (ind-1)*f_band+min(input.EigenValues);
+        pBandHO=plot([i1:1:i2],foo_ho_1_band([i1:1:i2]),'.-','linewidth',1,...
             'color',[.3 .3 .3]);
         hold on
-        strHOLattice = '$\epsilon_s \approx n \hbar \omega\sqrt{m_\mathrm{eff}/m} +\mathrm{min}(\epsilon)$';
+        strHOLattice = ['$n \hbar \omega\sqrt{m_\mathrm{eff}/m}=n h \times ' ...
+            num2str(round(f_band,1)) '~\mathrm{Hz}$'];
+        strHOLattice = ['$n h \times ' num2str(round(f_band,1)) '~\mathrm{Hz}$'];
         legStr{end+1} = strHOLattice;
         plist(end+1)=pBandHO;
+        
+        
     end
 
     % Labels and Limits

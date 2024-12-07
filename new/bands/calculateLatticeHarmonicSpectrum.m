@@ -5,6 +5,7 @@ Tmat = makeTmatrix(n,jjMax);
 Omega = opts.Omega;
 nBands = opts.NumBands;
 fr = npt.fr;
+
 %% Construct Harmonic Position Operator
 r = (n-1)/2;        % [-r,r] is the position in size
 x = -r:1:r;         % position operator is symmetric
@@ -89,8 +90,6 @@ for uu = 1:length(npt.depth)
         end
     end
     V = (Vdiag + Vdip + Vdip2)*Omega;
-
-
 %% asdf 
     % Energy offset Opeator for each band
     E0 = zeros(n,n,nBands);
@@ -123,6 +122,9 @@ for uu = 1:length(npt.depth)
 
     % Solve Eigenvalue problem
     [C,D]=eig(H);    
+    
+
+
 
     [Ed,inds] = sort(real(diag(D)));
     C = C(:,inds);

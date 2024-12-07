@@ -1,18 +1,18 @@
 %% Introduction
-npt=constants;
-npt.depth=[2.5]; 
+lattice=constants;
+lattice.depth=[2.5]; 
 
 %% Caclulate Band Properties
 
-npt = calculateBandStructure(npt);   % calculate band structure
+lattice = calculateBandStructure(lattice);   % calculate band structure
 
 % Plot the band structure
 show_band_opts = struct;
 show_band_opts.Bands = 1:3;
-hF_band = showBandStructure(npt,show_band_opts);
+hF_band = showBandStructure(lattice,show_band_opts);
 
 %% Calculate Tunneling Properties
-npt = calculateTunneling(npt);      % calculate tunneling elements
+lattice = calculateTunneling(lattice);      % calculate tunneling elements
 
 % showTunnelingDepth(npt)
 
@@ -20,13 +20,13 @@ npt = calculateTunneling(npt);      % calculate tunneling elements
 %% Calculate Wannier
 wannier_opts = struct;
 wannier_opts.Bands = [1:3];
-npt.WannierBands = wannier_opts.Bands;
+lattice.WannierBands = wannier_opts.Bands;
 
-npt = wannier(npt,wannier_opts);                % Calculate wannier function
-npt = calculateWannierMoments(npt);             % Dipole matrix elements in wannier basis
+lattice = wannier(lattice,wannier_opts);                % Calculate wannier function
+lattice = calculateWannierMoments(lattice);             % Dipole matrix elements in wannier basis
 
 % Show the Wannier function
-hF_wannier = showWannier(npt,wannier_opts);           % calculate wannier function 
+hF_wannier = showWannier(lattice,wannier_opts);           % calculate wannier function 
 
 %% Wannier Animation
 doAnimateWannier = 0;
@@ -51,50 +51,46 @@ end
 
 %% Harmonic Coupling
 
- npt = calculateWannierHarmonicCoupling(npt);
+ lattice = calculateWannierHarmonicCoupling(lattice);
 
 %% Calculate 1D spectrum with Harmonic Confinement
 
 % calculation parameters
 harmonic_opts = struct;
-harmonic_opts.NumSites =301;
-harmonic_opts.MaxTunnelingOrder = 51;
-harmonic_opts.NumBands = 1;
+harmonic_opts.NumSites =601;
+harmonic_opts.MaxTunnelingOrder = 5;
+harmonic_opts.NumBands =1;
 
 % XY Lattice
-harmonic_opts.omega = 2*pi*60;
-harmonic_opts.Omega = 0.5*npt.m*harmonic_opts.omega^2*(npt.lambda/2)^2/npt.h;
-[npt,harmonic_output_H] = calculateLatticeHarmonicSpectrum(npt,harmonic_opts);
+harmonic_opts.omega = 2*pi*57;
+harmonic_opts.Omega = 0.5*lattice.m*harmonic_opts.omega^2*(lattice.lambda/2)^2/lattice.h;
+[lattice,harmonic_output_H] = calculateLatticeHarmonicSpectrum(lattice,harmonic_opts);
 
 % Z Direction
-harmonic_opts.omega = 2*pi*230; % XDT Vertical trap frequency
-harmonic_opts.Omega = 0.5*npt.m*harmonic_opts.omega^2*(npt.lambda/2)^2/npt.h;
-[npt,harmonic_output_V] = calculateLatticeHarmonicSpectrum(npt,harmonic_opts);
+harmonic_opts.omega = 2*pi*266; % XDT Vertical trap frequency
+harmonic_opts.Omega = 0.5*lattice.m*harmonic_opts.omega^2*(lattice.lambda/2)^2/lattice.h;
+[lattice,harmonic_output_V] = calculateLatticeHarmonicSpectrum(lattice,harmonic_opts);
 
-%% Fit Lowest Band Energy to linear DOS (ie. best harmonic approximation)
+% Fit lowest band to linear dispersion
 harmonic_output_H = fitHOtoFirstBand(harmonic_output_H);
 harmonic_output_V = fitHOtoFirstBand(harmonic_output_V);
 
 %%
 
-hF_x=showLatticeHarmonic(harmonic_output_H,npt);
-xlim([0 50]);
+hF_x=showLatticeHarmonic(harmonic_output_H,lattice);
+xlim([0 60]);
 ylim(-6500 + [0 3000])
 
-hF_z=showLatticeHarmonic(harmonic_output_V,npt);
+hF_z=showLatticeHarmonic(harmonic_output_V,lattice);
 xlim([0 20]);
 ylim(-6500 + [0 3000])
 hF_z.Position(1) = hF_x.Position(1)+hF_x.Position(3)+5;
 
 %% Show Differential Energy
 out=harmonic_output_H;
-
-
 hF_eng_diff = figure(1010);
 clf
 hF_eng_diff.Color='w';
-
-
 
 uu=1;
 
@@ -147,13 +143,13 @@ legend([ps(1) ps(end)],strs([1 length(T)]),'location','southeast');
 %% 
 opts=struct;
 opts.Indeces = 'auto';
-opts.Indeces = [1 2 46 47 70 71 122 123];
+opts.Indeces = [1 2 50 51];
 % opts.Indeces = [1:100];
 
-showLatticeHarmonicWavefunction(npt,harmonic_output_H,opts);
+showLatticeHarmonicWavefunction(lattice,harmonic_output_H,opts);
 %%
 opts.Indeces = [1:150];
-wfs = calculateLatticeHarmonicWavefunction(npt,harmonic_output_H,opts);
+wfs = calculateLatticeHarmonicWavefunction(lattice,harmonic_output_H,opts);
 %%
 D=zeros(size(wfs,2),size(wfs,2));
 for rr=1:size(wfs,2)
@@ -196,7 +192,7 @@ ylabel('energy - E_0 [Hz]');
 title('eigenspectrum 2.5 Er + 60 Hz HO')
 %% Thermodynamical Analysis
 
-% calculateThermodynamics(npt,harmonic_output_H,harmonic_output_H,harmonic_output_V);
+calculateThermodynamics(lattice,harmonic_output_H,harmonic_output_H,harmonic_output_V);
 
 
 
