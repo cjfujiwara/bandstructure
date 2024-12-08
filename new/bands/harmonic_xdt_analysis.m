@@ -1,6 +1,6 @@
 %% Introduction
 lattice=constants;
-lattice.depth=[2.5]; 
+lattice.depth=[.01]; 
 
 %% Caclulate Band Properties
 
@@ -58,8 +58,8 @@ end
 % calculation parameters
 harmonic_opts = struct;
 harmonic_opts.NumSites =601;
-harmonic_opts.MaxTunnelingOrder = 5;
-harmonic_opts.NumBands =1;
+harmonic_opts.MaxTunnelingOrder = 51;
+harmonic_opts.NumBands =3;
 
 % XY Lattice
 harmonic_opts.omega = 2*pi*57;
@@ -78,12 +78,12 @@ harmonic_output_V = fitHOtoFirstBand(harmonic_output_V);
 %%
 
 hF_x=showLatticeHarmonic(harmonic_output_H,lattice);
-xlim([0 60]);
-ylim(-6500 + [0 3000])
+% xlim([0 60]);
+% ylim(-6500 + [0 3000])
 
 hF_z=showLatticeHarmonic(harmonic_output_V,lattice);
-xlim([0 20]);
-ylim(-6500 + [0 3000])
+% xlim([0 20]);
+% ylim(-6500 + [0 3000])
 hF_z.Position(1) = hF_x.Position(1)+hF_x.Position(3)+5;
 
 %% Show Differential Energy
@@ -192,7 +192,7 @@ ylabel('energy - E_0 [Hz]');
 title('eigenspectrum 2.5 Er + 60 Hz HO')
 %% Thermodynamical Analysis
 
-calculateThermodynamics(lattice,harmonic_output_H,harmonic_output_H,harmonic_output_V);
+% calculateThermodynamics(lattice,harmonic_output_H,harmonic_output_H,harmonic_output_V);
 
 
 

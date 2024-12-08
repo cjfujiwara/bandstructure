@@ -51,6 +51,12 @@ for uu=1:length(npt.depth)
         xlim([-5 5]);
         hold on    
         plot(npt.X_extended,npt.Wannier_X_Harmonic(:,nn,uu),'-','linewidth',2,'color',[.3 .3 .3 .7]);
+
+        if nn==1
+            y0=max(real(npt.Wannier_X(:,nn,uu)));
+            plot(npt.X_extended,y0*sinc(npt.X_extended),'-','linewidth',2,'color',[.1 .1 .1 .7]);
+        end
+
     end
     tend = toc;
     disp([' done (' num2str(round(tend,2)) ' s)']);
