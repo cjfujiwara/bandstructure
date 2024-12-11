@@ -56,6 +56,13 @@ for uu=1:length(npt.depth)
             y0=max(real(npt.Wannier_X(:,nn,uu)));
             plot(npt.X_extended,y0*sinc(npt.X_extended),'-','linewidth',2,'color',[.1 .1 .1 .7]);
         end
+        
+        if nn==2
+            x=npt.X_extended;
+            y=(cos(pi*x)-cos(2*pi*x))./(pi*x);
+            y0=max(real(npt.Wannier_X(:,nn,uu)));
+            plot(npt.X_extended,y0*y,'-','linewidth',2,'color',[.1 .1 .1 .7]);
+        end
 
     end
     tend = toc;

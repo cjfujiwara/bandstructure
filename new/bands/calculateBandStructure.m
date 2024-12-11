@@ -50,6 +50,9 @@ for nn = 1:length(npt.depth)
       for cc=1:size(vS0,2)  
             if mod(cc,2) % even parity band
                 vS0(:,cc)=vS0(:,cc)*exp(-1i * angle(vS0(1,cc)));
+                
+                % Forcing to be real, attempting
+                vS0(:,cc) = abs(vS0(:,cc)).*sign(real(vS0(:,cc)));
             else % odd parity band
                 vS0(:,cc)=vS0(:,cc)*exp(-1i * angle(vS0(cc,cc)));
 

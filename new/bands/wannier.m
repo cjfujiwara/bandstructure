@@ -89,10 +89,12 @@ for ii = 1:length(npt.depth)
         Bflat = reshape(B',[],1);
         Bordered = Bflat(inds_order);
         Bunique = Bordered(inds_unique);
+%         Kall = repmat(npt.K,npt.numStates);
         Y = Bunique;
         % Normalize to one
         Y = Y/sqrt(sum(Y.*conj(Y)));        
         % Assign k space function
+        
         wannier_k(:,nn)=Y;          
         % Perform FFT to get spatial domain
         Yfft = fftshift(ifft(Y));  

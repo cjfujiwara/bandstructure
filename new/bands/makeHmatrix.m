@@ -112,7 +112,7 @@ for n=-nMax:1:nMax
     if abs(n)>1 && n>0
         ind=2*n;
         U_mat(ind,ind)=1/2;     % 1
-        U_mat(ind-2,ind)=1/4;       % 0
+        U_mat(ind-2,ind)=1/4;   % 0
         U_mat(ind+2,ind)=1/4;   % 2
     end
     
@@ -120,7 +120,7 @@ for n=-nMax:1:nMax
     if abs(n)>1  && n<0       
         ind=2*abs(n)+1;
         U_mat(ind,ind)=1/2;     % 1
-        U_mat(ind-2,ind)=1/4;       % 0
+        U_mat(ind-2,ind)=1/4;   % 0
         U_mat(ind+2,ind)=1/4;   % 2
     end             
 end
@@ -129,8 +129,10 @@ end
 % Truncate
 U_mat = U_mat(1:numStates,1:numStates);
 
-U_mat(numStates-1,numStates-1) = 3/4;
-U_mat(numStates,numStates) = 3/4;
+
+% WHAT ARE THESE TERMS?
+% U_mat(numStates-1,numStates-1) = 3/4;
+% U_mat(numStates,numStates) = 3/4;
 
 % Form the hamiltonian
 h_mat = (p_mat + k*I_mat)^2 - U_mat*depth;

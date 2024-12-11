@@ -2,7 +2,7 @@ function [npt] = calculateWannierHarmonicCoupling(npt)
 
 dk = npt.K(2)-npt.K(1);
 
-nI = 21;                        % Max site number to couple
+nI = 51;                        % Max site number to couple
 
 iVec = -nI:1:nI;
 
@@ -88,10 +88,6 @@ for iU=1:nU
                 curveMat(iBr,iBc,ii,iU) = s3;
                 mat4(iBr,iBc,ii,iU) = s4;
 
-                % if iBc==2  && dI == 3;
-                %     keyboard
-                % 
-                % end
             end       
 
       end
