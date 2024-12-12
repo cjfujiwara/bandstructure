@@ -79,7 +79,6 @@ for uu = 1:length(npt.depth)
                 mat1 = coupling_rc_dI*N_hop;
                 Vsub = Vsub + mat1;
             end
-
             % Indeces in super matrix
             r1 = n*(rr-1)+1;r2 = n*rr;
             c1 = n*(cc-1)+1;c2 = n*cc;  

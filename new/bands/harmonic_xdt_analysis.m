@@ -1,6 +1,6 @@
 %% Introduction
 lattice=constants;
-lattice.depth=[.01]; 
+lattice.depth=[2.5]; 
 
 %% Caclulate Band Properties
 
@@ -29,7 +29,7 @@ lattice = calculateWannierMoments(lattice);             % Dipole matrix elements
 hF_wannier = showWannier(lattice,wannier_opts);           % calculate wannier function 
 %%
 
-calculateWannierHarmonicCoupling2(lattice)
+lattice=calculateWannierHarmonicCoupling2(lattice);
 %% Wannier Animation
 doAnimateWannier = 0;
 if doAnimateWannier

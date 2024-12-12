@@ -14,9 +14,9 @@ wn = wn/sqrt(trapz(x,wn.*wn));
 
 figure(29);
 clf
-plot(x,wm);
+plot(x/pi,wm);
 hold on
-plot(x,wn);
+plot(x/pi,wn);
 xlim([-10 10]);
 
 
