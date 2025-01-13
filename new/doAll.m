@@ -1,10 +1,4 @@
-
-disp(repmat('-',1,60));disp([mfilename '.m']);disp(repmat('-',1,60)); 
-
-% Add all subdirectories for this m file
-curpath = fileparts(mfilename('fullpath'));
-addpath(curpath);addpath(genpath(curpath))    
-
+addPaths;
 %% Comment on Units
 % This code calculates values paramtrized by the lattice momentum hbar*k_L
 % so that adopt the dimensionless position and momentum 
