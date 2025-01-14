@@ -77,14 +77,14 @@ harmonic_opts.omega = 2*pi*57;
 harmonic_opts.omega = 2*pi*55;
 
 harmonic_opts.Omega = 0.5*lattice.m*harmonic_opts.omega^2*(lattice.lambda/2)^2/lattice.h;
-[lattice,harmonic_output_H] = calculateLatticeHarmonicSpectrum3(lattice,harmonic_opts);
-% [lattice,harmonic_output_H2] = calculateLatticeHarmonicSpectrum(lattice,harmonic_opts);
+[lattice,harmonic_output_H] = calculateLHOSpectrum_sband(lattice,harmonic_opts);
+% [lattice,harmonic_output_H2] = calculateLHOSpectrum(lattice,harmonic_opts);
 
 % Z Direction
 harmonic_opts.omega = 2*pi*266; % XDT Vertical trap frequency
 harmonic_opts.Omega = 0.5*lattice.m*harmonic_opts.omega^2*(lattice.lambda/2)^2/lattice.h;
-% [lattice,harmonic_output_V] = calculateLatticeHarmonicSpectrum(lattice,harmonic_opts);
-[lattice,harmonic_output_V] = calculateLatticeHarmonicSpectrum3(lattice,harmonic_opts);
+% [lattice,harmonic_output_V] = calculateLHOSpectrum(lattice,harmonic_opts);
+[lattice,harmonic_output_V] = calculateLHOSpectrum_sband(lattice,harmonic_opts);
 
 % Fit lowest band to linear dispersion
 harmonic_output_H = fitHOtoFirstBand(harmonic_output_H);
