@@ -3,14 +3,19 @@
 % additional harmonic confinement.
 %
 
-%% Flags
-doShowBandStructure = true;
 
 %% Initialize
+% Define parameters of calculation
+
 lattice=constants;
 lattice.depth=[2.5]; 
 
+%% Flags
+doShowBandStructure = true;
+doAnimateWannier = false;
+
 %% Caclulate Band Properties
+% Calculate the band structure
 
 lattice = calculateBandStructure(lattice);   % calculate band structure
 
@@ -21,10 +26,13 @@ if doShowBandStructure
     hF_band = showBandStructure(lattice,show_band_opts);
 end
 
-%% Calculate Tunneling Properties
+%% Calculate Tunneling Propertiess
+% Calculate the tunneling matrix elements
 lattice = calculateTunneling(lattice);      % calculate tunneling elements
 
 %% Calculate Wannier
+% Calculate the wannier functions, specify which bands you want to
+% calculate
 wannier_opts = struct;
 wannier_opts.Bands = [1];
 lattice.WannierBands = wannier_opts.Bands;
@@ -34,11 +42,17 @@ lattice = calculateWannierMoments(lattice);             % Dipole matrix elements
 
 % Show the Wannier function
 hF_wannier = showWannier(lattice,wannier_opts);           % calculate wannier function 
-%%
+%% Wannier Harmonic Coupling
+% Calculate the matrix coupling element induced from a harmonic potential
+% on the wannier states (this is primarily important for multi-band
+% physics)
+%
+% <w_m(x_i)|x^2|w_n(x_j)>
+% <w_m(x_i)|x^1|w_n(x_j)>
 
 lattice=calculateWannierHarmonicCoupling2(lattice);
 %% Wannier Animation
-doAnimateWannier = 0;
+% Animate the wannier functions if you specified different lattice depths
 if doAnimateWannier
     tempfile = fullfile(tempdir,'animate.gif');
     for kk=1:length(hF_wannier)    

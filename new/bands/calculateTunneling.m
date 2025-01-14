@@ -8,13 +8,10 @@ Ebar = zeros(size(npt.bandEigenValue,1),size(npt.bandEigenValue,3));
 % Calculate tunneling elements for each depth
 for ind_depth=1:size(npt.bandEigenValue,3)
     fprintf(['computing tunneling (U=' num2str(npt.depth(ind_depth)) 'Er) ...'])
-
   for ind_band = 1:size(npt.bandEigenValue,1)
         Eq = npt.bandEigenValue(ind_band,:,ind_depth);
         Eq = Eq(:);
-
         Ebar(ind_band,ind_depth) = 0.5*trapz(Eq)*dk; % average band energy
-
         for ii = 1:deltaImax
             yy = cos(pi*npt.K(:)*ii);
             t = -0.5*trapz(yy.*Eq)*dk;
@@ -22,12 +19,9 @@ for ind_depth=1:size(npt.bandEigenValue,3)
         end         
   end
   disp('done');
-
 end
-
 npt.Tunneling = tunneling;
 npt.bandEigenValueAverage = Ebar;
-
 %% Band Curvature
 % Useful for band mass
 
