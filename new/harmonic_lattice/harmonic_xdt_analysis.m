@@ -24,9 +24,6 @@ end
 %% Calculate Tunneling Properties
 lattice = calculateTunneling(lattice);      % calculate tunneling elements
 
-% showTunnelingDepth(npt)
-
-
 %% Calculate Wannier
 wannier_opts = struct;
 wannier_opts.Bands = [1];
