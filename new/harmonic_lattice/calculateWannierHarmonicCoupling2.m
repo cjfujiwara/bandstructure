@@ -55,9 +55,7 @@ for iU=1:nU
             for nn=1:delta    
                 OSC = exp(2*1i*k*(nn*pi/2));
                 
-                if iBc==iBr
-                    keyboard
-                end
+          
                 D(iBr,iBc,nn,iU)=trapz(k,C.*OSC);
             end
                 

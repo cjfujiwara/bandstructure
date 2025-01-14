@@ -33,9 +33,16 @@ npt.bandEigenValueAverage = Ebar;
 
 % Band curavture at Gamma point (center of FBZ)
 npt.BandCurvatureG = zeros(size(npt.bandEigenValue,1),size(npt.bandEigenValue,3));
+npt.BandMassGamma = zeros(size(npt.bandEigenValue,1),size(npt.bandEigenValue,3));
+
 % Band curvature at X point (edge of FBZ)
+
+
 npt.BandCurvatureX = zeros(size(npt.bandEigenValue,1),size(npt.bandEigenValue,3));
+npt.BandMassChi = zeros(size(npt.bandEigenValue,1),size(npt.bandEigenValue,3));
+
 for ind_depth=1:size(npt.bandEigenValue,3)
+    
 fprintf(['computing band curvature/mass (U=' num2str(npt.depth(ind_depth)) 'Er) ...'])
 
   for ind_band = 1:size(npt.bandEigenValue,1)
@@ -56,6 +63,7 @@ fprintf(['computing band curvature/mass (U=' num2str(npt.depth(ind_depth)) 'Er) 
       kR = kk(ind+1);uR =uu(ind+1);
       pp=polyfit([kL kC kR],[uL uC uR],2);
       npt.BandCurvatureG(ind_band,ind_depth)=pp(1);
+      npt.BandMassGamma(ind_band,ind_depth)=1/pp(1);
 
       % [~,ind]=max(kk);
       
@@ -71,6 +79,8 @@ fprintf(['computing band curvature/mass (U=' num2str(npt.depth(ind_depth)) 'Er) 
       pp=polyfit(kk(1:10),uu(1:10),2);
 
       npt.BandCurvatureX(ind_band,ind_depth)=kappa;
+      npt.BandMassChi(ind_band,ind_depth)=1/kappa;
+
   end
   disp('done');
 

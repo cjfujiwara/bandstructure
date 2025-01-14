@@ -1,4 +1,12 @@
 %% Introduction
+% This script calculates the properties of an optical lattice with an
+% additional harmonic confinement.
+%
+
+%% Flags
+doShowBandStructure = true;
+
+%% Initialize
 lattice=constants;
 lattice.depth=[2.5]; 
 
@@ -6,10 +14,12 @@ lattice.depth=[2.5];
 
 lattice = calculateBandStructure(lattice);   % calculate band structure
 
-% Plot the band structure
-show_band_opts = struct;
-show_band_opts.Bands = 1:3;
-hF_band = showBandStructure(lattice,show_band_opts);
+if doShowBandStructure
+    % Plot the band structure
+    show_band_opts = struct;
+    show_band_opts.Bands = 1:3;
+    hF_band = showBandStructure(lattice,show_band_opts);
+end
 
 %% Calculate Tunneling Properties
 lattice = calculateTunneling(lattice);      % calculate tunneling elements
@@ -19,7 +29,7 @@ lattice = calculateTunneling(lattice);      % calculate tunneling elements
 
 %% Calculate Wannier
 wannier_opts = struct;
-wannier_opts.Bands = [1:3];
+wannier_opts.Bands = [1];
 lattice.WannierBands = wannier_opts.Bands;
 
 lattice = wannier(lattice,wannier_opts);                % Calculate wannier function
@@ -61,17 +71,23 @@ end
 harmonic_opts = struct;
 harmonic_opts.NumSites =601;
 harmonic_opts.MaxTunnelingOrder = 51;
-harmonic_opts.NumBands =3;
+harmonic_opts.NumBands =1;
+
+
 
 % XY Lattice
 harmonic_opts.omega = 2*pi*57;
+harmonic_opts.omega = 2*pi*55;
+
 harmonic_opts.Omega = 0.5*lattice.m*harmonic_opts.omega^2*(lattice.lambda/2)^2/lattice.h;
-[lattice,harmonic_output_H] = calculateLatticeHarmonicSpectrum(lattice,harmonic_opts);
+[lattice,harmonic_output_H] = calculateLatticeHarmonicSpectrum3(lattice,harmonic_opts);
+% [lattice,harmonic_output_H2] = calculateLatticeHarmonicSpectrum(lattice,harmonic_opts);
 
 % Z Direction
 harmonic_opts.omega = 2*pi*266; % XDT Vertical trap frequency
 harmonic_opts.Omega = 0.5*lattice.m*harmonic_opts.omega^2*(lattice.lambda/2)^2/lattice.h;
-[lattice,harmonic_output_V] = calculateLatticeHarmonicSpectrum(lattice,harmonic_opts);
+% [lattice,harmonic_output_V] = calculateLatticeHarmonicSpectrum(lattice,harmonic_opts);
+[lattice,harmonic_output_V] = calculateLatticeHarmonicSpectrum3(lattice,harmonic_opts);
 
 % Fit lowest band to linear dispersion
 harmonic_output_H = fitHOtoFirstBand(harmonic_output_H);
@@ -80,13 +96,19 @@ harmonic_output_V = fitHOtoFirstBand(harmonic_output_V);
 %%
 
 hF_x=showLatticeHarmonic(harmonic_output_H,lattice);
-% xlim([0 60]);
-% ylim(-6500 + [0 3000])
+xlim([0 60]);
+ylim(-6500 + [0 3000])
 
 hF_z=showLatticeHarmonic(harmonic_output_V,lattice);
-% xlim([0 20]);
-% ylim(-6500 + [0 3000])
+xlim([0 20]);
+ylim(-6500 + [0 3000])
 hF_z.Position(1) = hF_x.Position(1)+hF_x.Position(3)+5;
+
+%% Eigen States
+showLHO_Eigenstates(lattice,harmonic_output_H)
+showLHO_Eigenstates(lattice,harmonic_output_V)
+
+
 
 %% Show Differential Energy
 out=harmonic_output_H;

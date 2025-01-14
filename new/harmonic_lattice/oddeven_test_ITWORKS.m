@@ -2,7 +2,7 @@
 Omega=2;
 t = 563;
 
-N=601;
+N = 601;
 nc = (N+1)/2;
 
 % Change of basis matrix
@@ -44,6 +44,7 @@ e1 = diag(d1);
 % New Basis
 [c2,d2]=eig(H2);
 e2 = diag(d2);
+
 
 % New Basis Even
 [c2a,d2a]=eig(H2a);
