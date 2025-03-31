@@ -1,29 +1,27 @@
-function [npt,output] = calculateLatticeHarmonicSpectrum3(npt,opts)
+function [npt,output] = calculateLHOSpectrum_sband(npt,opts)
 % Calculate the 1D eigenspectrum.  Include tunneling of arbitrary order,
 % but only include single band physics
 
-nBands = 1;
-uu=1;
-
-n = opts.NumSites;
-jjMax = opts.MaxTunnelingOrder;
-
-Tmat = makeTmatrix(n,jjMax);
-Omega = opts.Omega;
-fr = npt.fr;
+nBands                              = 1;
+uu                                  = 1;
+n                                   = opts.NumSites;
+jjMax                               = opts.MaxTunnelingOrder;
+Tmat                                = makeTmatrix(n,jjMax);
+Omega                               = opts.Omega;
+fr                                  = npt.fr;
 
 %% Construct change of basis matrix
 % Unitary operator to convert form single site states to odd/even pairs
 
-nc = (n+1)/2; % Index which is the center
+nc                  = (n+1)/2; % Index which is the center
+u1                  = eye(n);
+u2                  = flip(u1,1);
+u1(nc:end,nc:end)   = -u1(nc:end,nc:end);
 
-u1 = eye(n);
-u2 = flip(u1,1);
-u1(nc:end,nc:end)=-u1(nc:end,nc:end);
-U = u1+u2;
-
-U=U/sqrt(2);  % To preserve the norm
-U(nc,nc) = 1; % Center site is unchanged
+% Change of basis matrix
+U                   = u1+u2;
+U                   = U/sqrt(2);  % To preserve the norm
+U(nc,nc)            = 1; % Center site is unchanged
 
 % 1:nc are even states
 % nc+1:end are odd states
@@ -47,32 +45,44 @@ for jj = 1:jjMax % Iterate over all tunneling order
     T(:,:,nn) = T(:,:,nn) + t(nn,jj)*Tmat(:,:,jj);           
 end
 
-%% Construct Hamiltonian
+%% Construct Hamiltonian and Separate into Odd/Even
 
-Ebar = npt.bandEigenValueAverage(nn,uu)*fr;      
-E0= eye(n)*Ebar;
+Ebar        = npt.bandEigenValueAverage(nn,uu)*fr;      
+E0          =  eye(n)*Ebar;
 
-H = T + V;                               % Original Hamiltonian
-Hoddeven = U*H*ctranspose(U);            % oddeven basis
-Hoddeven(abs(Hoddeven)<1e-3)=0;
+H           = T + V;                        % s-band Hamiltonian
+Hoddeven    = U*H*ctranspose(U);            % odd/even Hamiltonian
+Hoddeven(abs(Hoddeven)<1e-3)=0;             % Get rid of numerical noise
 
 % Add band offset
 Hoddeven = Hoddeven+E0;
 H = H + E0;
 
+% Divide into Odd and Even Hamiltonians
 Heven = Hoddeven(1:nc,1:nc);             % even sector
 Hodd  = Hoddeven((nc+1):end,(nc+1):end); % odd sector
 
-%% Diagonalize Each Hamiltonian
+%% Solve Modified Hamiltonians
+% Use these to compare and make sure the odd/even thing works if desired
 
-% Original
-[c,eng] = eig(H);eng=diag(eng);
-% After Basis Transformation
-[c_oddeven,eng_oddeven]=eig(Hoddeven);eng_oddeven=diag(eng_oddeven);
-% Even Basis
+% Solve Total Hamiltonian (comment for speed)
+% [c,eng] = eig(H);eng=diag(eng);
+
+% Solve Odd/Even Hamiltonian (comment for speed)
+% [c_oddeven,eng_oddeven]=eig(Hoddeven);eng_oddeven=diag(eng_oddeven);
+
+%% Solve
+% Solve Even Hamiltonian
 [c_even,eng_even]=eig(Heven);eng_even=diag(eng_even);
-% Odd Basis
+s=sign(c_even(end,:));
+S = repmat(s,[size(c_even,1) ,1]);
+c_even = S.*c_even;
+
+% Solve Odd Hamiltonian
 [c_odd,eng_odd]=eig(Hodd);eng_odd=diag(eng_odd);
+s=sign(c_odd(1,:));
+S = repmat(s,[size(c_odd,1) ,1]);
+c_odd = S.*c_odd;
 
 
 % Interleave even and odd eigenvalues
@@ -86,15 +96,16 @@ eng_odd(end)=[];
 c_even_full = [c_even; zeros(size(c_odd,1),size(c_even,2))];
 c_odd_full = [zeros(size(c_even,1),size(c_odd,2)); c_odd];   % blk diagonal
 c_odd_full(:,end+1)=NaN(n,1);
-
 c_oddeven2 = reshape([c_even_full;c_odd_full],n,[]);
 c_oddeven2(:,end)=[];
+
+% Convert into original position basis
 c_oddeven2 = U*c_oddeven2;
 
-% Convert odd/even back into original basis
-c_blk = U*blkdiag(c_even,c_odd);
-[eng_oddeven3,inds] = sort([eng_even; eng_odd],'ascend');
-c_oddeven3 = c_blk(:,inds);
+% Convert eigenvectors into original position basis
+% c_blk = U*blkdiag(c_even,c_odd);
+% [eng_oddeven3,inds] = sort([eng_even; eng_odd],'ascend');
+% c_oddeven3 = c_blk(:,inds);
 
 % c_oddeven2 = c_oddeven3;
 % eng_oddeven2 = eng_oddeven3;
@@ -129,40 +140,34 @@ output.BandRanges(nn,2,uu) = max(npt.bandEigenValue(nn,:,uu))*fr;
 
 %% Dipole Moment Operator
 D = zeros(n,n,1);
-tic
-for r=1:n
-    for c = 1:r
-        c1 = output.EigenVectors(:,r);
-        c2 = output.EigenVectors(:,c);        
-        D(r,c)=sum(conj(c1).*x'.*c2);     
-    end
-end
-% Get diagonal values
-dd=diag(D);
-% Add transpose
-D = D + ctranspose(D);
-D(logical(eye(n))) = dd;
-toc
+xT = x';
+M1 = output.EigenVectors;
+M2 = M1;
+M3 = repmat(xT,[1 size(M2,2)]);
+M4 = M2.*M3;
+D=ctranspose(M1)*M4;
+
 output.DipoleOperator = D;
 
 %% Dipole Moment Operator
-D = zeros(n,n,1);
-tic
-for r=1:n
-    for c = 1:n
-        c1 = output.EigenVectors(:,r);
-        c2 = output.EigenVectors(:,c);        
-        D(r,c)=sum(conj(c1).*x'.*c2);     
-    end
-end
-% Get diagonal values
-% dd=diag(D);
-% % Add transpose
-% D = D + ctranspose(D);
-% D(logical(eye(n))) = dd;
-toc
-output.DipoleOperator = D;
-
+% old way which uses for loops is slow
+% D = zeros(n,n,1);
+% tic
+% for r=1:n
+%     for c = 1:n
+%         c1 = output.EigenVectors(:,r);
+%         c2 = output.EigenVectors(:,c);        
+%         D(r,c)=sum(conj(c1).*x'.*c2);     
+%     end
+% end
+% % Get diagonal values
+% % dd=diag(D);
+% % % Add transpose
+% % D = D + ctranspose(D);
+% % D(logical(eye(n))) = dd;
+% toc
+% output.DipoleOperator = D;
+% 
 
 end
 % function calculateDipoleOperator

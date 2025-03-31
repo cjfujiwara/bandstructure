@@ -8,7 +8,7 @@
 % Define parameters of calculation
 
 lattice=constants;
-lattice.depth=[.01 .05 .1 .5:.1:20 25:5:200]; 
+lattice.depth=[2.5]; 
 
 %% Flags
 doShowBandStructure = false;
@@ -137,7 +137,6 @@ harmonic_opts.NumBands =1;
 
 % XY Lattice
 harmonic_opts.omega = 2*pi*57;
-harmonic_opts.omega = 2*pi*55;
 
 harmonic_opts.Omega = 0.5*lattice.m*harmonic_opts.omega^2*(lattice.lambda/2)^2/lattice.h;
 [lattice,harmonic_output_H] = calculateLHOSpectrum_sband(lattice,harmonic_opts);
