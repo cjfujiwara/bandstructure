@@ -4,8 +4,6 @@ if ~isfield(opts,'Indeces')
     opts.Indeces='auto';
 end
 
-
-
 %%
 
 if isequal(opts.Indeces,'auto')
@@ -17,7 +15,6 @@ end
 
 
 %%
-
 
 vv = harmonic_input.EigenVectors;
 pp = harmonic_input.PositionVector;
@@ -34,8 +31,6 @@ for kk=1:length(opts.Indeces)
     psi=latticeharmonic_make_position_wavefunction(v,pp,nband,ww,wx);    
     wfs(:,kk)=psi;
 end
-
-
 
 
 end

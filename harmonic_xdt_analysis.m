@@ -1,8 +1,6 @@
 %% Introduction
 % This script calculates the properties of an optical lattice with an
 % additional harmonic confinement.
-%
-
 
 %% Initialize
 % Define parameters of calculation

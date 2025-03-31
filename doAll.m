@@ -76,10 +76,8 @@ if opts.doPlot;showWannier(npt,opts);end
 %% Data RF
 
 % differential_swave_shift2;
-% differential_swave_shift3;
-% 
-% differential_swave_shift4;
-% 
+% differential_swave_shift3; 
+% differential_swave_shift4; 
 % differential_swave_shift5;
 %%
 doSave=0;
