@@ -2,6 +2,7 @@ function Tmat = makeTmatrix(n,jmax)
 % Kinetic energy tunneling operator with periodic boundary conditions;
 %
 %
+% This could be sped up
     Tmat = zeros(n,n,jmax);
     for kk=1:jmax
         Tmat(:,:,kk) = diag(ones(n-kk,1),kk)+diag(ones(n-kk,1),-kk);
