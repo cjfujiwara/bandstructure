@@ -8,10 +8,10 @@
 % Define parameters of calculation
 
 lattice=constants;
-lattice.depth=[2.5]; 
+lattice.depth=[.01 .05 .1 .5:.1:20 25:5:200]; 
 
 %% Flags
-doShowBandStructure = true;
+doShowBandStructure = false;
 doAnimateWannier = false;
 
 %% Caclulate Band Properties
@@ -34,23 +34,67 @@ lattice = calculateTunneling(lattice);      % calculate tunneling elements
 % Calculate the wannier functions, specify which bands you want to
 % calculate
 wannier_opts = struct;
-wannier_opts.Bands = [1];
+wannier_opts.Bands = [1 2 3];
 lattice.WannierBands = wannier_opts.Bands;
 
 lattice = wannier(lattice,wannier_opts);                % Calculate wannier function
 lattice = calculateWannierMoments(lattice);             % Dipole matrix elements in wannier basis
 
 % Show the Wannier function
-hF_wannier = showWannier(lattice,wannier_opts);           % calculate wannier function 
-%% Wannier Harmonic Coupling
-% Calculate the matrix coupling element induced from a harmonic potential
-% on the wannier states (this is primarily important for multi-band
-% physics)
-%
-% <w_m(x_i)|x^2|w_n(x_j)>
-% <w_m(x_i)|x^1|w_n(x_j)>
+% hF_wannier = showWannier(lattice,wannier_opts);           % calculate wannier function 
 
-lattice=calculateWannierHarmonicCoupling2(lattice);
+%% Make Suboutput
+band_inds = [1 2 3 4 5];
+xL = [-30 30];
+kL = [-20 20];
+
+i1 = find(lattice.K_extended>=kL(1),1);
+i2 = find(lattice.K_extended>=kL(2),1);
+
+i3 = find(lattice.X_extended>=kL(1),1);
+i4 = find(lattice.X_extended>=kL(2),1);
+
+maxTunnelSite = 15;
+
+hubbard                 = struct;
+hubbard.h               = lattice.h;
+hubbard.hbar            = lattice.hbar;
+hubbard.a0              = lattice.a0;
+hubbard.lambda          = lattice.lambda;
+hubbard.Er              = lattice.Er;
+hubbard.fr              = lattice.fr;
+hubbard.numStates       = lattice.numStates;
+hubbard.numK            = lattice.numK;
+hubbard.K               = lattice.K;
+hubbard.depth           = lattice.depth;
+hubbard.bandEigenValue  = lattice.bandEigenValue(band_inds,:,:);
+hubbard.Tunneling       = lattice.Tunneling(band_inds,1:maxTunnelSite,:);
+
+BG_1D=zeros(size(hubbard.bandEigenValue,3),1);
+BG_2D=zeros(size(hubbard.bandEigenValue,3),1);
+BG_3D=zeros(size(hubbard.bandEigenValue,3),1);
+for kk=1:size(hubbard.bandEigenValue,3)
+    Es_max = max(hubbard.bandEigenValue(1,:,kk));
+    Es_min = min(hubbard.bandEigenValue(1,:,kk));
+    Ep_min = min(hubbard.bandEigenValue(2,:,kk));
+    BG_1D(kk) = Ep_min-Es_max;
+    BG_2D(kk) = (Es_min+Ep_min)-(Es_max+Es_max);
+    BG_3D(kk) = (Es_min+Es_min+Ep_min)-(Es_max+Es_max+Es_max);
+end
+
+hubbard.BandGap1D = BG_1D;
+hubbard.BandGap2D = BG_2D;
+hubbard.BandGap3D = BG_3D;
+
+% lattice_out.numX            = lattice.numX;
+% lattice_out.K_extended      = lattice.K_extended(i1:i2);
+% lattice_out.Wannier_K       = lattice.Wannier_K(i1:i2,:,:);
+% lattice_out.X_extended      = lattice.X_extended(i3:i4);
+% lattice_out.Wannier_X       = lattice.Wannier_X(i3:i4,:,:);
+% lattice_out.Wannier_X_Harmonic = lattice.Wannier_X_Harmonic(i3:i4,:,:);
+% lattice_out.Harmonic_Length = lattice.Harmonic_Length;
+
+
 %% Wannier Animation
 % Animate the wannier functions if you specified different lattice depths
 if doAnimateWannier
@@ -72,19 +116,24 @@ if doAnimateWannier
     copyfile(tempfile,'wannier.gif','f');
 end
 
-%% Harmonic Coupling
+%% Wannier Harmonic Coupling
+% Calculate the matrix coupling element induced from a harmonic potential
+% on the wannier states (this is primarily important for multi-band
+% physics)
+%
+% <w_m(x_i)|x^2|w_n(x_j)>
+% <w_m(x_i)|x^1|w_n(x_j)>
 
- lattice = calculateWannierHarmonicCoupling(lattice);
+lattice = calculateWannierHarmonicCoupling2(lattice);
+lattice = calculateWannierHarmonicCoupling(lattice);
 
 %% Calculate 1D spectrum with Harmonic Confinement
 
 % calculation parameters
 harmonic_opts = struct;
 harmonic_opts.NumSites =601;
-harmonic_opts.MaxTunnelingOrder = 51;
+harmonic_opts.MaxTunnelingOrder = 11;
 harmonic_opts.NumBands =1;
-
-
 
 % XY Lattice
 harmonic_opts.omega = 2*pi*57;
@@ -119,8 +168,6 @@ hF_z.Position(1) = hF_x.Position(1)+hF_x.Position(3)+5;
 showLHO_Eigenstates(lattice,harmonic_output_H)
 showLHO_Eigenstates(lattice,harmonic_output_V)
 
-
-
 %% Show Differential Energy
 out=harmonic_output_H;
 hF_eng_diff = figure(1010);
@@ -142,8 +189,8 @@ eng = out.EigenValues(:,uu);
 E0=eng(1);
 pData=scatter(eng(1:end-1)-E0,diff(eng),2,colors(1:end-1,:),'linewidth',2,...
     'parent',ax1);
-ylim([0 130])
-xlim([0 20]*563);
+ylim([0 60])
+xlim([0 10]*563);
 ylabel('${E}_{n+1}-{E}_{n}$ [Hz]','interpreter','latex')
 hold on
 
@@ -165,7 +212,7 @@ for nn=1:length(T)
     hold on
 end
 ylim([0 1])
-xlim([0 20]*t)
+xlim([0 10]*t)
 set(ax2,'Visible','off')
 linkaxes([ax1 ax2],'x');
 

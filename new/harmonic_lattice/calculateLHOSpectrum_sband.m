@@ -137,18 +137,32 @@ for r=1:n
         D(r,c)=sum(conj(c1).*x'.*c2);     
     end
 end
-
-
-
 % Get diagonal values
 dd=diag(D);
-
 % Add transpose
 D = D + ctranspose(D);
 D(logical(eye(n))) = dd;
 toc
-
 output.DipoleOperator = D;
+
+%% Dipole Moment Operator
+D = zeros(n,n,1);
+tic
+for r=1:n
+    for c = 1:n
+        c1 = output.EigenVectors(:,r);
+        c2 = output.EigenVectors(:,c);        
+        D(r,c)=sum(conj(c1).*x'.*c2);     
+    end
+end
+% Get diagonal values
+% dd=diag(D);
+% % Add transpose
+% D = D + ctranspose(D);
+% D(logical(eye(n))) = dd;
+toc
+output.DipoleOperator = D;
+
 
 end
 % function calculateDipoleOperator

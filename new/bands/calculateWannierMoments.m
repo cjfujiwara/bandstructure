@@ -26,7 +26,7 @@ npt.WannierDipole = UX;
 % npt.WannierDipole2 = UX2;
  % npt.WannierDipole2 = UX*UX;
 
- npt.WannierDipole_Harmonic = UX_HO*npt.Harmonic_Length/sqrt(2);
+ % npt.WannierDipole_Harmonic = UX_HO*npt.Harmonic_Length/sqrt(2);
 
 end
 

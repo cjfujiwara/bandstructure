@@ -25,8 +25,8 @@ out.Er=Er;
 out.fr=fr;
 
 %% Numerical parameters
-out.numStates=201;
-out.numK=501;
+out.numStates=101;
+out.numK=301;
 
 out.K=linspace(-1,1,out.numK)';
 dK = mode(diff(out.K));
