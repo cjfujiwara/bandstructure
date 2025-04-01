@@ -17,10 +17,10 @@ addpath(a);addpath(genpath(a));
 %% Initialize
 % Define parameters of calculation
 wannier_opts            = struct;
-wannier_opts.Bands      = [1 ];
+wannier_opts.Bands      = [1];
 
 lattice                 = constants;
-lattice.depth           = [2.5]; 
+lattice.depth           = [3.5]; 
 lattice.WannierBands    = wannier_opts.Bands;
 
 %% Flags
@@ -44,7 +44,6 @@ lattice = calculateTunneling(lattice);      % calculate tunneling elements
 %% Calculate Wannier
 % Calculate the wannier functions, specify which bands you want to
 % calculate
-
 
 lattice = wannier(lattice,wannier_opts);                % Calculate wannier function
 lattice = calculateWannierMoments(lattice);             % Dipole matrix elements in wannier basis
@@ -146,7 +145,7 @@ HarmonicBands = 1;
 
 % XY Lattice
 horz_opts = struct;
-horz_opts.omega = 2*pi*67;
+horz_opts.omega = 2*pi*65;
 horz_opts.NumSites = Nsites;
 horz_opts.MaxTunnelingOrder = TunnelOrder;
 horz_opts.HarmonicBands = HarmonicBands;

@@ -53,7 +53,7 @@ for nn = 1:length(npt.depth)
         vec(:,:,ii)=vS0;             % Assign eigenvectors     
     end
     t2=toc;
-    disp([' done (' num2str(round(t2,3)) ' s)']);
+    disp([' done (' num2str(round(1000*t2)) ' ms)']);
     % Add the computed band structure to the output
     npt.bandEigenValue(:,:,nn)=eng;
     npt.bandEigenVectors(:,:,:,nn)=vec;  

@@ -1,6 +1,6 @@
 function npt = calculateTunneling(npt)
 %% Tunneling Matrix Element
-
+tic
 dk = npt.K(2)-npt.K(1);
 deltaImax = 101;
 tunneling = zeros(size(npt.bandEigenValue,1),deltaImax,size(npt.bandEigenValue,3));
@@ -18,7 +18,8 @@ for ind_depth=1:size(npt.bandEigenValue,3)
             tunneling(ind_band,ii,ind_depth) = t;     
         end         
   end
-  disp('done');
+    tend = toc;
+    disp([' done (' num2str(round(tend*1000,0)) ' ms)']);    
 end
 npt.Tunneling = tunneling;
 npt.bandEigenValueAverage = Ebar;
@@ -36,7 +37,7 @@ npt.BandCurvatureX = zeros(size(npt.bandEigenValue,1),size(npt.bandEigenValue,3)
 npt.BandMassChi = zeros(size(npt.bandEigenValue,1),size(npt.bandEigenValue,3));
 
 for ind_depth=1:size(npt.bandEigenValue,3)
-    
+    tic
 fprintf(['computing band curvature/mass (U=' num2str(npt.depth(ind_depth)) 'Er) ...'])
 
   for ind_band = 1:size(npt.bandEigenValue,1)
@@ -76,8 +77,8 @@ fprintf(['computing band curvature/mass (U=' num2str(npt.depth(ind_depth)) 'Er) 
       npt.BandMassChi(ind_band,ind_depth)=1/kappa;
 
   end
-  disp('done');
-
+    tend = toc;
+    disp([' done (' num2str(round(tend*1000,0)) ' ms)']);    
 end
 
 end

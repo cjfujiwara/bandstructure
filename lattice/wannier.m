@@ -131,7 +131,7 @@ for ii = 1:length(npt.depth)
     npt.Harmonic_Length(ii) = (1/depth)^(1/4)/pi;
     
     tend = toc;
-    disp([' done (' num2str(round((tend),3)) ' s)']);    
+    disp([' done (' num2str(round(tend*1000,0)) ' ms)']);    
 
 end
 
