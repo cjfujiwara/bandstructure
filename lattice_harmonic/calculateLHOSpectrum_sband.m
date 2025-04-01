@@ -10,6 +10,8 @@ Tmat                                = makeTmatrix(n,jjMax); % Could be made fast
 Omega                               = opts.Omega;
 fr                                  = npt.fr;
 
+fprintf(['computing LHO states (U=' num2str(npt.depth(uu)) 'Er,Nsites=' num2str(n) ',Omega=' num2str(round(Omega,2)) 'Hz) ... ']);
+tic
 %% Construct change of basis matrix
 % Unitary operator to convert form single site states to odd/even pairs
 
@@ -35,9 +37,9 @@ x2 = x.^2;          % position squared
 V = Omega*diag(x2);
 
 %% Construct Kinetic Energy Operator
-
-t = npt.Tunneling(:,:,uu)*npt.fr; % Matrix of tunneling elements (band,site)
 nn=1; % Band index
+
+t = npt.Tunneling(nn,:,uu)*npt.fr; % Matrix of tunneling elements (band,site)
 % Could be made faster
 % Kinetic Energy operator for each band
 T = zeros(n,n,nBands);  
@@ -115,9 +117,12 @@ D   = ctranspose(M1)*M4;
 
 %% Initialize ouput
 
+tout = t(:);
+tout = t(1:jjMax);
+
 output = struct;
 output.Depth = npt.depth;
-output.Tunneling = npt.Tunneling;
+output.Tunneling = tout;
 output.NumSites = n;
 output.NumBands = nBands;
 output.MaxTunnelingOrder = jjMax;
@@ -141,6 +146,7 @@ output.BandProjection(:,nn,uu) = ones(size(output.BandProjection,1),1);
 output.BandRanges(nn,1,uu) = min(npt.bandEigenValue(nn,:,uu))*fr; 
 output.BandRanges(nn,2,uu) = max(npt.bandEigenValue(nn,:,uu))*fr; 
 
-
+t2=toc;
+disp(['done (' num2str(round(t2,2)) 's)'])
 
 end

@@ -160,10 +160,8 @@ else
         if k<n
             hkm2 = hkm1;
             hkm1 = hk;
-        end
-        
-    end
-    
+        end        
+    end    
 end
 end
 
