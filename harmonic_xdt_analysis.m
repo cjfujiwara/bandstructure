@@ -141,7 +141,7 @@ end
 % Numerical Settings
 Nsites = 601;
 TunnelOrder = 11;
-HarmonicBands = 1;
+HarmonicBands = [1];
 
 % XY Lattice
 horz_opts = struct;

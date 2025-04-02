@@ -96,7 +96,7 @@ end
 
 % Total conductivity
     function y = sigma_func(T,G,f)
-        y = arrayfun(@(f) sigma_helper(T,G,f),f);
+        y = arrayfun(@( f) sigma_helper(T,G,f),f);
     end
 
     function y = sigma_helper(T,G,f)
@@ -332,10 +332,10 @@ i3 = trapz(ft,real(sigma_func(563*2.0,250,ft)));
 i4 = trapz(ft,real(sigma_func(563*2.5,250,ft)));
 
 subplot(121);
-plot(ft,real(1./sigma_func(563,250,ft))); hold on
-plot(ft,real(1./sigma_func(563*1.5,250,ft))); hold on
-plot(ft,real(1./sigma_func(563*2.0,250,ft))); hold on
-plot(ft,real(1./sigma_func(563*2.5,250,ft))); hold on
+plot(ft,real(1./sigma_func(563,250,ft))/i1); hold on
+plot(ft,real(1./sigma_func(563*1.5,250,ft))/i2); hold on
+plot(ft,real(1./sigma_func(563*2.0,250,ft))/i3); hold on
+plot(ft,real(1./sigma_func(563*2.5,250,ft))/i4); hold on
 ylabel('Re(\sigma_0/\sigma)')
 legend({'T=1.0t','T=1.5t','T=2.0t','T=2.5t'})
 xlim([0 100])
@@ -350,7 +350,7 @@ legend({'\Gamma=50/s','T=100/s','T=150/s','T=200/s'})
 
 %%
 
-keyboard
+% keyboard
 
 end
 
