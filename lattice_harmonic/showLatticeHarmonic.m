@@ -54,8 +54,14 @@ for uu=1:length(input.Depth)
     % Harmonic energy approximation
     i0 = find(eng>=0,1);
     foo_ho = @(ind) (ind-i0)*input.omega/(2*pi);
+    if ~isempty(i0)
+    
     pHO=plot([1 nstates],foo_ho([1 nstates]),'-','linewidth',2,...
         'color',[.3 .3 .3]);
+    else
+        pHO=plot(0,0);
+    end
+    
     hold on
     strHO = ['$nh\times' num2str(input.omega/(2*pi)) '\mathrm{Hz}$'];
     legStr{end+1}=strHO;
