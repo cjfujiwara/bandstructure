@@ -154,8 +154,8 @@ horz_opts.Omega = 0.5*lattice.m*horz_opts.omega^2*(lattice.lambda/2)^2/lattice.h
 
 % Z Direction
 vert_opts = struct;
-vert_opts.omega = 2*pi*300;
-vert_opts.NumSites = Nsites;
+vert_opts.omega = 2*pi*1;
+vert_opts.NumSites = 3;
 vert_opts.MaxTunnelingOrder = TunnelOrder;
 vert_opts.HarmonicBands = HarmonicBands;
 vert_opts.Omega = 0.5*lattice.m*vert_opts.omega^2*(lattice.lambda/2)^2/lattice.h;
