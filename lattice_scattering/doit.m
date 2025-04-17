@@ -1,122 +1,67 @@
 function doit
 
 %% k1,k2 Energy Map
-
-eng=@(k1,k2) -2*cos(pi*k1)-2*cos(pi*k2);
-k1V = linspace(-3,3,1e3+1);
-k2V = k1V;
-[kk1,kk2]=meshgrid(k1V,k2V);
-engMap = eng(kk1,kk2);
-klim =[-3 3];
-
-
+eng=@(k1,k2) -2*cos(pi*k1)-2*cos(pi*k2);    % Energy Functional
+k1V = linspace(-3,3,1e3+1);                 % k1 vector
+k2V = k1V;                                  % k2 vector
+[kk1,kk2]=meshgrid(k1V,k2V);                % meshgrid of k1 and k2
+engMap = eng(kk1,kk2);                      % image of energy
+klim =[-2 2];                               % some plotting limits
+%% Brillouin Zones
+bz1_k1k2 = [1 1 -1 -1; -1 1 1 -1];          % First Brillouin Zone
+bz2_k1k2 = [2 0 -2 0; 0 2 0 -2];            % Second Brillouin Zone
 %% q,P Energy Map
+% q:= k1-k2, P:=k1+k2
 
-eng_qP=@(q,P) -4*cos(pi*q/2).*cos(pi*P/2);
+eng_qP=@(q,P) -4*cos(pi*q/2).*cos(pi*P/2);  % Energy Functional
+qV = linspace(-6,6,1e3+1);                  % q vector (relative)
+PV = qV;                                    % P vector (total)
+[qq,PP]=meshgrid(qV,PV);                    % meshgrid of p and Q
+engMap_qP = eng_qP(qq,PP);                  % image of energy
 
-qV = linspace(-6,6,1e3+1);
-PV = qV;
-[qq,PP]=meshgrid(qV,PV);
-engMap_qP = eng_qP(qq,PP);
-
-
-% Convert (k1,k2) to (q,P) (q=k1-k2,P=k1+k2);
-
-U_kk_2_qP = [1 -1;1 1];
-U_qP_2_kk = inv(U_kk_2_qP);
-
-k1k2_2_qP =@(k1,k2) [1 -1;1 1]*[k1;k2];
-
-klim_2_qp_a = k1k2_2_qP(klim(2),klim(2));
-klim_2_qp_b = k1k2_2_qP(klim(1),klim(2));
-klim_2_qp_c = k1k2_2_qP(klim(1),klim(1));
-klim_2_qp_d = k1k2_2_qP(klim(2),klim(1));
-
-
-klim_in_QP_x = [klim_2_qp_a(1) klim_2_qp_b(1) klim_2_qp_c(1) klim_2_qp_d(1)];
-klim_in_QP_y = [klim_2_qp_a(2) klim_2_qp_b(2) klim_2_qp_c(2) klim_2_qp_d(2)];
-
-kfbz_2_qp_a = k1k2_2_qP(1,1);
-kfbz_2_qp_b = k1k2_2_qP(-1,1);
-kfbz_2_qp_c = k1k2_2_qP(-1,-1);
-kfbz_2_qp_d = k1k2_2_qP(1,-1);
-kfbz_in_QP_x = [kfbz_2_qp_a(1) kfbz_2_qp_b(1) kfbz_2_qp_c(1) kfbz_2_qp_d(1)];
-kfbz_in_QP_y = [kfbz_2_qp_a(2) kfbz_2_qp_b(2) kfbz_2_qp_c(2) kfbz_2_qp_d(2)];
-
+%% Change of Basis Vectors
+% Unitary matrix to transform k1,k2, to q,P and visa-versa
+U = [1 -1;1 1];
 %% Choose Vectors
-% Initial Momentum
-k1 = .7;
-k2 = -0.5;
 
-str1=['$(' num2str(k1) ',' num2str(k2) ')$'];
+% Initial State |k1,k2>
+k1k2 = [-.8;-.5];
 
-% qP Initial
-v1=U_kk_2_qP*[k1;k2];
-q1 = v1(1);P1=v1(2);
-disp(v1);
+% qP State |q,P>
+qP_1=U*k1k2;
 
-% Final possible umklapp
-q2 = q1;
-P2_p = P1+2;
-P2_n = P1-2;
+% qP+- State |q,P+-2> from umklapp scattering
+qP_Plus = qP_1 + [0;2];
+qP_Nega = qP_1 - [0;2];
 
-disp('k1k2')
-disp(eng(k1,k2))
-
-disp('q1P1')
-disp(eng_qP(q1,P1))
-
-disp(eng_qP(q1,P1+2))
-
-% Final possible umklapp in k1,k2
-% % qP Final
-v2=U_qP_2_kk*[q2;P2_n];
-v3=U_qP_2_kk*[q2;P2_p];
-
-%% Check Energies
-
-% Find q prime that corresponds to an umklapp event and conserves total
-% final energy
-E1 = eng_qP(q1,P1);
-n=4;
-qprime = fzero(@(qprime) eng_qP(qprime,P1-n)-E1,0);
-
-k_umklapp = U_qP_2_kk*[qprime;P1-n];
-
-while abs(k_umklapp(1))>1
-    k_umklapp(1)=k_umklapp(1)-2*sign(k_umklapp(1));
-end
-
-while abs(k_umklapp(2))>1
-    k_umklapp(2)=k_umklapp(2)-2*sign(k_umklapp(2));
-end
-
-
-% ind=find(E1-eng_qP(qprime,P1-2)<0,1)
-% keyboard
-% disp(eng(k1,k2))
-
-
-% disp(eng(v2(1),v2(2)))
+% k3k4 States from Umklapp
+k3k4_Plus = inv(U)*qP_Plus;
+k3k4_Nega = inv(U)*qP_Nega;
 
 %% Make Default Pictures
 hF=figure(20);
 clf
 hF.Color='w';
-colormap(parula)
+
+baseMap = gray(256);        % Or any built-in colormap
+white = ones(1, 3);           % RGB for white
+alpha = 0.5;                  % 0 = white, 1 = full color
+mutedMap = alpha * baseMap + (1 - alpha) * white;
+colormap(mutedMap);
 
 
 ax1 = subplot(121);
-hImg = imagesc(k1V,k2V,engMap,'alphadata',.5);
+hImg = imagesc(k1V,k2V,engMap);
 hold on
-levels=linspace(-4,4,10);
-contour(k1V,k2V,engMap,levels,'k-')
+levels=linspace(-4,4,11);
+contour(k1V,k2V,engMap,levels,'-','color',[.2 .2 .2])
 cc=colorbar;
-xlabel('k_1');
-ylabel('k_2');
-cc.Label.String='energy (t)';
-bz_1 = plot(polyshape([1 1 -1 -1],[-1 1  1 -1]),'facealpha',0,'linewidth',2);
-bz_2 = plot(polyshape([2 0 -2 0],[0 2 0 -2]),'facealpha',0,'linewidth',2);
+xlabel('$k_1~ [\pi/a]$','interpreter','latex');
+ylabel('$k_2 ~[\pi/a]$','interpreter','latex');
+cc.Label.String='energy [t] : $\mathcal{E} = -2 t \cos(k_1) -2t\cos(k_2)$';
+cc.Label.Interpreter='latex';
+plot(polyshape([1 0]*bz1_k1k2,[0 1]*bz1_k1k2),'facealpha',0,'linewidth',2);
+plot(polyshape([1 0]*bz2_k1k2,[0 1]*bz2_k1k2),'facealpha',0,'linewidth',2,'linestyle','--');
 axis equal tight
 xlim(klim)
 ylim(klim);
@@ -124,48 +69,110 @@ set(gca,'ydir','normal');
 set(gca,'fontsize',16)
 set(ax1,'fontsize',16)
 set(ax1,'YTick',[-2 -1 0 1 2],'YTick',-2:1:2)
-set(ax1,'YGrid','on','xgrid','on')
-
-% k=45;
-% set(ax1, 'CameraUpVector', [sind(k), cosd(k), 0]); %% Specific Vectors
-
+set(ax1,'YGrid','on','xgrid','on','fontname','times')
+ co=get(gca,'colororder');
+ title('$\left|k_1,k_2\right\rangle$-space','interpreter','latex')
 
 ax2 = subplot(122);
-hImg = imagesc(qV,PV,engMap_qP,'alphadata',.5);
+hImg = imagesc(qV,PV,engMap_qP);
 hold on
-levels=linspace(-4,4,10);
-contour(qV,PV,engMap_qP,levels,'k-')
+levels=linspace(-4,4,11);
+contour(qV,PV,engMap_qP,levels,'-','color',[.2 .2 .2])
 cc=colorbar;
-xlabel('$q=k_1-k_2$','interpreter','latex');
-ylabel('$P=k_1+k_2$','interpreter','latex');
-cc.Label.String='energy (t)';
+xlabel('$q:=k_1-k_2 ~[\pi/a]$','interpreter','latex');
+ylabel('$P:=k_1+k_2~ [\pi/a]$','interpreter','latex');
+cc.Label.String='energy [t] : $\mathcal{E} = -4 t \cos(q/2)\cos(P/2)$';
 
+cc.Label.Interpreter='latex';
 axis equal tight
-xlim([-4 4])
-ylim([-4 4]);
+xlim([-2.5 2.5])
+ylim([-2.5 2.5]);
 set(gca,'ydir','normal');
-
-k_limits = plot(polyshape(klim_in_QP_x,klim_in_QP_y),'facealpha',0,'linewidth',1,'linestyle','--');
-k_fbz = plot(polyshape(kfbz_in_QP_x,kfbz_in_QP_y),'facealpha',0,'linewidth',1,'linestyle','-');
+plot(polyshape([1 0]*U*bz1_k1k2,[0 1]*U*bz1_k1k2),'facealpha',0,'linewidth',2,'linestyle','-');
+plot(polyshape([1 0]*U*bz2_k1k2,[0 1]*U*bz2_k1k2),'facealpha',0,'linewidth',2,'linestyle','--');
+ title('$\left|q,P\right\rangle$-space','interpreter','latex')
 
 set(gca,'fontsize',16)
 set(gca,'YTick',[-2 -1 0 1 2],'YTick',-2:1:2)
-set(gca,'YGrid','on','xgrid','on')
+set(gca,'YGrid','on','xgrid','on','fontname','times')
  %% Specific Vectors
 
+
+
+ % Draw states that converse total momentum and energy (but not relative).
+k1_dummy = linspace(-1,1,100);
+P0 =1;
+k2_dummy = P0-k1_dummy;
+k1mod = mod(k1_dummy+1,2)-1;
+k2mod = mod(k2_dummy+1,2)-1;
+ds=diff(k2mod);
+[~,ind]=max(abs(ds));
+plot(k1mod(1:ind),k2mod(1:ind),'-','parent',ax1,'linewidth',2,...
+    'color',co(3,:));
+plot(k1mod(ind+1:end-1),k2mod(ind+1:end-1),'-','parent',ax1,'linewidth',2,....
+    'color',co(3,:));
+
+ % Draw states that converse total momentum (but not relative).
+% This includes all possible umklapp events
+k1_dummy = linspace(-1,1,100);
+P0 = k1k2(1)+k1k2(2);
+k2_dummy = P0-k1_dummy;
+k1mod = mod(k1_dummy+1,2)-1;
+k2mod = mod(k2_dummy+1,2)-1;
+ds=diff(k2mod);
+[~,ind]=max(abs(ds));
+plot(k1mod(1:ind),k2mod(1:ind),'-','parent',ax1,'linewidth',2,...
+    'color',.8*co(1,:));
+plot(k1mod(ind+1:end-1),k2mod(ind+1:end-1),'-','parent',ax1,'linewidth',2,....
+    'color',.8*co(2,:));
+
+
 % Initial Momentum (k1,k2);
-plot([0 k1],[0 k2],'linewidth',2,'color','k','parent',ax1);
-
-% Initial Momentum (q,P)
-plot([0 q1],[0 P1],'-','linewidth',2','color','k','parent',ax2)
-
-% Umklapp Processes
-plot([0 q2],[0 P2_n],'-','linewidth',2,'color','r','parent',ax2)
-plot([0 q2],[0 P2_p],'-','linewidth',2,'color','g','parent',ax2)
+plot(k1k2(1),k1k2(2),'ko','markerfacecolor',co(1,:),...
+    'linewidth',1,'color','k','parent',ax1,...
+    'markersize',6,'markersize',10);
 
 
 % Umklapp Processes in k1,k2
-plot([0 v2(1)],[0 v2(2)],'-','linewidth',2,'color','r','parent',ax1)
-plot([0 v3(1)],[0 v3(2)],'-','linewidth',2,'color','g','parent',ax1)
+plot(k3k4_Plus(1),k3k4_Plus(2),'marker','s','color','k','parent',ax1,...
+    'markerfacecolor',co(2,:),'markersize',8)
+plot(k3k4_Nega(1),k3k4_Nega(2),'marker','s','color','k','parent',ax1,...
+    'markerfacecolor',co(2,:),'markersize',8)
+%%
+
+% Special Umklapp that conserve energy
+plot([-1 1],[1 1],'-','parent',ax2,'linewidth',2,...
+    'color',co(3,:));
+plot([-1 1],[-1 -1],'-','parent',ax2,'linewidth',2,...
+    'color',co(3,:));
+
+
+qp_Dummy1=U*[k1mod(1) k1mod(ind);k2mod(1) k2mod(ind)];
+qp_Dummy2=U*[k1mod(ind+1) k1mod(end-1);k2mod(ind+1) k2mod(end-1)];
+
+ plot([1 0]*qp_Dummy1,[0 1]*qp_Dummy1,'-','parent',ax2,'linewidth',2,...
+    'color',.8*co(1,:));
+ plot([1 0]*qp_Dummy2,[0 1]*qp_Dummy2,'-','parent',ax2,'linewidth',2,...
+    'color',.8*co(2,:));
+
+
+% Umklapp Plus 1
+plot([-1 1],[1 1],'-','parent',ax2,'linewidth',2,...
+    'color',co(3,:));
+plot([-1 1],[-1 -1],'-','parent',ax2,'linewidth',2,...
+    'color',co(3,:));
+
+% Initial Momentum (k1,k2);
+plot(qP_1(1),qP_1(2),'ko','markerfacecolor',co(1,:),...
+    'linewidth',1,'color','k','parent',ax2,...
+    'markersize',10);
+
+% Umklapp Processes in qP
+plot(qP_Plus(1),qP_Plus(2),'marker','s','color','k','parent',ax2,...
+    'markerfacecolor',co(2,:),'markersize',8)
+plot(qP_Nega(1),qP_Nega(2),'marker','s','color','k','parent',ax2,...
+    'markerfacecolor',co(2,:),'markersize',8)
+
+
 end
 
