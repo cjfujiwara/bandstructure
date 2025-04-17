@@ -1,5 +1,5 @@
 function Tmat = makeTmatrixNOPBC(n,jmax)
-
+% Obsolete
 %
     Tmat = zeros(n,n,jmax);
     for kk=1:jmax

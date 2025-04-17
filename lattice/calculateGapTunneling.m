@@ -1,5 +1,6 @@
 function [npt,hF]=calculateGapTunneling(npt)
-
+% CJF: I think this is out of date, with exception of the gap calculations,
+% which are useful
 %% Tunneling, Gap
 
 U=linspace(.1,300,501);

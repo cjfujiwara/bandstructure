@@ -1,4 +1,6 @@
 function calculateWannier(npt,opts)
+
+% CF : I believe this is now obsolete
 %% Wannier Function
 % The wannier function is a position basis description of states in the
 % lattice potential.  They are constructed by an fourier transform of the

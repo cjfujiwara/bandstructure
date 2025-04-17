@@ -1,6 +1,7 @@
 function Tmat = makeTmatrix(n,jmax)
 % Kinetic energy tunneling operator with periodic boundary conditions;
-%
+% Obsolete
+
 %
 % This could be sped up
     Tmat = zeros(n,n,jmax);
