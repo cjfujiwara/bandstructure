@@ -3,7 +3,6 @@ function ff = showLHO_Eigenstates(lattice,npt)
 t1=npt.Tunneling(1,1)*npt.fr;
 t2=npt.Tunneling(1,2)*npt.fr;
 
-
 ustr = ['V_0=' num2str(npt.Depth) '~E_\mathrm{R}'];
 omegastr=['\omega=2 \pi \cdot' num2str(npt.omega/(2*pi)) '~\mathrm{Hz}'];
 title_str = ['$' ustr ';' omegastr '$'];

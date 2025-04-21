@@ -13,6 +13,7 @@ function y = drude(amp,f0,G,f)
     w0  = 2*pi*f0;
     y   = 1i*amp*G*w./((w.^2-w0.^2)+1i*w*G);
 end
+
 [amp,ind] = max(real(z));
 f0 = x(ind);
 P_drude_complex = [amp f0 50];
@@ -34,7 +35,7 @@ f0err = (conf(2,2)-conf(2,1))/2;
 G = fout(3);
 Gerr = (conf(3,2)-conf(3,1))/2;
 
-ft = linspace(0,1000,1000);
+ft = linspace(0,250,1000);
 
 drude_complex               = struct;
 drude_complex.s0            = amp;
@@ -49,7 +50,6 @@ drude_complex.SigmaFit      = drude(amp,f0,G,ft);
 
 drude_sum = trapz(ft,real(drude(amp,f0,G,ft)));
 
-% keyboard
 
 doCalculateLHO = 1;
 if doCalculateLHO
@@ -156,9 +156,9 @@ for jj=1:length(LHO)
     
     %% Constrained Fit
     y = [real(z); imag(z)];
-    drude_wrapper = @(P,f) [sigma_real(P(1),P(2),f); sigma_imag(P(1),P(2),f)];
+    tdpt_wrapper = @(P,f) [sigma_real(P(1),P(2),f); sigma_imag(P(1),P(2),f)];
     
-    [fout,resnorm,residual,exitflag,output0,lambda,jacobian]=lsqcurvefit(drude_wrapper,P,x,y);
+    [fout,resnorm,residual,exitflag,output0,lambda,jacobian]=lsqcurvefit(tdpt_wrapper,P,x,y);
     conf = nlparci(fout,residual,'jacobian',jacobian);
     
     SS_res = resnorm;
@@ -181,6 +181,7 @@ for jj=1:length(LHO)
     %
     % ft = linspace(0,100,500);
     yt = sigma_func(T,G,ft);  
+    
     plot(ft,real(yt),'-','color',cc(jj,:),'parent',ax1);
     hold(ax1,'on')
     plot(ft,imag(yt),'-','color',cc(jj,:),'parent',ax2);
@@ -269,84 +270,84 @@ xlim([0 150]);
 s='Mar16spectrum198p5';
 %% Real Fit
 %%
-hF3 = figure(figNum2+1);
-hF3.Color='w';
-clf(hF3);
-axes('parent',hF3)
-co=get(gca,'colororder');
-% axa = subplot(2,1,1,'parent',hF2);
-
-pDrude_R=plot(ft,real(1./drude(amp,f0,G,ft)),'--','color',co(1,:));
-hold on
-pDrude_I=plot(ft,imag(1./drude(amp,f0,G,ft)),'--','color',co(2,:));
-ylabel('$\rho$','interpreter','latex')
-xlabel('drive frequency (Hz)')
-set(gca,'box','on','fontname','times')
-
-pTDPT_R=plot(ft,real(1./sigma_func(T,G,ft)),'-','color',co(1,:),'linewidth',1);
-hold on
-pTDPT_I=plot(ft,imag(1./sigma_func(T,G,ft)),'-','color',co(2,:),'linewidth',1);
-
-pData_R=plot(x,real(1./z),'o','markerfacecolor',co(1,:),'color',co(1,:)*.5);
-pData_I=plot(x,imag(1./z),'s','markerfacecolor',co(2,:),'color',co(2,:)*.5);
-
-str1=['Re[drude]'];
-str2=['Im[drude]'];
-
-str3=['Re[tdpt]'];
-str4=['Im[tdpt]'];
-
-legStr={str1, str2, str3, str4};
-legend([pDrude_R pDrude_I pTDPT_R pTDPT_I],legStr)
-
-str_drude = ['drude $(' ...
-    'f_0:' num2str(round(drude_complex.f0,1)) '~\mathrm{Hz}' ...
-    ',A:' num2str(round(drude_complex.s0,1))  ...    
-    ',\Gamma:' num2str(round(drude_complex.G,1)) '\mathrm{s}^{-1})$'];
-
-str_tdpt = ['tdpt $(f_0:' num2str(round(f0_best,1)) '~\mathrm{Hz}' ...
-    ',T:' num2str(round(T/t,2)) 't'...
-    ',\Gamma:' num2str(round(G,1)) '\mathrm{s}^{-1})$'];
-
-str_tdpt_2 = ['tdpt err $\pm' num2str(round(Terr/t,1)) 't'...
-    ',\pm' num2str(round(Gerr,0)) '\mathrm{s}^{-1})$'];
-
-str = [str_drude newline str_tdpt newline str_tdpt_2];
-
-text(.99,.01,str,'units','normalized','horizontalalignment','right',...
-    'verticalalignment','bottom','interpreter','latex')
-xlim([20 100]);
-% keyboard
-
-s='Mar16spectrum198p5';
+% hF3 = figure(figNum2+1);
+% hF3.Color='w';
+% clf(hF3);
+% axes('parent',hF3)
+% co=get(gca,'colororder');
+% % axa = subplot(2,1,1,'parent',hF2);
+% 
+% pDrude_R=plot(ft,real(1./drude(amp,f0,G,ft)),'--','color',co(1,:));
+% hold on
+% pDrude_I=plot(ft,imag(1./drude(amp,f0,G,ft)),'--','color',co(2,:));
+% ylabel('$\rho$','interpreter','latex')
+% xlabel('drive frequency (Hz)')
+% set(gca,'box','on','fontname','times')
+% 
+% pTDPT_R=plot(ft,real(1./sigma_func(T,G,ft)),'-','color',co(1,:),'linewidth',1);
+% hold on
+% pTDPT_I=plot(ft,imag(1./sigma_func(T,G,ft)),'-','color',co(2,:),'linewidth',1);
+% 
+% pData_R=plot(x,real(1./z),'o','markerfacecolor',co(1,:),'color',co(1,:)*.5);
+% pData_I=plot(x,imag(1./z),'s','markerfacecolor',co(2,:),'color',co(2,:)*.5);
+% 
+% str1=['Re[drude]'];
+% str2=['Im[drude]'];
+% 
+% str3=['Re[tdpt]'];
+% str4=['Im[tdpt]'];
+% 
+% legStr={str1, str2, str3, str4};
+% legend([pDrude_R pDrude_I pTDPT_R pTDPT_I],legStr)
+% 
+% str_drude = ['drude $(' ...
+%     'f_0:' num2str(round(drude_complex.f0,1)) '~\mathrm{Hz}' ...
+%     ',A:' num2str(round(drude_complex.s0,1))  ...    
+%     ',\Gamma:' num2str(round(drude_complex.G,1)) '\mathrm{s}^{-1})$'];
+% 
+% str_tdpt = ['tdpt $(f_0:' num2str(round(f0_best,1)) '~\mathrm{Hz}' ...
+%     ',T:' num2str(round(T/t,2)) 't'...
+%     ',\Gamma:' num2str(round(G,1)) '\mathrm{s}^{-1})$'];
+% 
+% str_tdpt_2 = ['tdpt err $\pm' num2str(round(Terr/t,1)) 't'...
+%     ',\pm' num2str(round(Gerr,0)) '\mathrm{s}^{-1})$'];
+% 
+% str = [str_drude newline str_tdpt newline str_tdpt_2];
+% 
+% text(.99,.01,str,'units','normalized','horizontalalignment','right',...
+%     'verticalalignment','bottom','interpreter','latex')
+% xlim([20 100]);
+% % keyboard
+% 
+% s='Mar16spectrum198p5';
 %% Imaginary Fit
-
-
-figure(7);
-clf
-set(gcf,'Color','w');
-
-i1 = trapz(ft,real(sigma_func(563,250,ft)));
-i2 = trapz(ft,real(sigma_func(563*1.5,250,ft)));
-i3 = trapz(ft,real(sigma_func(563*2.0,250,ft)));
-i4 = trapz(ft,real(sigma_func(563*2.5,250,ft)));
-
-subplot(121);
-plot(ft,real(1./sigma_func(563,250,ft))/i1); hold on
-plot(ft,real(1./sigma_func(563*1.5,250,ft))/i2); hold on
-plot(ft,real(1./sigma_func(563*2.0,250,ft))/i3); hold on
-plot(ft,real(1./sigma_func(563*2.5,250,ft))/i4); hold on
-ylabel('Re(\sigma_0/\sigma)')
-legend({'T=1.0t','T=1.5t','T=2.0t','T=2.5t'})
-xlim([0 100])
-
-subplot(122);
-plot(ft,real(1./sigma_func(563*3,50,ft))); hold on
-plot(ft,real(1./sigma_func(563*3,100,ft))); hold on
-plot(ft,real(1./sigma_func(563*3,150,ft))); hold on
-plot(ft,real(1./sigma_func(563*3,200,ft))); hold on
-ylabel('Re(\sigma_0/\sigma)')
-legend({'\Gamma=50/s','T=100/s','T=150/s','T=200/s'})
+% 
+% 
+% figure(7);
+% clf
+% set(gcf,'Color','w');
+% 
+% i1 = trapz(ft,real(sigma_func(563,250,ft)));
+% i2 = trapz(ft,real(sigma_func(563*1.5,250,ft)));
+% i3 = trapz(ft,real(sigma_func(563*2.0,250,ft)));
+% i4 = trapz(ft,real(sigma_func(563*2.5,250,ft)));
+% 
+% subplot(121);
+% plot(ft,real(1./sigma_func(563,250,ft))/i1); hold on
+% plot(ft,real(1./sigma_func(563*1.5,250,ft))/i2); hold on
+% plot(ft,real(1./sigma_func(563*2.0,250,ft))/i3); hold on
+% plot(ft,real(1./sigma_func(563*2.5,250,ft))/i4); hold on
+% ylabel('Re(\sigma_0/\sigma)')
+% legend({'T=1.0t','T=1.5t','T=2.0t','T=2.5t'})
+% xlim([0 100])
+% 
+% subplot(122);
+% plot(ft,real(1./sigma_func(563*3,50,ft))); hold on
+% plot(ft,real(1./sigma_func(563*3,100,ft))); hold on
+% plot(ft,real(1./sigma_func(563*3,150,ft))); hold on
+% plot(ft,real(1./sigma_func(563*3,200,ft))); hold on
+% ylabel('Re(\sigma_0/\sigma)')
+% legend({'\Gamma=50/s','T=100/s','T=150/s','T=200/s'})
 
 %%
 
