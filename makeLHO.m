@@ -14,7 +14,7 @@ if ~isfield(npt,'Nsites')
     npt.Nsites = 601;
 end
 if ~isfield(npt,'TrapFrequency_Hz')
-    npt.TrapFrequency_Hz = 67;
+    npt.TrapFrequency_Hz = 66.8;
 end
 if ~isfield(npt,'TunnelOrder')
     npt.TunnelOrder = 11;

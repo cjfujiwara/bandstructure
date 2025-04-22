@@ -22,7 +22,6 @@ S5 = full(spdiags(zeros(N,2),[-5 5],W));  % 5th diagonal to to zero
 % W = logical(~S1);               % Only first 1st diagonal
 % W = logical(~S3);               % Only first 3rd diagonal
 % W = logical(~S5);               % Only first 5th diagonal
-
 % W = logical(~S3+~S2+~S0);       % Only 0th, 2nd, and 3rd diagonal
 % % W = S1;                         % Only non 1st diagonal
 

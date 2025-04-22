@@ -1,5 +1,5 @@
-T=1000;
-G=50;
+T=1126;
+G=2*pi*20;
 
 ff = 5:1:400;
 zz=conductivity2(ff,T,G,lho);
