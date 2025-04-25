@@ -30,13 +30,6 @@ oscillations_wrapper = @(P,t) ...
 P_guess = [S_guess C_guess guess_x0 guess_v0];
 yG = oscillations_wrapper(P_guess,x);
     
-% figure(19);
-% clf
-% plot(x,y,'o');
-% hold on
-% plot(x,yG,'o-');
-
-
 
 %% Normal Fitting
         options = optimset('Display','off');    

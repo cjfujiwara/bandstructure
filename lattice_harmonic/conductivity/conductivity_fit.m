@@ -1,4 +1,4 @@
-function fout = conductivity_fit(freq,sigma,src)
+function fout = conductivity_fit(freq,sigma)
 % freq      : frequency data
 % sigma     : complex conductivity data
 
@@ -9,10 +9,27 @@ sigma = sigma(:);
 % Separate real and imaginary parts
 y = [real(sigma); imag(sigma)];
 
+%% Lattice Properties
+lattice                     = constants;
+lattice.depth               = [2.5]; 
+lattice.WannierBands        = [1];
 
+lattice.numStates           = 101;       % must be odd
+lattice.numK                = 301;      % must be odd    
+
+wannier_opts                = struct;
+wannier_opts.Bands          = [1];
+
+
+%% LHO
 % Number of eigenstates to include in fit
-N = 101;
-  
+N = 101;  
+% Numerical Settings
+Nsites          = 601;
+TunnelOrder     = 21;
+HarmonicBands   = 1;    
+
+%% Display Stuff
 
 figNum1 = 1990;
 figNum2 = 1991;
@@ -67,15 +84,6 @@ drude_complex.SigmaFit      = drude(amp,f0,G,ft);
 
 %% Calculate Lattice Properties
 
-lattice                     = constants;
-lattice.depth               = [2.5]; 
-lattice.WannierBands        = [1];
-
-lattice.numStates           = 101;       % must be odd
-lattice.numK                = 301;      % must be odd    
-
-wannier_opts                = struct;
-wannier_opts.Bands          = [1];
 
 lattice = calculateBandStructure(lattice);      % calculate band structure
 lattice = calculateTunneling(lattice);          % calculate tunneling elements
@@ -85,12 +93,8 @@ lattice = calculateWannierMoments(lattice);     % Dipole matrix elements in wann
 
 %% Calculate LHO States
 
-% Numerical Settings
-Nsites          = 601;
-TunnelOrder     = 21;
-HarmonicBands   = 1;    
-omega           = 2*pi*[(f0+2):1:(f0+12)];
 
+omega           = 2*pi*[(f0+2):1:(f0+12)];
 
 HO_opts = struct;
 HO_opts.NumSites = Nsites;
