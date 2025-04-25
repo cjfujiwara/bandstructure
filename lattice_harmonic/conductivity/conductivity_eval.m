@@ -1,4 +1,4 @@
-function z = conductivity2(f,T,G,lho)
+function z = conductivity_eval(f,T,G,lho)
 % Author : CJ Fujiwara
 %
 % This function evaluates the conductivity assuming lineare response and a

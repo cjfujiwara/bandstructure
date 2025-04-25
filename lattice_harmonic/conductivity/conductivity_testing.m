@@ -47,13 +47,11 @@ text(.99,.01,str,'interpreter','latex','units','normalized',...
 ylim([-.1 .1]);
 %%
 
-data=load('C:\Users\coraf\Downloads\2025.03.16 198.5 G spectrum data.mat');
-data=data.Mar16spectrum198p5;
-
-z = data.sR+ 1i*data.sI;
-f = data.freq;
-
-fout = conductivity(f,z);
+data    = load('C:\Users\coraf\Downloads\2025.03.16 198.5 G spectrum data.mat');
+data    = data.Mar16spectrum198p5;
+z       = data.sR+ 1i*data.sI;
+f       = data.freq;
+fout    = conductivity_fit(f,z);
 
 %%
 inds=[1:15];
