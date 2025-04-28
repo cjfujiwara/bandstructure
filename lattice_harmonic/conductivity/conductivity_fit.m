@@ -1,4 +1,4 @@
-function fout = conductivity_fit(freq,sigma)
+function output_best = conductivity_fit(freq,sigma)
 % freq      : frequency data
 % sigma     : complex conductivity data
 
@@ -20,7 +20,17 @@ lattice.numK                = 301;      % must be odd
 wannier_opts                = struct;
 wannier_opts.Bands          = [1];
 
+%% Calculate Lattice Properties
 
+lattice = calculateBandStructure(lattice);      % calculate band structure
+lattice = calculateTunneling(lattice);          % calculate tunneling elements
+lattice = wannier(lattice,wannier_opts);        % Calculate wannier function
+lattice = calculateWannierMoments(lattice);     % Dipole matrix elements in wannier basis
+
+
+% First tunneling in Hz
+tunnelings = lattice.Tunneling(1,:)*lattice.fr;% 1st tunneling
+t= tunnelings(1);
 %% LHO
 % Number of eigenstates to include in fit
 N = 101;  
@@ -81,14 +91,6 @@ drude_complex.Rsquared      = R2;
 drude_complex.FreqFit       = ft;
 drude_complex.SigmaFit      = drude(amp,f0,G,ft);
 % drude_sum                   = trapz(ft,real(drude(amp,f0,G,ft)));
-
-%% Calculate Lattice Properties
-
-
-lattice = calculateBandStructure(lattice);      % calculate band structure
-lattice = calculateTunneling(lattice);          % calculate tunneling elements
-lattice = wannier(lattice,wannier_opts);        % Calculate wannier function
-lattice = calculateWannierMoments(lattice);     % Dipole matrix elements in wannier basis
 
 
 %% Calculate LHO States
@@ -186,12 +188,12 @@ for jj=1:length(LHO)
     
     G = fout(2);
     Gerr = (conf(2,2)-conf(2,1))/2;
-    output(jj).trap_freq = src.omega/(2*pi);
-    output(jj).T = T;
-    output(jj).Terr = Terr;
-    output(jj).G = G;
-    output(jj).Gerr = Gerr;
-    output(jj).Rsquared = R2;
+    output(jj).TrapFrequency_Hz     = src.omega/(2*pi);
+    output(jj).Temperature_Hz       = T;
+    output(jj).TemperatureErr_Hz    = Terr;
+    output(jj).Gamma_invSec         = G;
+    output(jj).GammaErr_invSec      = Gerr;
+    output(jj).Rsquared             = R2;
     
 
     yt = sigma_func(T,G,ft);      
@@ -213,25 +215,30 @@ uistack(pDR,'top')
 
 axes(ax4);
 yyaxis left
-errorbar(omega/(2*pi),[output.G],[output.Gerr],'o','parent',ax4)
+errorbar(omega/(2*pi),[output.Gamma_invSec],[output.GammaErr_invSec],'o','parent',ax4)
 xlabel(ax4,'trap freq (Hz)')
 ylabel(ax4,'\Gamma (1/s)')
 yyaxis right
-errorbar(omega/(2*pi),[output.T]/563,[output.Terr]/563,'o','parent',ax4)
+errorbar(omega/(2*pi),[output.Temperature_Hz]/t,[output.TemperatureErr_Hz]/563,'o','parent',ax4)
 ylabel('temp (t)')
 ylim([0 3])
 
 %% Summary Figure
-[val,ind]=max([output.Rsquared]);
-output_best = output(ind);
-T=output_best.T;
-Terr=output_best.Terr;
-G=output_best.G;
-Gerr=output_best.Gerr;
-f0_best = output_best.trap_freq;
+[val,ind]           = max([output.Rsquared]);
+output_best         = output(ind);
+T                   = output_best.Temperature_Hz;
+Terr                = output_best.TemperatureErr_Hz;
+G                   = output_best.Gamma_invSec;
+Gerr                = output_best.GammaErr_invSec;
+f0_best             = output_best.TrapFrequency_Hz;
 
-t=LHO(1).Tunneling(1);
-%%
+sR = @(omega) real(sigma_func(T,G,omega/(2*pi)));
+
+Fsum = 2/pi*integral(sR,0,2000);
+
+
+
+%% Best Summary
 hF2 = figure(figNum2);
 hF2.Color='w';
 clf(hF2);

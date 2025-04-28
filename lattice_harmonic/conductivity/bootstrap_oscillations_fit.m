@@ -1,10 +1,10 @@
-function output=bootstrap_oscillations_fit(x,y,f)
+function output=bootstrap_oscillations_fit(x,y1,y2,f)
 
 % Amplitude Guess
-guess_Amplitude = 0.5*(max(y)-min(y));
+guess_Amplitude = 0.5*(max(y1)-min(y1));
 
 % Center Guess
-guess_x0 = median(y);
+guess_x0 = median(y1);
 
 % Velocity Guess
 guess_v0 = 0;
@@ -13,7 +13,7 @@ guess_v0 = 0;
 phiVec = linspace(0,-2*pi,100);
 phi_sse = zeros(length(phiVec),1);
 for rr=1:length(phiVec)
-    phi_sse(rr) = sum((guess_Amplitude*sin(2*pi*f*x + phiVec(rr)) + guess_x0 - y).^2);
+    phi_sse(rr) = sum((guess_Amplitude*sin(2*pi*f*x + phiVec(rr)) + guess_x0 - y1).^2);
 end
 [~,ii] = min(phi_sse);
 guess_phi = phiVec(ii);
@@ -30,12 +30,11 @@ oscillations_wrapper = @(P,t) ...
 P_guess = [S_guess C_guess guess_x0 guess_v0];
 yG = oscillations_wrapper(P_guess,x);
     
-
 %% Normal Fitting
         options = optimset('Display','off');    
         x = x(:);
-y = y(:);
-data = [x y];
+y1 = y1(:);
+data = [x y1];
 
 [fout,resnorm,residual,exitflag,output0,lambda,jacobian] = ...
     lsqcurvefit(oscillations_wrapper, P_guess, data(:,1), data(:,2), [], [], options);
@@ -69,7 +68,7 @@ nBootstraps = 1e3;
 % Apply bootstrap
 [bootstat, bootsam] = bootstrp(nBootstraps, @fitModel, data);
 
-figure(20)
+figure;
 clf
 subplot(241)
 histfit(bootstat(:,1));
@@ -101,21 +100,26 @@ histfit(bootstat(:,4));
 xlabel('v0 (um/ms)');
 ylabel('occurences')
 
-subplot(212)
+subplot(2,4,[5 6 7])
 co=get(gca,'colororder');
 tt=linspace(min(x),max(x),100);
 plot(tt,oscillations_wrapper(P_fit,tt),'r-');
 hold on
-plot(x,y,'o','markerfacecolor',co(1,:),'color','k');
+plot(x,y1,'o','markerfacecolor',co(1,:),'color','k');
 hold on
 xlabel('total time (ms)');
 ylabel('position (um)')
 
+subplot(2,4,8)
+plot(y2,y1,'o');
+xlabel('y1')
+ylabel('y2');
+axis equal tight
 %% Create Ouputs
 
 output = struct;
 output.x = x;
-output.y = y;
+output.y = y1;
 output.FitParam = P_fit;
 output.FitErr = P_err;
 output.BootStat = bootstat;
