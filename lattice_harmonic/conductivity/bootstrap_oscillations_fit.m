@@ -1,4 +1,4 @@
-function output=bootstrap_oscillations_fit(x,y1,y2,f)
+function output=bootstrap_oscillations_fit(x,y1,f)
 
 % Amplitude Guess
 guess_Amplitude = 0.5*(max(y1)-min(y1));
@@ -68,53 +68,7 @@ nBootstraps = 1e3;
 % Apply bootstrap
 [bootstat, bootsam] = bootstrp(nBootstraps, @fitModel, data);
 
-figure;
-clf
-subplot(241)
-histfit(bootstat(:,1));
-pdS = fitdist(bootstat(:,1),'Normal');
-xlabel('S (um)');
-ylabel('occurences')
-str=['boot normal : ' num2str(round(pdS.mu,2)) '\pm' num2str(round(2*pdS.sigma,2)) ...
-    newline ...
-    'fit 95 conf : ' num2str(round(S_val,2)) '\pm' num2str(round(S_err,2))];
-text(.01,.99,str,'units','normalized','verticalalignment','top','backgroundcolor',[1 1 1 .5]);
 
-subplot(242)
-histfit(bootstat(:,2));
-pdC = fitdist(bootstat(:,2),'Normal');
-xlabel('C (um)');
-ylabel('occurences')
-str=['boot normal : ' num2str(round(pdC.mu,2)) '\pm' num2str(round(2*pdC.sigma,2)) ...
-    newline ...
-    'fit 95 conf : ' num2str(round(C_val,2)) '\pm' num2str(round(C_err,2))];
-text(.01,.99,str,'units','normalized','verticalalignment','top','backgroundcolor',[1 1 1 .5]);
-
-subplot(243)
-histfit(bootstat(:,3));
-xlabel('x0 (um)');
-ylabel('occurences')
-
-subplot(244)
-histfit(bootstat(:,4));
-xlabel('v0 (um/ms)');
-ylabel('occurences')
-
-subplot(2,4,[5 6 7])
-co=get(gca,'colororder');
-tt=linspace(min(x),max(x),100);
-plot(tt,oscillations_wrapper(P_fit,tt),'r-');
-hold on
-plot(x,y1,'o','markerfacecolor',co(1,:),'color','k');
-hold on
-xlabel('total time (ms)');
-ylabel('position (um)')
-
-subplot(2,4,8)
-plot(y2,y1,'o');
-xlabel('y1')
-ylabel('y2');
-axis equal tight
 %% Create Ouputs
 
 output = struct;
@@ -124,5 +78,6 @@ output.FitParam = P_fit;
 output.FitErr = P_err;
 output.BootStat = bootstat;
 output.BootSam = bootsam;
+output.FitFunc = oscillations_wrapper;
 end
 
