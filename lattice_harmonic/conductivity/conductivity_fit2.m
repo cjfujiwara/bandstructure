@@ -1,4 +1,4 @@
-function output = conductivity_fit2(lattice,freq,sigma,sigma_err)
+function output = conductivity_fit2(lattice,freq,sigma,sigma_err,input)
 
 % freq      : frequency data
 % sigma     : complex conductivity data
@@ -26,6 +26,9 @@ sigma_err = sigma_err(:);
 %% Construct Initial Guess
 
 P0 = [700 200 60];
+if nargin==5
+   P0=input.fout; 
+end
 
 %% Define Cost Function
         
