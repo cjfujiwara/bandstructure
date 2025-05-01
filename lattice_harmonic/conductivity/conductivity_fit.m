@@ -1,13 +1,19 @@
-function output_best = conductivity_fit(freq,sigma)
+function output_best = conductivity_fit(freq,sigma,sigma_err)
 % freq      : frequency data
 % sigma     : complex conductivity data
+
+if nargin ==2
+    sigma_err = zeros(length(freq),1);
+end
 
 % Make sure they are a colummn vector
 freq = freq(:);     
 sigma = sigma(:);
+sigma_err = sigma_err(:);
 
 % Separate real and imaginary parts
 y = [real(sigma); imag(sigma)];
+yerr = [real(sigma_err); imag(sigma_err)];
 
 %% Lattice Properties
 lattice                     = constants;
@@ -96,7 +102,8 @@ drude_complex.SigmaFit      = drude(amp,f0,G,ft);
 %% Calculate LHO States
 
 
-omega           = 2*pi*[(f0+2):1:(f0+12)];
+omega           = 2*pi*[(f0+2):.5:(f0+12)];
+omega = omega(:);
 
 HO_opts = struct;
 HO_opts.NumSites = Nsites;
@@ -144,16 +151,18 @@ ax4 = subplot(1,4,4,'parent',hF1);
 cc=jet(length(LHO));
 
 
-pDR=plot(freq,real(sigma),'ko','markerfacecolor','k','parent',ax1);
+pDR=errorbar(freq,real(sigma),real(sigma_err),'ko','markerfacecolor','k','parent',ax1);
 hold(ax1,'on');
 xlabel(ax1,'Frequency (Hz)')
 ylabel(ax1,'Re[\sigma/\sigma_0]')
 
-pDI=plot(freq,imag(sigma),'ko','markerfacecolor','k','parent',ax2);
+pDI=errorbar(freq,imag(sigma),real(sigma_err),'ko','markerfacecolor','k','parent',ax2);
 xlabel(ax2,'Frequency (Hz)')
 ylabel(ax2,'Im[\sigma/\sigma_0]')
 hold(ax2,'on');
 
+
+  
 for jj=1:length(LHO)
     fprintf(['Fitting ' num2str(jj) ' of ' num2str(length(LHO))]);
     src = LHO(jj);
@@ -169,15 +178,33 @@ for jj=1:length(LHO)
     [EE1,EE2]   = meshgrid(eng,eng);
     dEE         = EE1-EE2;
     
-    P = [850 drude_complex.G];
+    P0 = [850 drude_complex.G];
     % P = [1100 51];
     
     %% Constrained Fit
-    tdpt_wrapper = @(P,f) [sigma_real(P(1),P(2),f); sigma_imag(P(1),P(2),f)];
-    options = optimset('Display','off');    
+    
+    % Just normal 2D least squares
+%     tdpt_wrapper = @(P,f) [sigma_real(P(1),P(2),f); sigma_imag(P(1),P(2),f)];
+%     options = optimset('Display','off');    
+%     [fout,resnorm,residual,exitflag,output0,lambda,jacobian]=lsqcurvefit(tdpt_wrapper,P0,freq,y,[],[],options);
+%     conf = nlparci(fout,residual,'jacobian',jacobian);
+    
+    % Fminsearch where we supply the TOTAL cost function
+%     fmin_total_cost = @(P) sum((sigma_real(P(1),P(2),freq)-real(sigma)).^2./real(sigma_err).^2 + ...
+%         (sigma_imag(P(1),P(2),freq)-imag(sigma)).^2./imag(sigma_err).^2);    
+%     [P_out,cost_value,exitflag,output] = fminsearch(fmin_total_cost, P0);
+    
+    % lsqnonlin minimizes sum of squares of a function
+        options = optimset('Display','off');    
 
-    [fout,resnorm,residual,exitflag,output0,lambda,jacobian]=lsqcurvefit(tdpt_wrapper,P,freq,y,[],[],options);
+     lsq_weighted_err = @(P) [(sigma_real(P(1),P(2),freq)-real(sigma))./real(sigma_err); ...
+        (sigma_imag(P(1),P(2),freq)-imag(sigma))./imag(sigma_err)];      
+    [fout, resnorm, residual, exitflag, output0,...
+        lambda, jacobian] = lsqnonlin(lsq_weighted_err, P0,[],[],options);
     conf = nlparci(fout,residual,'jacobian',jacobian);
+
+    
+    
     
     SS_res = resnorm;
     SS_tot = sum((real(sigma)-mean(real(sigma))).^2+(imag(sigma)-mean(imag(sigma))).^2);
@@ -203,10 +230,14 @@ for jj=1:length(LHO)
     hold(ax2,'on')
     disp(' done');
     drawnow;
+%     keyboard
+if jj==14
+    keyboard
+end
 end
 
 
-plot(omega/(2*pi),[output.Rsquared],'o','parent',ax3)
+plot(omega'/(2*pi),[output.Rsquared],'o','parent',ax3)
 xlabel(ax3,'trap freq (Hz)')
 ylabel(ax3,'R squared')
 
@@ -215,11 +246,11 @@ uistack(pDR,'top')
 
 axes(ax4);
 yyaxis left
-errorbar(omega/(2*pi),[output.Gamma_invSec],[output.GammaErr_invSec],'o','parent',ax4)
+errorbar(omega'/(2*pi),[output.Gamma_invSec],[output.GammaErr_invSec],'o','parent',ax4)
 xlabel(ax4,'trap freq (Hz)')
 ylabel(ax4,'\Gamma (1/s)')
 yyaxis right
-errorbar(omega/(2*pi),[output.Temperature_Hz]/t,[output.TemperatureErr_Hz]/563,'o','parent',ax4)
+errorbar(omega'/(2*pi),[output.Temperature_Hz]/t,[output.TemperatureErr_Hz]/563,'o','parent',ax4)
 ylabel('temp (t)')
 ylim([0 3])
 
@@ -287,6 +318,6 @@ str = [str_drude newline str_tdpt newline str_tdpt_2];
 text(.99,.01,str,'units','normalized','horizontalalignment','right',...
     'verticalalignment','bottom','interpreter','latex')
 xlim([0 150]);
-
+keyboard
 end
 

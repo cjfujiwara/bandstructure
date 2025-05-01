@@ -11,8 +11,8 @@ Omega                               = opts.Omega;
 fr                                  = npt.fr;
 
 
-fprintf(['computing LHO states (U=' num2str(npt.depth(uu)) 'Er,N=' num2str(n) ...
-    ',fHO=' num2str(round(opts.omega/(2*pi),1)) ',Omega=' num2str(round(Omega,1)) 'Hz) ... ']);
+% fprintf(['computing LHO states (U=' num2str(npt.depth(uu)) 'Er,N=' num2str(n) ...
+%     ',fHO=' num2str(round(opts.omega/(2*pi),1)) ',Omega=' num2str(round(Omega,1)) 'Hz) ... ']);
 
 
 %% Construct change of basis matrix
@@ -157,6 +157,6 @@ output.BandRanges(nn,1,uu) = min(npt.bandEigenValue(nn,:,uu))*fr;
 output.BandRanges(nn,2,uu) = max(npt.bandEigenValue(nn,:,uu))*fr; 
 
 t2=toc;
-disp(['done (' num2str(round(1e3*t2,0)) 'ms)'])
+% disp(['done (' num2str(round(1e3*t2,0)) 'ms)'])
 
 end

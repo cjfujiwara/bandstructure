@@ -1,4 +1,4 @@
-function bootstrap_com(digdata)
+function out=bootstrap_com(digdata)
 % Image Calibrations
 px_per_site = 2.68;
 um_per_site = 0.532;
@@ -34,9 +34,11 @@ CoM_range           = 4;
         out = [mean(x3) mean(y3)];
     end
 
+out = struct;
+
 % Iterate over all digdata
 for nn=1:length(digdata)
-    disp('digdata')    
+    disp([num2str(nn) ' of ' num2str(length(digdata))])    
 
     % First Moment Initialize
     Xcom      = zeros(size(digdata(nn).Ratom,2),1);
@@ -68,6 +70,7 @@ for nn=1:length(digdata)
     freqs(nn) = freq;
 
      for ii=1:length(digdata(nn).Ratom)
+         fprintf(['image ' num2str(ii) '/' num2str(length(digdata(nn).Ratom))]);
         data = digdata(nn).Ratom{ii}'*um_per_px;            % data             
 
          % Bootstrap centre-of-mass
@@ -113,9 +116,31 @@ for nn=1:length(digdata)
         Yskew(ii) = pdYskew.mu;                              % y skew
         XskewErr(ii) = (px(2,1)-px(1,1))*0.5;                % x skew err
         YskewErr(ii) = (py(2,1)-py(1,1))*0.5;                % y skew err
+        disp(' done');
      end
+    fprintf('bootstrapping heating ...');
+    heatX(nn)=bootstrap_linear(Ttot,Xvar);
+    heatY(nn)=bootstrap_linear(Ttot,Yvar);
+    disp('done');
+
+
+    % heatXY(nn) = bootstrap_linear2d(Ttot,[Xvar Yvar]); 
+    fprintf('bootstrapping oscillations ...');
+    output(nn)=bootstrap_oscillations_fit(Ttot,Xcom,freq*1e-3);
+    disp('done');
+    C=output(nn).Covariance; % covariance matrix
+    
 
     
+    % Atom Number and Gauss Charge Density
+    N =[digdata(nn).Natoms];
+    sx = sqrt(Xvar);
+    sy = sqrt(Yvar);
+    
+    rho_charge_gauss_peak = N./(2*pi*sx.*sy);
+%     rho_charge_gauss_avg  = N./
+    
+    % 2D gaussform N/(sqrt(2*pi*sx^2)*sqrt(2*pi*sx^2)) exp(-x^2/2s^2)exp(-y^2/2s^2)
 
     
 
@@ -150,7 +175,7 @@ for nn=1:length(digdata)
     ylabel('E[y] (\mum)')
 
     % Variance X
-    ax_varx=subplot(4,2,3,'parent',summary)
+    ax_varx=subplot(4,2,3,'parent',summary);
     errorbar(Ttot,Xvar,XvarErr,'o','markerfacecolor',co(1,:),...
         'markeredgecolor',co(1,:)*.5,'linewidth',1,'markersize',8,...
         'color',co(1,:)*.5);
@@ -159,7 +184,7 @@ for nn=1:length(digdata)
     hold on
 
     % Variance Y
-    ax_vary=subplot(4,2,4,'parent',summary)
+    ax_vary=subplot(4,2,4,'parent',summary);
     errorbar(Ttot,Yvar,YvarErr,'o','markerfacecolor',co(2,:),...
         'markeredgecolor',co(2,:)*.5,'linewidth',1,'markersize',8,...
         'color',co(2,:)*.5);
@@ -192,14 +217,6 @@ for nn=1:length(digdata)
     title('atom number');
     ylim([0 max([digdata(nn).Natoms])*1.2]);
 
-    heatX(nn)=bootstrap_linear(Ttot,Xvar);
-    heatY(nn)=bootstrap_linear(Ttot,Yvar);
-
-
-    % heatXY(nn) = bootstrap_linear2d(Ttot,[Xvar Yvar]); 
-
-    output(nn)=bootstrap_oscillations_fit(Ttot,Xcom,freq*1e-3);
-    C=cov(output(nn).BootStat); % covariance matrix
 
 
 
@@ -241,14 +258,11 @@ for nn=1:length(digdata)
     c1=mean(output(nn).BootStat(:,1));
     c2=mean(output(nn).BootStat(:,2));
 
-    xa=c1 + [-1 1]*C(1,1);
-    ya= c2 +[-1 1]*C(1,2);
+    xa = c1 + [-1 1]*C(1,1);
+    ya = c2 +[-1 1]*C(1,2);
 
-    xb=c1 + [-1 1]*C(1,2);
-    yb= c2 +[-1 1]*C(2,2);
-    % 
-    % plot(xa,ya,'r-');;
-    % plot(xb,yb,'r-');
+    xb = c1 + [-1 1]*C(1,2);
+    yb = c2 +[-1 1]*C(2,2);
 
 
     subplot(2,4,6,'parent',x_osc)
@@ -293,73 +307,26 @@ for nn=1:length(digdata)
     ylabel('y slope um^2')
     axis equal tight
     title('X-Y heating correlator')
-
-    % set(gca,'visible','off')
-    % plot(output(nn).BootStat(:,3),output(nn).BootStat(:,4),'.');
-    % xlabel('center')
-    % ylabel('velocity')
-    % title('x0-v covariance')
-
     
-
-    % co=get(gca,'colororder');
-    % hold on
-       
-    % errorbar(Ttot,Xcom,XcomErr,'o','markerfacecolor',co(1,:),...
-    %     'markeredgecolor',co(1,:)*.5,'linewidth',1,'markersize',8,...
-    %     'color',co(1,:)*.5);
-    % xlabel('total time (ms)');
-    % ylabel('position (um)')
-    % keyboard
-
-    % subplot(3,4,5,'parent',x_osc)
-    % histfit(bootstat(:,1));
-    % pdS = fitdist(bootstat(:,1),'Normal');
-    % xlabel('S (um)');
-    % ylabel('occurences')
-    % str=['boot normal : ' num2str(round(pdS.mu,2)) '\pm' num2str(round(2*pdS.sigma,2)) ...
-    %     newline ...
-    %     'fit 95 conf : ' num2str(round(S_val,2)) '\pm' num2str(round(S_err,2))];
-    % text(.01,.99,str,'units','normalized','verticalalignment','top','backgroundcolor',[1 1 1 .5]);
-    % 
-    % subplot(3,4,6,'parent',x_osc)
-    % histfit(bootstat(:,2));
-    % pdC = fitdist(bootstat(:,2),'Normal');
-    % xlabel('C (um)');
-    % ylabel('occurences')
-    % str=['boot normal : ' num2str(round(pdC.mu,2)) '\pm' num2str(round(2*pdC.sigma,2)) ...
-    %     newline ...
-    %     'fit 95 conf : ' num2str(round(C_val,2)) '\pm' num2str(round(C_err,2))];
-    % text(.01,.99,str,'units','normalized','verticalalignment','top','backgroundcolor',[1 1 1 .5]);
-    % 
-    % subplot(3,4,7,'parent',x_osc)
-    % histfit(bootstat(:,3));
-    % xlabel('x0 (um)');
-    % ylabel('occurences')
-    % 
-    % subplot(3,4,9,'parent',x_osc)
-    % histfit(bootstat(:,4));
-    % xlabel('v0 (um/ms)');
-    % ylabel('occurences')
-
-
-% 
-% subplot(2,4,8)
-% plot(y2,y1,'o');
-% xlabel('y1')
-% ylabel('y2');
-% axis equal tight
-
-keyboard
-
-
-    % V2(nn) = [P(1).conductivity_ODT2_mod_amp];
+    out(nn).SourceDirectory = digdata(nn).SourceDirectory;
+    out(nn).FileNames = digdata(nn).FileNames;
+    out(nn).Params = digdata(nn).Params;
+    out(nn).Freqency  = freq;
+    out(nn).S = output(nn).FitParam(1);
+    out(nn).SErr = output(nn).FitErr(1);
+    out(nn).C = output(nn).FitParam(2);
+    out(nn).CErr = output(nn).FitErr(2);
+    out(nn).BootStrapOscillations = output(nn);
+    out(nn).BootStrapHeatX = heatX(nn);
+    out(nn).BootStrapHeatY = heatY(nn);
+% nn
+% keyboard
 end
 allP = [output.FitParam];
  
 S = allP(1:4:end);
 C = allP(2:4:end);
-keyboard
+% keyboard
 
 end
 

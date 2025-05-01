@@ -79,5 +79,7 @@ output.FitErr = P_err;
 output.BootStat = bootstat;
 output.BootSam = bootsam;
 output.FitFunc = oscillations_wrapper;
+output.Covariance = cov(bootstat); %covariance matrix
+
 end
 
