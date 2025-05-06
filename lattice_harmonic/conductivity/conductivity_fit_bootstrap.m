@@ -31,15 +31,15 @@ normal_fit = conductivity_fit2(lattice,freq,sigma,sigma_err);
 %%
 n=0;
      function fittedParams=fitModel(data)
-        tic;
+        t1=now;
          freq = data(:,1);
         sigma = data(:,2);
         sigma_err = data(:,3);         
         output = conductivity_fit2(lattice,freq,sigma,sigma_err,normal_fit);
         fittedParams= [output.fout output.rho0 output.rhoinf]; 
         n=n+1;
-        t2=toc;
-        disp([num2str(n) ' ' num2str(t2) ' sec.']);
+        t2=now;
+        disp([num2str(n) ' ' num2str(24*60*60*(t2-t1),'%.2f') ' sec.']);
      end
 
 

@@ -25,7 +25,7 @@ sigma_err = sigma_err(:);
 
 %% Construct Initial Guess
 
-P0 = [700 200 60];
+P0 = [700 200 57];
 if nargin==5
    P0=input.fout; 
 end
@@ -40,7 +40,9 @@ end
         % Rename fit parameters 
         T       = P(1);
         G       = P(2);
-        omega   = 2*pi*P(3);        
+        omega   = 2*pi*P(3); 
+
+        % disp(num2str(P(3)))
         
         
         % Solve Eigenvalue Problem
@@ -83,6 +85,7 @@ end
         T       = P(1);
         G       = P(2);
         omega   = 2*pi*P(3);        
+        F=P(3);
         
         
         % Solve Eigenvalue Problem
@@ -114,21 +117,17 @@ end
             y = sum(A,'all');
         end
         
-        fvec=linspace(5,300,1e3);
 
-        
-         sigma_fit = arrayfun(@(f) foo(f),fvec);
-         
-         ig=find(sign(diff(sign(imag(sigma_fit))))==1,1);
-         
-         f0=fvec(ig);
-         
-         f0=fzero(@(f) imag(foo(f)),f0);
-         
-         rho0=real(1/foo(f0));
-         
-         rhoinf = real(1/foo(1e3));
-         
+        % Find Resitivity at zero imag cond
+        fvec = linspace(F/4,2*F,50);
+        sigma_fit = arrayfun(@(f) foo(f),fvec);         
+        ig=find(sign(diff(sign(imag(sigma_fit))))==1,1);         
+        f0=fvec(ig);         
+        f0=fzero(@(f) imag(foo(f)),f0);  
+        rho0=real(1/foo(f0));      
+
+        % find high freq rho
+        rhoinf = real(1/foo(1e3));     
     end
 
 %% Fit it
