@@ -38,8 +38,10 @@ n=0;
         output = conductivity_fit2(lattice,freq,sigma,sigma_err,normal_fit);
         fittedParams= [output.fout output.rho0 output.rhoinf]; 
         n=n+1;
+
         t2=now;
         disp([num2str(n) ' ' num2str(24*60*60*(t2-t1),'%.2f') ' sec.']);
+
      end
 
 
