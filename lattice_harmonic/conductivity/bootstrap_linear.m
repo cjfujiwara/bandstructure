@@ -1,4 +1,4 @@
-function output=bootstrap_linear(x,var)
+function output=bootstrap_linear(x,var,nBootstraps)
 
 x=x(:);
 var=var(:);
@@ -43,7 +43,7 @@ P_err=[m_err b_err];
         fittedParams = lsqcurvefit(lin_func, P_guess, data(:,1), data(:,2), [], [], options);
     end
 
-nBootstraps = 1e3;
+% nBootstraps = 1e2;
 % Apply bootstrap
 [bootstat, bootsam] = bootstrp(nBootstraps, @fitModel, data);
 

@@ -40,7 +40,8 @@ n=0;
         n=n+1;
 
         t2=now;
-        disp([num2str(n) ' ' num2str(24*60*60*(t2-t1),'%.2f') ' sec.']);
+        fprintf([num2str(n) ' ' num2str(24*60*60*(t2-t1),'%.2f') ' sec.']);
+        disp([num2str(fittedParams(1),'%.2f') ', ' num2str(fittedParams(2),'%.2f') ', ' num2str(fittedParams(3),'%.2f')]);
 
      end
 

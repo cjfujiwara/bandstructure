@@ -1,4 +1,4 @@
-function output=bootstrap_oscillations_fit(x,y1,f)
+function output=bootstrap_oscillations_fit(x,y1,f,N_boot_oscillations)
 
 % Amplitude Guess
 guess_Amplitude = 0.5*(max(y1)-min(y1));
@@ -64,9 +64,9 @@ P_err=[S_err C_err x0_err v0_err];
         fittedParams = lsqcurvefit(oscillations_wrapper, P_guess, data(:,1), data(:,2), [], [], options);
     end
 
-nBootstraps = 1e3;
+% nBootstraps = 1e3;
 % Apply bootstrap
-[bootstat, bootsam] = bootstrp(nBootstraps, @fitModel, data);
+[bootstat, bootsam] = bootstrp(N_boot_oscillations, @fitModel, data);
 
 
 %% Create Ouputs
