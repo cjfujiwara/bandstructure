@@ -58,7 +58,7 @@ for jj=1:length(composite_data)
         freq_drive = [digdata(nn).Params(1).conductivity_mod_freq];
         output(jj).Frequency_Hz(nn) = freq_drive;
 
-        disp([num2str(freq_drive) ' Hz']);
+        fprintf([num2str(freq_drive) ' Hz:']);
 
         % Initialize Panel Objects
         panel_frequency = uitab(tab_group_spectrum,'title',[num2str(freq_drive) ' Hz']);
@@ -97,9 +97,10 @@ for jj=1:length(composite_data)
         freqs(nn) = freq;
     
           
-        fprintf('bootstrap moments ')
+        fprintf('bootstraping... ')
+         fprintf('moments... ')
+
          for ii=1:length(digdata(nn).Ratom)
-            fprintf([num2str(ii) ' ']);
             data = digdata(nn).Ratom{ii}'*um_per_px;            % data             
     
              % Bootstrap centre-of-mass
@@ -146,11 +147,11 @@ for jj=1:length(composite_data)
             YskewErr(ii) = (py(2,1)-py(1,1))*0.5;                % y skew err
          end
 
-        fprintf(' bootstrap heating')
+         fprintf('heating... ')
         bs_heatX=bootstrap_linear(Ttot,Xvar,N_boot_heating);
         bs_heatY=bootstrap_linear(Ttot,Yvar,N_boot_heating);
     
-        fprintf(' bootstrap oscillations')
+         fprintf('oscillations... ')
         bs_osc=bootstrap_oscillations_fit(Ttot,Xcom,freq*1e-3,N_boot_oscillations);
         C=bs_osc.Covariance; % covariance matrix      
         
@@ -313,23 +314,9 @@ for jj=1:length(composite_data)
         subplot(2,3,5,'parent',tab_heating)
         histogram(bs_heatY.BootStat(:,2))  
         xlabel('offset um^2')
-        title('Y var offset')    
-
-
-        % output(nn).SourceDirectory = digdata(nn).SourceDirectory;
-        % output(nn).FileNames = digdata(nn).FileNames;
-        % output(nn).Params = digdata(nn).Params;
-        % output(nn).Freqency  = freq;
-        % output(nn).S = output(nn).FitParam(1);
-        % output(nn).SErr = output(nn).FitErr(1);
-        % output(nn).C = output(nn).FitParam(2);
-        % output(nn).CErr = output(nn).FitErr(2);
-        % output(nn).BootStrapOscillations = output(nn);
-        % output(nn).BootStrapHeatX = heatX(nn);
-        % output(nn).BootStrapHeatY = heatY(nn);
-    
+        title('Y var offset')        
         drawnow;
-        disp('done');
+        disp(' done');
     end
 end
 % allP = [output.FitParam];

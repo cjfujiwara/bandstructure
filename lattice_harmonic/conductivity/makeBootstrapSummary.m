@@ -10,10 +10,17 @@
 % the fields of composite data
 
 %% Run the bootstrap on the moments 
+% Analyze the 1st, 2nd, and 3rd moments. 
+% Fit the 1st moment to sinuisoidal oscillation
+% Fit the 2nd moment to a linear increase (for fitting)
 bs_moments=bootstrap_com(composite_data);
 
-%% Rescale 
-
+% %% Rescale 
+% 
+%     S_fit = integral(fun_fit,2*pi*tdpt_Shift,inf);
+%     S_HO = integral(fun_HO,2*pi*tdpt_Shift,inf);
+    
+    rescaleFactor = S_HO/S_fit;
 %% Run the Bootstrap on the Spectrum
 % Only do this if you really mean to, since it will take your computer a
 % few hours to run

@@ -142,6 +142,7 @@ output.PositionVector = repmat(x,[1 nBands]);
 output.EigenValues(:,uu) = eng_oddeven2;
 output.EigenVectors(:,:,uu) = c_oddeven2;    
 output.DipoleOperator = D;
+output.Hamiltonian = H;
 
 % output.EigenValues = zeros(output.NumSites*output.NumBands,length(npt.depth));
 % output.EigenVectors = zeros(output.NumSites*output.NumBands,output.NumSites*output.NumBands,length(npt.depth));
