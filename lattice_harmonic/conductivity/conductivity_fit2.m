@@ -1,41 +1,54 @@
-function output = conductivity_fit2(lattice,freq,sigma,sigma_err,input)
+function output = conductivity_fit2(lattice,FREQ,SIGMA,SIGMA_ERR,input)
 
 % freq      : frequency data
 % sigma     : complex conductivity data
-
+t1=now;
+tic
 if nargin ==2
-    sigma_err = zeros(length(freq),1);
+    SIGMA_ERR = zeros(length(FREQ),1);
 end
 
 %% Settings
 
-% Number of eigenstates to include in fit
-N = 101;  
 % Numerical Settings
-Nsites          = 301;
-TunnelOrder     = 11;
-HarmonicBands   = 1;    
+Nsites          = 301;      % number of lattice sites to consider
+TunnelOrder     = 11;       % tunneling order to consider
+HarmonicBands   = 1;        % which bands to use (always 1 for now)
+N               = 101;      % Number of eigenstates to include in fit
 
 %% Process Data
 
 % Make sure they are a colummn vector
-freq = freq(:);     
-sigma = sigma(:);
-sigma_err = sigma_err(:);
+FREQ        = FREQ(:);     
+SIGMA       = SIGMA(:);
+SIGMA_ERR   = SIGMA_ERR(:);
 
 %% Construct Initial Guess
 % WE NEED TO FIT A DRUDE/LORENTZIAN AND THEN MAKE A SMART GUESS
 % SUM RULE GETS US TEMP
 % FWHM GETS GAMMA
-% FPEAK + 2.5ER GET TRAPF FREQUENCY
-P0 = [700 200 57];
 if nargin==5
    P0=input.fout; 
+else
+    drude = conductivity_fit_drude(FREQ,SIGMA,SIGMA_ERR);    
+    % Band mass at k=0;
+    m0=lattice.BandMassGamma(1);
+    P0 = [1000 drude.fout(2) drude.fout(3)*sqrt(m0)];
+end
+
+%% Make Frequency matrix
+% N x N x n (where n = length of frequencies)
+
+FREQ_MAT = zeros(N,N,length(FREQ));
+for jj=1:length(FREQ)
+    a = FREQ(jj);
+    FREQ_MAT(:,:,jj) = a(ones(N,N));
 end
 
 %% Define Cost Function
-        
+
     function yy=error_function(P)
+        ta=now;
         % P(1) : TEMPERATURE   [Hz]
         % P(2) : GAMMA         [1/s]
         % P(3) : TRAP FREQUENCY [Hz]
@@ -68,16 +81,33 @@ end
     
         % Partition Function
         Z = sum(exp(-eng/T),'all');
+
+        % OLD WAY
+        % % sigma[freq_drive] for a single frequency
+        % function y = foo(f)
+        %     A = -1i*f*((exp(-myEE1/T)-exp(-myEE2/T))/Z).*d2./((f-mydEE)+1i*G/2/(2*pi));
+        %     y = sum(A,'all');
+        % end        
+        % % sigma_fit = arrayfun(@(f) foo(f),FREQ); % evaluate sigma for all drive freqs
+        % 
+        % sigma_fit = zeros(length(FREQ),1);
+        % for cc=1:length(FREQ)
+        %     sigma_fit(cc) = foo(FREQ(cc));
+        % end
         
-        % sigma[freq_drive] for a single frequency
-        function y = foo(f)
-            A = -1i*f*((exp(-myEE1/T)-exp(-myEE2/T))/Z).*d2./((f-mydEE)+1i*G/2/(2*pi));
-            y = sum(A,'all');
-        end        
-        sigma_fit = arrayfun(@(f) foo(f),freq); % evaluate sigma for all drive freqs
-         
-         yy=[(real(sigma_fit)-real(sigma))./real(sigma_err);
-         (imag(sigma_fit)-imag(sigma))./imag(sigma_err)];        
+        % Matrix way
+        mydEE3 = repmat(mydEE,[1 1 length(FREQ)]);
+        myEE13  = repmat(myEE1,[1 1 length(FREQ)]);
+        myEE23  = repmat(myEE2,[1 1 length(FREQ)]);
+        D23     = repmat(d2,[1 1 length(FREQ)]);
+        A3 = -1i*FREQ_MAT.*((exp(-myEE13/T)-exp(-myEE23/T))/Z).*D23./((FREQ_MAT-mydEE3)+1i*G/2/(2*pi));
+        sigma_fit = sum(A3,[1 2]);
+        sigma_fit = sigma_fit(:);
+
+         yy=[(real(sigma_fit)-real(SIGMA))./real(SIGMA_ERR);
+         (imag(sigma_fit)-imag(SIGMA))./imag(SIGMA_ERR)]; 
+        tb=now;
+        % disp((tb-ta)*24*60*60)
     end
 
     function [rho0,rhoinf]=getVals(P)
@@ -86,7 +116,8 @@ end
         G       = P(2);
         omega   = 2*pi*P(3);        
         F=P(3);
-        
+        ta=now;
+
         
         % Solve Eigenvalue Problem
         opts=struct;               
@@ -119,7 +150,7 @@ end
         
 
         % Find Resitivity at zero imag cond
-        fvec = linspace(F/4,2*F,50);
+        fvec = linspace(F/4,2*F,20);
         sigma_fit = arrayfun(@(f) foo(f),fvec);         
         ig=find(sign(diff(sign(imag(sigma_fit))))==1,1);         
         f0=fvec(ig);         
@@ -127,7 +158,9 @@ end
         rho0=real(1/foo(f0));      
 
         % find high freq rho
-        rhoinf = real(1/foo(1e3));     
+        rhoinf = real(1/foo(1e3));   
+        tb=now;
+        % disp((tb-ta)*24*60*60)
     end
 
 %% Fit it
@@ -141,9 +174,14 @@ options.Display='off';
     lambda, jacobian] = lsqnonlin(@(P) error_function(P), P0,[],[],options);
 conf = nlparci(fout,residual,'jacobian',jacobian);
 
+
 [rho0,rhoinf]=getVals(fout);
+t2=now;
 
 %% Create Output
+
+% disp((t2-t1)*24*60*60)
+
 
 output = struct;
 output.fout = fout;
