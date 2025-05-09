@@ -24,7 +24,10 @@ sigma = sigma(:);
 sigma_err = sigma_err(:);
 
 %% Construct Initial Guess
-
+% WE NEED TO FIT A DRUDE/LORENTZIAN AND THEN MAKE A SMART GUESS
+% SUM RULE GETS US TEMP
+% FWHM GETS GAMMA
+% FPEAK + 2.5ER GET TRAPF FREQUENCY
 P0 = [700 200 57];
 if nargin==5
    P0=input.fout; 
@@ -35,15 +38,12 @@ end
     function yy=error_function(P)
         % P(1) : TEMPERATURE   [Hz]
         % P(2) : GAMMA         [1/s]
-        % P(3) : TRAP FREQUENC [Hz]
+        % P(3) : TRAP FREQUENCY [Hz]
         
         % Rename fit parameters 
         T       = P(1);
         G       = P(2);
         omega   = 2*pi*P(3); 
-
-        % disp(num2str(P(3)))
-        
         
         % Solve Eigenvalue Problem
         opts=struct;               
@@ -69,12 +69,12 @@ end
         % Partition Function
         Z = sum(exp(-eng/T),'all');
         
+        % sigma[freq_drive] for a single frequency
         function y = foo(f)
             A = -1i*f*((exp(-myEE1/T)-exp(-myEE2/T))/Z).*d2./((f-mydEE)+1i*G/2/(2*pi));
             y = sum(A,'all');
-        end
-        
-         sigma_fit = arrayfun(@(f) foo(f),freq);
+        end        
+        sigma_fit = arrayfun(@(f) foo(f),freq); % evaluate sigma for all drive freqs
          
          yy=[(real(sigma_fit)-real(sigma))./real(sigma_err);
          (imag(sigma_fit)-imag(sigma))./imag(sigma_err)];        

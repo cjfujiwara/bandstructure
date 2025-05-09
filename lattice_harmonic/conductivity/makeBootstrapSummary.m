@@ -14,13 +14,13 @@
 % Fit the 1st moment to sinuisoidal oscillation
 % Fit the 2nd moment to a linear increase (for fitting)
 bs_moments=bootstrap_com(composite_data);
-
-% %% Rescale 
 % 
-%     S_fit = integral(fun_fit,2*pi*tdpt_Shift,inf);
-%     S_HO = integral(fun_HO,2*pi*tdpt_Shift,inf);
-    
-    rescaleFactor = S_HO/S_fit;
+% % %% Rescale 
+% % 
+% %     S_fit = integral(fun_fit,2*pi*tdpt_Shift,inf);
+% %     S_HO = integral(fun_HO,2*pi*tdpt_Shift,inf);
+% 
+%     rescaleFactor = S_HO/S_fit;
 %% Run the Bootstrap on the Spectrum
 % Only do this if you really mean to, since it will take your computer a
 % few hours to run
@@ -60,14 +60,17 @@ rho0=[];
 rhoinf=[];
 for gg=1:length(out)
 
-    s0=composite_data(gg).Name;
-    t0=uicontrol('style','text','string',s0,'horizontalalignment','left',...
-        'backgroundcolor','w');
-    t0.Position(3:4)=t0.Extent(3:4);
-    t0.Position(1:2)=[1 1];
 
     str=[composite_data(gg).Name(1:10) ' ' num2str(out(gg).SpectralFit.fout(1)/t,'%.1f') 't'];
     tb(gg)=uitab(tg,'Title',str,'backgroundcolor','w');
+
+
+    s0=composite_data(gg).Name;
+    t0=uicontrol('style','text','string',s0,'horizontalalignment','left',...
+        'backgroundcolor','w','parent',tb(gg));
+    t0.Position(3:4)=t0.Extent(3:4);
+    t0.Position(1:2)=[1 1];
+
 
     subplot(2,3,1,'parent',tb(gg));
     histfit(out(gg).bootstat(:,1)/t);

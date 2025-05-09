@@ -140,7 +140,7 @@ hF_size = figure;
 hF_size.Color='w';
 clf
 
-subplot(221);
+subplot(141);
 imagesc(TrapFrequency_Hz,Temperature_Hz,gauss_radii*0.532);
 set(gca,'YDir','normal','fontsize',14,'fontname','times');
 xlabel('trap frequency (Hz)');
@@ -149,7 +149,7 @@ cc=colorbar;
 cc.Label.String = 'second moment (um)';
 title('size')
 
-subplot(222);
+subplot(142);
 imagesc(TrapFrequency_Hz,Temperature_Hz,osc_freq);
 set(gca,'YDir','normal','fontsize',14,'fontname','times');
 xlabel('trap frequency (Hz)');
@@ -160,24 +160,42 @@ title('frequency')
 
 
 
-ftrap_mat = repmat(TrapFrequency_Hz(:),[1 length(Temperature_Hz)]);
 m0star = lattice.BandMassGamma(1); % band mass in units of bare mass
-
-% A=sqrt(m0star)*osc_freq./ftrap_mat;
-
-keyboard
-
-% subplot(223);
-% imagesc(TrapFrequency_Hz,Temperature_Hz,A);
-% set(gca,'YDir','normal','fontsize',14,'fontname','times');
-% xlabel('trap frequency (Hz)');
-% ylabel('temperature (Hz)')
-% cc=colorbar;
-% cc.Label.String = 'oscillation frequency (Hz)';
-% title('frequency')
+subplot(144);
+imagesc(TrapFrequency_Hz,Temperature_Hz,sqrt(m0star)*osc_freq./fff);
+set(gca,'YDir','normal','fontsize',14,'fontname','times');
+xlabel('trap frequency (Hz)');
+ylabel('temperature (Hz)')
+cc=colorbar;
+cc.Label.String = '$\sqrt{m_0^*/m_0}f_\mathrm{osc}/f_\mathrm{trap}$';
+cc.Label.Interpreter='latex';
+title('normalized oscillation frequency')
+caxis([.9 1]);
 
 
+subplot(143);
+cla
+myslist = [6:.5:8];
 
+for ss = 1:length(myslist)
+    s=myslist(ss);
+    T0=zeros(length(TrapFrequency_Hz),1);
+    freq=T0;
+    for ff = 1:length(TrapFrequency_Hz)
+        this_s_list = gauss_radii(:,ff)*0.532;
+        this_freq = osc_freq(:,ff);
+        T0(ff) = fzero(@(T) interp1(Temperature_Hz,this_s_list,T)-s ,1000);
+        freq(ff) = interp1(Temperature_Hz,this_freq,T0(ff));
+    end
+    plot(freq,TrapFrequency_Hz(:)./freq);
+    hold on
+    legStr{ss}=['$\sigma =' num2str(s) '\mu\mathrm{m}$'];
+end
+set(gca,'YDir','normal','fontsize',14,'fontname','times');
+legend(legStr,'interpreter','latex','fontsize',10,'location','southeast');
+
+xlabel('oscillation frequency (Hz)');
+ylabel('trap frequency/oscillation frequency')
 % keyboard
 
 
