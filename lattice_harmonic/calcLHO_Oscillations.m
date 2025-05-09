@@ -23,7 +23,7 @@ lattice = calculateWannierMoments(lattice);     % Dipole matrix elements in wann
 
 m0star = lattice.BandMassGamma(1); % band mass in units of bare mass
 
-displacement_sites = 1;     % 10 sites is like 5 um
+displacement_sites = 4;     % 10 sites is like 5 um
 TrapFrequency_Hz = 45:.5:80;
 Temperature_Hz   = 0:50:2500;
 Temperature_Hz(1) =0.01;
@@ -172,10 +172,10 @@ cc.Label.Interpreter='latex';
 title('normalized oscillation frequency')
 caxis([.9 1]);
 
-
+%%
 subplot(143);
 cla
-myslist = [6:.5:8];
+myslist = [6:.5:10];
 
 for ss = 1:length(myslist)
     s=myslist(ss);
