@@ -24,7 +24,7 @@ bs_moments=bootstrap_com(composite_data);
 %% Run the Bootstrap on the Spectrum
 % Only do this if you really mean to, since it will take your computer a
 % few hours to run
-doRunBootstrap = true;
+doRunBootstrap = false;
 if doRunBootstrap
     for nn=1:length(composite_data)
         sr=[composite_data(nn).conductivity.cond_real];

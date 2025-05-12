@@ -3,7 +3,6 @@ function out=conductivity_fit_bootstrap(freq,sigma,sigma_err)
 freq=freq(:);
 sigma=sigma(:);
 sigma_err=sigma_err(:);
-
 data=[freq sigma sigma_err];
 
 %% Calculate Lattice Properties
@@ -29,27 +28,54 @@ lattice = calculateWannierMoments(lattice);     % Dipole matrix elements in wann
 normal_fit = conductivity_fit2(lattice,freq,sigma,sigma_err);
 
 %%
+nBootstraps = 1000;
+
+
+D = parallel.pool.DataQueue;
+h = waitbar(0,'Please wait ...');
+afterEach(D,@nUpdateWaitbar);
+
+N = 200;
+p = 1;
+
+
 n=0;
+
      function fittedParams=fitModel(data)
+         D = parallel.pool.DataQueue;        
+
         t1=now;
          freq = data(:,1);
         sigma = data(:,2);
         sigma_err = data(:,3);         
         output = conductivity_fit2(lattice,freq,sigma,sigma_err,normal_fit);
         fittedParams= [output.fout output.rho0 output.rhoinf]; 
-        n=n+1;
 
         t2=now;
-        fprintf([num2str(n) ' ' num2str(24*60*60*(t2-t1),'%.2f') ' sec.']);
+        % fprintf([num2str(n) ' ' num2str(24*60*60*(t2-t1),'%.2f') ' sec.']);
+        % fprintf([num2str(24*60*60*(t2-t1),'%.2f') ' sec ']);
         disp([num2str(fittedParams(1),'%.2f') ', ' num2str(fittedParams(2),'%.2f') ', ' num2str(fittedParams(3),'%.2f')]);
-
+        % n=n+1;
+        send(D,0);
      end
 
+ function nUpdateWaitbar(~)
+        waitbar(p/nBootstraps,h);
+        p = p + 1;
+    end
 
-nBootstraps = 1000;
+
+
+options.UseParallel	=true;
+options.UseSubstreams	=false;
+% options.UseParallel	='true';
+
+
+
 % Apply bootstrap
-[bootstat, bootsam] = bootstrp(nBootstraps, @fitModel, data);
-
+tic
+[bootstat, bootsam] = bootstrp(nBootstraps, @fitModel, data,'Options',options);
+toc
 out=struct;
 out.SpectralFit = normal_fit;
 out.bootstat = bootstat;
