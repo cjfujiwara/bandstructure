@@ -36,12 +36,18 @@ yG = oscillations_wrapper(P_guess,x);
 y1 = y1(:);
 data = [x y1];
 
+% lower_bound = [-10 -10 ]
+upper_bound = [inf 0 inf inf];
+
 [fout,resnorm,residual,exitflag,output0,lambda,jacobian] = ...
-    lsqcurvefit(oscillations_wrapper, P_guess, data(:,1), data(:,2), [], [], options);
+    lsqcurvefit(oscillations_wrapper, P_guess, data(:,1), data(:,2), [], upper_bound, options);
 conf = nlparci(fout,residual,'jacobian',jacobian);
-% SS_res = resnorm;
-% SS_tot = sum((real(z)-mean(real(z))).^2+(imag(z)-mean(imag(z))).^2);
-% R2 = 1 - SS_res/SS_tot;
+SS_res = resnorm;
+SS_tot = sum((real(data(:,2))-mean(real(data(:,2)))).^2+(imag(data(:,2))-mean(imag(data(:,2)))).^2);
+R2 = 1 - SS_res/SS_tot;
+
+
+
 
 S_val = fout(1);
 S_err = (conf(1,2)-conf(1,1))/2;
@@ -80,6 +86,7 @@ output.BootStat = bootstat;
 output.BootSam = bootsam;
 output.FitFunc = oscillations_wrapper;
 output.Covariance = cov(bootstat); %covariance matrix
+output.rsquare = R2;
 
 end
 

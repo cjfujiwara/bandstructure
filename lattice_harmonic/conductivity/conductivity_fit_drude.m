@@ -52,8 +52,12 @@ conf = nlparci(fout,residual,'jacobian',jacobian);
     end
 
 %% Calculate Sum Rule
-ww=2*pi*linspace(0,2e3,1e4);
-Sr = (2/pi)*trapz(ww,sigma_real_fit(fout(1),fout(2),fout(3),ww));
+ff = linspace(0,2e3,1e4);
+
+Sr = (2/pi)*trapz(2*pi*ff,sigma_real_fit(fout(1),fout(2),2*pi*fout(3),2*pi*ff));
+
+s = sigma_real_fit(fout(1),fout(2),2*pi*fout(3),2*pi*ff)+...
+    1i*sigma_imag_fit(fout(1),fout(2),2*pi*fout(3),2*pi*ff);
 
 %% Create Output
 
@@ -61,6 +65,8 @@ output = struct;
 output.fout = fout;
 output.conf=conf;
 output.SumRule = Sr;
-
+output.FREQ_THEORY = ff;
+output.SIGMA_THEORY = s;
+output.SIGMA_PEAK = max(real(s));
 end
 

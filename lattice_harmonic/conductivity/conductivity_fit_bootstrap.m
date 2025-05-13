@@ -29,46 +29,38 @@ normal_fit = conductivity_fit2(lattice,freq,sigma,sigma_err);
 
 %%
 nBootstraps = 1000;
-
-
-D = parallel.pool.DataQueue;
-h = waitbar(0,'Please wait ...');
-afterEach(D,@nUpdateWaitbar);
-
-N = 200;
-p = 1;
-
-
 n=0;
 
      function fittedParams=fitModel(data)
-         D = parallel.pool.DataQueue;        
-
         t1=now;
-         freq = data(:,1);
+        freq = data(:,1);
         sigma = data(:,2);
         sigma_err = data(:,3);         
         output = conductivity_fit2(lattice,freq,sigma,sigma_err,normal_fit);
         fittedParams= [output.fout output.rho0 output.rhoinf]; 
-
         t2=now;
-        % fprintf([num2str(n) ' ' num2str(24*60*60*(t2-t1),'%.2f') ' sec.']);
-        % fprintf([num2str(24*60*60*(t2-t1),'%.2f') ' sec ']);
+        fprintf([num2str(24*60*60*(t2-t1),'%.2f') ' sec ']);
         disp([num2str(fittedParams(1),'%.2f') ', ' num2str(fittedParams(2),'%.2f') ', ' num2str(fittedParams(3),'%.2f')]);
-        % n=n+1;
-        send(D,0);
+        n=n+1;
      end
-
- function nUpdateWaitbar(~)
-        waitbar(p/nBootstraps,h);
-        p = p + 1;
-    end
-
-
 
 options.UseParallel	=true;
 options.UseSubstreams	=false;
-% options.UseParallel	='true';
+
+    FREQ_THEORY = linspace(0,200,200);
+
+
+    figure(20);
+    clf
+    co=get(gca,'colororder');
+    errorbar(freq,real(sigma),real(sigma_err),'o','markerfacecolor',co(1,:));
+    hold on
+    errorbar(freq,imag(sigma),imag(sigma_err),'o','markerfacecolor',co(2,:));
+    drawnow;
+    yF=conductivity_eval2(FREQ_THEORY, [normal_fit.fout],lattice);
+    plot(FREQ_THEORY,real(yF),'-','color',co(1,:));
+    hold on
+    plot(FREQ_THEORY,imag(yF),'-','color',co(2,:));
 
 
 

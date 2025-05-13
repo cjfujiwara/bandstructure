@@ -20,22 +20,26 @@ HarmonicBands=1;
 
 %% Calculate Lattice Properties
 
-lattice                     = constants;
-lattice.depth               = DEPTH_ER; 
-lattice.WannierBands        = [1];
+if isstruct(DEPTH_ER)
+    lattice = DEPTH_ER;
+else
 
-lattice.numStates           = 101;       % must be odd
-lattice.numK                = 301;      % must be odd    
-
-wannier_opts                = struct;
-wannier_opts.Bands          = [1];
-
-
-lattice = calculateBandStructure(lattice);      % calculate band structure
-lattice = calculateTunneling(lattice);          % calculate tunneling elements
-lattice = wannier(lattice,wannier_opts);        % Calculate wannier function
-lattice = calculateWannierMoments(lattice);     % Dipole matrix elements in wannier basis
-
+    lattice                     = constants;
+    lattice.depth               = DEPTH_ER; 
+    lattice.WannierBands        = [1];
+    
+    lattice.numStates           = 101;       % must be odd
+    lattice.numK                = 301;      % must be odd    
+    
+    wannier_opts                = struct;
+    wannier_opts.Bands          = [1];
+    
+    
+    lattice = calculateBandStructure(lattice);      % calculate band structure
+    lattice = calculateTunneling(lattice);          % calculate tunneling elements
+    lattice = wannier(lattice,wannier_opts);        % Calculate wannier function
+    lattice = calculateWannierMoments(lattice);     % Dipole matrix elements in wannier basis
+end
 %%
 
  function sigma_fit=sigma_eval(P)

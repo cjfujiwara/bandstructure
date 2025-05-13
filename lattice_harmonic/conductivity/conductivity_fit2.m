@@ -3,7 +3,6 @@ function output = conductivity_fit2(lattice,FREQ,SIGMA,SIGMA_ERR,input)
 % freq      : frequency data
 % sigma     : complex conductivity data
 t1=now;
-tic
 if nargin ==2
     SIGMA_ERR = zeros(length(FREQ),1);
 end
@@ -30,11 +29,41 @@ SIGMA_ERR   = SIGMA_ERR(:);
 if nargin==5
    P0=input.fout; 
 else
+    fprintf('calculating initial guess')
     drude = conductivity_fit_drude(FREQ,SIGMA,SIGMA_ERR);    
     % Band mass at k=0;
-    m0=lattice.BandMassGamma(1);
-    P0 = [1000 drude.fout(2) drude.fout(3)*sqrt(m0)];
+    m0          = lattice.BandMassGamma(1); % in units of bare mass
+    amu         = 1.66054e-27;      % [kg] atomic mass unit
+    m           = 40*amu;           % [kg] potassium-40 mass
+    aL          = 532e-9;           % [m] lattice spacing
+    hbar        = 1.05457182e-34;   % [Js] reduce planck's constant
+    S_DRUDE     = drude.SumRule;    
+    t           = lattice.Tunneling(1,1)*lattice.fr;
+
+    % Match the peak conductivity at this Gamma to make initial guess
+    tVec        = [0.1:.1:2 2.5:.5:6];
+    gamma_drude = abs(drude.fout(2));
+    f0_drude    = drude.fout(3)*sqrt(m0);
+    s0_DRUDE    = drude.SIGMA_PEAK;
+    FREQ_PEAK   = drude.fout(3);
+    s0_TDPT = zeros(length(tVec),1);
+    for jj = 1:length(tVec)
+        P0 = [tVec(jj)*t gamma_drude f0_drude];
+        s0_TDPT(jj)  = real(conductivity_eval2(FREQ_PEAK, P0,lattice));
+    end
+    Tg = interp1(s0_TDPT,tVec,s0_DRUDE);
+    P0 = [Tg*t gamma_drude f0_drude];    
+    fprintf('done')
+
+    % uncomment for debugging
+    % FREQ_THEORY = [0:2:200 250:50:500 2e3];
+    % plot(drude.FREQ_THEORY,real(drude.SIGMA_THEORY));hold on;
+    % sigma_TDPT  = conductivity_eval2(FREQ_THEORY, P0,lattice);
+    % plot(FREQ_THEORY,real(sigma_TDPT));
 end
+
+
+
 
 %% Make Frequency matrix
 % N x N x n (where n = length of frequencies)
@@ -83,7 +112,7 @@ end
         Z = sum(exp(-eng/T),'all');
 
         % OLD WAY
-        % % sigma[freq_drive] for a single frequency
+        % sigma[freq_drive] for a single frequency
         % function y = foo(f)
         %     A = -1i*f*((exp(-myEE1/T)-exp(-myEE2/T))/Z).*d2./((f-mydEE)+1i*G/2/(2*pi));
         %     y = sum(A,'all');
@@ -108,6 +137,8 @@ end
          (imag(sigma_fit)-imag(SIGMA))./imag(SIGMA_ERR)]; 
         tb=now;
         % disp((tb-ta)*24*60*60)
+
+        
     end
 
     function [rho0,rhoinf]=getVals(P)
@@ -182,7 +213,7 @@ t2=now;
 
 % disp((t2-t1)*24*60*60)
 
-
+% keyboard
 output = struct;
 output.fout = fout;
 output.conf=conf;

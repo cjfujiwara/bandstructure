@@ -17,6 +17,8 @@ CoM_range           = 4;
 
 
 %% Moment Functions
+
+
 % centre-of-mass
     function out = mean2D(data)
         out = [mean(data(:,1)) mean(data(:,2))];
@@ -52,6 +54,9 @@ for jj=1:length(composite_data)
     clf(hF(jj))   
     tab_group_spectrum = uitabgroup(hF(jj));
     drawnow;
+
+    panel_summary = uitab(tab_group_spectrum,'title','summary');
+
     % Get specific digdata
     digdata=[composite_data(jj).digdata];
     for nn=1:length(digdata)        
@@ -94,12 +99,11 @@ for jj=1:length(composite_data)
         Tr      = [P.conductivity_mod_ramp_time];
         Ttot    = T+Tr;
         Ttot    = Ttot(:);
-        freqs(nn) = freq;
-    
+        freqs(nn) = freq;    
           
         fprintf('bootstraping... ')
-         fprintf('moments... ')
 
+        fprintf('moments... ')
          for ii=1:length(digdata(nn).Ratom)
             data = digdata(nn).Ratom{ii}'*um_per_px;            % data             
     
@@ -147,7 +151,8 @@ for jj=1:length(composite_data)
             YskewErr(ii) = (py(2,1)-py(1,1))*0.5;                % y skew err
          end
 
-         fprintf('heating... ')
+
+        fprintf('heating... ')
         bs_heatX=bootstrap_linear(Ttot,Xvar,N_boot_heating);
         bs_heatY=bootstrap_linear(Ttot,Yvar,N_boot_heating);
     
@@ -169,7 +174,7 @@ for jj=1:length(composite_data)
         % output(jj).Depth_Er(nn) = unique([bs_moments(1).Params{1}.lattice_load_depthX]);
         % output(jj).Field_Gauss = unique([bs_moments(1).Params{1}.conductivity_FB_field])+0.123;
         output(jj).N{nn}= N;
-        output(jj).Density_PeakGayssCharge{nn} = rho_charge_gauss_peak;
+        output(jj).Density_PeakGaussCharge{nn} = rho_charge_gauss_peak;
         output(jj).CentreX{nn}                  = Xcom;
         output(jj).CentreY{nn}                  = Ycom;
         output(jj).VarianceX_um{nn}             = Xvar;
@@ -180,10 +185,12 @@ for jj=1:length(composite_data)
         output(jj).SErr_um(nn)                  = bs_osc.FitErr(1);
         output(jj).C_um(nn)                     = bs_osc.FitParam(2);
         output(jj).CErr_um(nn)                  = bs_osc.FitErr(2);
+        output(jj).rsquare(nn)                  = bs_osc.rsquare;
+
         output(jj).HeatX_um2perms(nn)           = bs_heatX.FitParam(1);
         output(jj).HeatXErr_um2perms(nn)        = bs_heatX.FitErr(1);
         output(jj).HeatY_um2perms(nn)           = bs_heatY.FitParam(1);
-        output(jj).HeatYErr_um2perms(nn)        = bs_heatY.FitErr(1);
+        output(jj).HeatYErr_um2perms(nn)        = bs_heatY.FitErr(1);        
 
         fprintf(' plotting')
         %% Plot Moments
@@ -263,7 +270,14 @@ for jj=1:length(composite_data)
         tt=linspace(min(Ttot),max(Ttot),100);
         plot(tt,bs_osc.FitFunc(bs_osc.FitParam,tt),'k-','parent',ax_comx,'linewidth',1);    
         plot(tt,bs_heatX.FitFunc(bs_heatX.FitParam,tt),'k-','parent',ax_varx,'linewidth',1);
-        plot(tt,bs_heatY.FitFunc(bs_heatY.FitParam,tt),'k-','parent',ax_vary,'linewidth',1);        
+        plot(tt,bs_heatY.FitFunc(bs_heatY.FitParam,tt),'k-','parent',ax_vary,'linewidth',1); 
+
+        str=['R^2=' num2str(bs_osc.rsquare,'%.3f')];
+        text(.01,.01,str,'units','normalized',...
+            'verticalalignment','bottom','horizontalalignment','left',...
+            'fontsize',12,'parent',ax_comx);
+
+
         subplot(2,4,1,'parent',tab_osc)
         histogram(bs_osc.BootStat(:,1));
         xlabel('S (um)')
@@ -319,11 +333,7 @@ for jj=1:length(composite_data)
         disp(' done');
     end
 end
-% allP = [output.FitParam];
-% 
-% S = allP(1:4:end);
-% C = allP(2:4:end);
-% % keyboard
+
 
 end
 
