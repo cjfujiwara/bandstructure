@@ -44,6 +44,9 @@ else
     tVec        = [0.1:.1:2 2.5:.5:6];
     gamma_drude = abs(drude.fout(2));
     f0_drude    = drude.fout(3)*sqrt(m0);
+
+
+    f0_drude    = min([f0_drude 61]);
     s0_DRUDE    = drude.SIGMA_PEAK;
     FREQ_PEAK   = drude.fout(3);
     s0_TDPT = zeros(length(tVec),1);

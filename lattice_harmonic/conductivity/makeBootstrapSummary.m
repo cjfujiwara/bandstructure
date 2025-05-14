@@ -17,7 +17,7 @@
 [bs_moments,hF]=bootstrap_com(composite_data);
 
 %% Get Conductivity
-omega_xdt   = 2*pi*44;          % [1/s] XDT Trap Frequency
+omega_xdt   = 2*pi*42;          % [1/s] XDT Trap Frequency
 amu         = 1.66054e-27;      % [kg] atomic mass unit
 m           = 40*amu;           % [kg] potassium-40 mass
 aL          = 532e-9;           % [m] lattice spacing
@@ -50,6 +50,7 @@ end
 doRunBootstrap = true;
 if doRunBootstrap
     for nn=1:length(bs_moments)
+        % nn=3;
         % Old data to gather
         % sr      = [composite_data(nn).conductivity.cond_real];
         % sr_err  = [composite_data(nn).conductivity.cond_real_err];        
@@ -59,17 +60,20 @@ if doRunBootstrap
         % s       = sr+1i*si;
         % s_err   = sr_err+1i*si_err;       
 
-        f       = [bs_moments(nn).Frequency_Hz];
-        s       = [bs_moments(nn).sigma];
-        s_err   = [bs_moments(nn).sigmaErr];
+        % f       = [bs_moments(nn).Frequency_Hz];
+        % s       = [bs_moments(nn).sigma];
+        % s_err   = [bs_moments(nn).sigmaErr];
+        % 
+        % % Interpreter R2 as an "error" for weighting purposes
+        % R2      = [bs_moments(nn).rsquare];
+        % R2_err  = sqrt(1./R2);
+        % R2_err  = (1+1i)*R2_err.*abs(mean(real(s_err)));        
+        % 
+        % out(nn)=conductivity_fit_bootstrap(f,s,s_err);
 
-        % Interpreter R2 as an "error" for weighting purposes
-        R2      = [bs_moments(nn).rsquare];
-        R2_err  = sqrt(1./R2);
-        R2_err  = (1+1i)*R2_err.*abs(mean(real(s_err)));        
+        out(nn)=conductivity_fit_bootstrap(bs_moments(nn));
 
-        out(nn)=conductivity_fit_bootstrap(f,s,s_err);
-        keyboard
+        % keyboard
     end
 end
 
@@ -168,19 +172,39 @@ for gg=1:length(out)
     ylabel('occurences')
 
 
-    % subplot(4,4,11,'parent',tb(gg));
-    % histfit(out(gg).bootstat(:,5));
-    % xlabel('\rho (\omega\rightarrow \infty) [1/\sigma_0]')
-    % title('high frequency limit resitivity');
-    % pdrhoinf = fitdist(out(gg).bootstat(:,5),'normal');
-    % rhoinf(gg,1)=pdrhoinf.mu; 
-    % rhoinf(gg,2)=pdrhoinf.sigma;
-    % text(.01,.99,[num2str(round(pdrhoinf.mu,4)) '\pm' num2str(round(pdrhoinf.sigma,4))],...
-    %     'units','normalized','verticalalignment','top')
-    % ylabel('occurences')
+    subplot(4,4,9,'parent',tb(gg));
+    histfit(out(gg).bootstat(:,5));
+    xlabel('\rho (\omega\rightarrow \infty) [1/\sigma_0]')
+    title('high frequency limit resitivity');
+    pdrhoinf = fitdist(out(gg).bootstat(:,5),'normal');
+    rhoinf(gg,1)=pdrhoinf.mu; 
+    rhoinf(gg,2)=pdrhoinf.sigma;
+    text(.01,.99,[num2str(round(pdrhoinf.mu,4)) '\pm' num2str(round(pdrhoinf.sigma,4))],...
+        'units','normalized','verticalalignment','top')
+    ylabel('occurences')
 
-    
+        subplot(4,4,10,'parent',tb(gg));
+    histfit(out(gg).bootstat(:,6)/t);
+    xlabel('Tx size/t')
+    title('temperature size x');
+    pdTx = fitdist(out(gg).bootstat(:,6)/t,'normal');
 
+    Tx(gg,1)=pdTx.mu; 
+    Tx(gg,2)=pdTx.sigma;
+    text(.01,.99,[num2str(round(pdTx.mu,2)) '\pm' num2str(round(pdTx.sigma,2))],...
+        'units','normalized','verticalalignment','top')
+    ylabel('occurences')
+
+        subplot(4,4,11,'parent',tb(gg));
+    histfit(out(gg).bootstat(:,7)/t);
+    xlabel('Ty size/t')
+    title('temperature size y');
+    pdTy = fitdist(out(gg).bootstat(:,7)/t,'normal');
+    Ty(gg,1)=pdTy.mu; 
+    Ty(gg,2)=pdTy.sigma;
+    text(.01,.99,[num2str(round(pdTy.mu,2)) '\pm' num2str(round(pdTy.sigma,2))],...
+        'units','normalized','verticalalignment','top')
+    ylabel('occurences')
 
 end
 
@@ -195,21 +219,31 @@ co=get(gca,'colororder');
 subplot(121);
 errorbar(temp(:,1),gamma(:,1),gamma(:,2),gamma(:,2),temp(:,2),temp(:,2),...
     'o','color',co(1,:),'markerfacecolor',co(1,:))
+
+% errorbar(Tx(:,1),gamma(:,1),gamma(:,2),gamma(:,2),Tx(:,2),Tx(:,2),...
+    % 'o','color',co(1,:),'markerfacecolor',co(1,:))
+
+
 xlabel('spectral T/t [t]')
 ylabel('\Gamma [1/s]')
 set(gca,'fontsize',14,'fontname','times')
 title('current dissipation');
+xlim([0 4])
 
 
 subplot(122);
 p0=errorbar(temp(:,1),rho0(:,1),rho0(:,2),rho0(:,2),temp(:,2),temp(:,2),...
     'o','color',.5*co(3,:),'markerfacecolor',co(3,:));
+% errorbar(Tx(:,1),rho0(:,1),rho0(:,2),rho0(:,2),Tx(:,2),Tx(:,2),...
+    % 'o','color',co(1,:),'markerfacecolor',co(1,:))
 hold on
-pinf=errorbar(temp(:,1),rhoinf(:,1),rhoinf(:,2),rhoinf(:,2),temp(:,2),temp(:,2),...
-    'o','color',.5*co(4,:),'markerfacecolor',co(4,:));
+% pinf=errorbar(temp(:,1),rhoinf(:,1),rhoinf(:,2),rhoinf(:,2),temp(:,2),temp(:,2),...
+    % 'o','color',.5*co(4,:),'markerfacecolor',co(4,:));
 xlabel('spectral T/t [t]')
 ylabel('\rho [1/\sigma_0]')
-legend([p0 pinf],{'$\rho(\mathrm{Im}[\sigma]=0)$','$\rho(\omega\rightarrow \infty)$'},'interpreter','latex',...
-    'location','northwest')
+% legend([p0 pinf],{'$\rho(\mathrm{Im}[\sigma]=0)$','$\rho(\omega\rightarrow \infty)$'},'interpreter','latex',...
+%     'location','northwest')
+
 set(gca,'fontsize',14,'fontname','times')
 title('resistivity');
+xlim([0 4])

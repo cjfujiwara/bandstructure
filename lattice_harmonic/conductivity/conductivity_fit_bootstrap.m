@@ -1,9 +1,30 @@
-function out=conductivity_fit_bootstrap(freq,sigma,sigma_err)
+function out=conductivity_fit_bootstrap(bs_moment)
 
-freq=freq(:);
-sigma=sigma(:);
-sigma_err=sigma_err(:);
-data=[freq sigma sigma_err];
+
+freq            = [bs_moment.Frequency_Hz];
+sigma           = [bs_moment.sigma];
+sigma_err       = [bs_moment.sigmaErr];
+
+% Interpreter R2 as an "error" for weighting purposes
+R2      = [bs_moment.rsquare];
+R2_err  = sqrt(1./R2);
+R2_err  = (1+1i)*R2_err.*abs(mean(real(sigma_err)));        
+sigma_err = R2_err;
+
+
+% out(nn)=conductivity_fit_bootstrap(f,s,s_err);
+
+varX_um = arrayfun( @(i) mean(bs_moment.VarianceX_um{i}),1:length(bs_moment.VarianceX_um));
+varY_um = arrayfun( @(i) mean(bs_moment.VarianceY_um{i}),1:length(bs_moment.VarianceY_um));
+
+
+varX_um2 = varX_um(:);
+varY_um2 = varY_um(:);
+
+freq        = freq(:);
+sigma       = sigma(:);
+sigma_err   = sigma_err(:);
+data        = [freq sigma sigma_err varX_um2 varY_um2];
 
 %% Calculate Lattice Properties
 
@@ -33,15 +54,34 @@ n=0;
 
      function fittedParams=fitModel(data)
         t1=now;
-        freq = data(:,1);
-        sigma = data(:,2);
-        sigma_err = data(:,3);         
-        output = conductivity_fit2(lattice,freq,sigma,sigma_err,normal_fit);
+        F = data(:,1);
+        S = data(:,2);
+        SE = data(:,3);  
+        X2 = data(:,4);
+        Y2 = data(:,5);
+        output = conductivity_fit2(lattice,F,S,SE,normal_fit);
         fittedParams= [output.fout output.rho0 output.rhoinf]; 
         t2=now;
-        fprintf([num2str(24*60*60*(t2-t1),'%.2f') ' sec ']);
-        disp([num2str(fittedParams(1),'%.2f') ', ' num2str(fittedParams(2),'%.2f') ', ' num2str(fittedParams(3),'%.2f')]);
-        n=n+1;
+      
+        amu= 1.66054e-27; %[kg];
+        % m = 40 * amu * lattice.BandMassGamma(1,1);
+        m = 40 * amu;
+
+        h = lattice.h;
+
+        Tx = m*mean(X2)*(1e-12)*(2*pi*output.fout(3))^2/h;
+        Ty = m*mean(Y2)*(1e-12)*(2*pi*output.fout(3))^2/h;
+
+% keyboard
+        fittedParams = [fittedParams Tx Ty];
+
+          fprintf([num2str(24*60*60*(t2-t1),'%.2f') ' sec ']);
+            disp([num2str(fittedParams(1),'%.2f') ', ' ...
+                num2str(fittedParams(2),'%.2f') ', ' ...
+                num2str(fittedParams(3),'%.2f') ', ' ...
+                num2str(fittedParams(6),'%.2f') ', ' ...
+                num2str(fittedParams(7),'%.2f') ]);
+            n=n+1;
      end
 
 options.UseParallel	=true;
@@ -61,8 +101,9 @@ options.UseSubstreams	=false;
     plot(FREQ_THEORY,real(yF),'-','color',co(1,:));
     hold on
     plot(FREQ_THEORY,imag(yF),'-','color',co(2,:));
+    drawnow;
 
-
+% keyboard
 
 % Apply bootstrap
 tic
