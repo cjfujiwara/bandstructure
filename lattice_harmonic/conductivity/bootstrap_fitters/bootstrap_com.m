@@ -101,7 +101,7 @@ for jj=1:length(composite_data)
         Ttot    = Ttot(:);
         freqs(nn) = freq;    
           
-        fprintf('bootstraping... ')
+        fprintf('bootstrapping... ')
 
         fprintf('moments... ')
          for ii=1:length(digdata(nn).Ratom)

@@ -1,4 +1,6 @@
 function output=bootstrap_oscillations_fit(x,y1,f,N_boot_oscillations)
+x = x(:);
+y1 = y1(:);
 
 % Amplitude Guess
 guess_Amplitude = 0.5*(max(y1)-min(y1));
@@ -31,9 +33,7 @@ P_guess = [S_guess C_guess guess_x0 guess_v0];
 yG = oscillations_wrapper(P_guess,x);
     
 %% Normal Fitting
-        options = optimset('Display','off');    
-        x = x(:);
-y1 = y1(:);
+options = optimset('Display','off');    
 data = [x y1];
 
 % lower_bound = [-10 -10 ]
