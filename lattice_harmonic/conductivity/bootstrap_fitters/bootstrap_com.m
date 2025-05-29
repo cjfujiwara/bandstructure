@@ -12,7 +12,7 @@ V2=[];
 
 N_boot_moments      = 100;
 N_boot_heating      = 100;
-N_boot_oscillations = 100;
+N_boot_oscillations = 200;
 CoM_range           = 4;
 
 
