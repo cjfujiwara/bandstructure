@@ -8,9 +8,9 @@ if nargin == 2
     DEPTH_ER=2.5;
 end
 %% Convert Fit Param into each value
-TEMP_HZ = P(1);
-GAMMA_INV_SEC = P(2);
-TRAP_HZ     = P(3);
+TEMP_HZ         = P(1);
+GAMMA_INV_SEC   = P(2);
+TRAP_HZ         = P(3);
 
 %% Settings
 
