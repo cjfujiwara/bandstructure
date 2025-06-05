@@ -23,6 +23,12 @@ trap=[];
 rho0=[];
 rhoinf=[];
 for gg=1:length(out)
+    
+    temp_me = out(gg).bootstat(:,1)/t;
+    binds=[temp_me<=0.6];
+    
+    out(gg).bootstat(binds,:)=[];
+    
     str=[composite_data(gg).Name(1:10) ' ' num2str(out(gg).SpectralFit.fout(1)/t,'%.1f') 't'];
     tb(gg)=uitab(tg,'Title',str,'backgroundcolor','w');
     s0=composite_data(gg).Name;

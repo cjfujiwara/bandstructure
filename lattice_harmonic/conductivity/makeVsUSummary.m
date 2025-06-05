@@ -42,7 +42,7 @@ set(gca,'fontsize',8)
 xlim([0 36])
 ylim([0 .05]);
 hold on
-%%
+%% Temperature and Density
 hF_vs_U_density=figure(5);
 hF_vs_U_density.Color='w';
 clf
