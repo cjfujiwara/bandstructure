@@ -71,8 +71,13 @@ P_err=[S_err C_err x0_err v0_err];
     end
 
 % nBootstraps = 1e3;
+
+opts=struct;
+opts.UseParallel	=true;
+opts.UseSubstreams	=false;
+
 % Apply bootstrap
-[bootstat, bootsam] = bootstrp(N_boot_oscillations, @fitModel, data);
+[bootstat, bootsam] = bootstrp(N_boot_oscillations, @fitModel, data,'options',opts);
 
 
 %% Create Ouputs

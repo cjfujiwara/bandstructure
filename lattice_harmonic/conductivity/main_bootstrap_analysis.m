@@ -32,7 +32,20 @@ for nn=1:length(bs_moments)
                     = -1i*(omega./force_invsec).*(-1i*C_site+S_site);
     bs_moments(nn).sigmaErr ...
                     = 1i*(omega./force_invsec).*(-1i*CErr_site+SErr_site);
+               
+    for jj=1:length([bs_moments(nn).OscBootStat])
+        bs_data=bs_moments(nn).OscBootStat{jj};
+        C_site_bs = bs_data(:,1)*1e-6/aL;
+        S_site_bs = bs_data(:,2)*1e-6/aL;
+        sigma_bs = -1i*(omega./force_invsec(jj)).*(1i*C_site_bs-S_site_bs);
+        rho_bs = 1./sigma_bs;
+    end
+    
+
+
 end
+
+%% Bootstrap frequency dependent C-S into  sigma(omega) and rho(omega)
 
 %% Run the Bootstrap on the Spectrum
 % Only do this if you really mean to, since it will take your computer a
@@ -43,3 +56,5 @@ if doRunBootstrap
         out(nn)=conductivity_fit_bootstrap(bs_moments(nn));
     end
 end
+
+

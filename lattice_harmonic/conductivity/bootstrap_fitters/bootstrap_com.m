@@ -13,6 +13,8 @@ V2=[];
 N_boot_moments      = 100;
 N_boot_heating      = 100;
 N_boot_oscillations = 150;
+N_boot_oscillations = 2000;
+
 CoM_range           = 4;
 
 
@@ -157,6 +159,8 @@ for jj=1:length(composite_data)
         bs_heatY=bootstrap_linear(Ttot,Yvar,N_boot_heating);
     
          fprintf('oscillations... ')
+
+
         bs_osc=bootstrap_oscillations_fit(Ttot,Xcom,freq*1e-3,N_boot_oscillations);
         C=bs_osc.Covariance; % covariance matrix      
         
@@ -186,6 +190,7 @@ for jj=1:length(composite_data)
         output(jj).C_um(nn)                     = bs_osc.FitParam(2);
         output(jj).CErr_um(nn)                  = bs_osc.FitErr(2);
         output(jj).rsquare(nn)                  = bs_osc.rsquare;
+        output(jj).OscBootStat{nn}              = bs_osc.BootStat;
 
         output(jj).HeatX_um2perms(nn)           = bs_heatX.FitParam(1);
         output(jj).HeatXErr_um2perms(nn)        = bs_heatX.FitErr(1);
