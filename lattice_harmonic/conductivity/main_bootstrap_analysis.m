@@ -32,17 +32,20 @@ for nn=1:length(bs_moments)
                     = -1i*(omega./force_invsec).*(-1i*C_site+S_site);
     bs_moments(nn).sigmaErr ...
                     = 1i*(omega./force_invsec).*(-1i*CErr_site+SErr_site);
+    bs_moments(nn).rho ...
+                    = (-1i*(omega./force_invsec).*(-1i*C_site+S_site)).^-1;
+    bs_moments(nn).rhoErr ...
+                    = (force_invsec./omega).*((CErr_site-1i.*SErr_site)/...
+                    (C_site.^2+S_site.^2)-(C_site-1i.*S_site).*...
+                    (2*C_site.*CErr_site+2.*S_site.*SErr_site)/(C_site.^2+S_site.^2).^2);
                
     for jj=1:length([bs_moments(nn).OscBootStat])
         bs_data=bs_moments(nn).OscBootStat{jj};
         C_site_bs = bs_data(:,1)*1e-6/aL;
         S_site_bs = bs_data(:,2)*1e-6/aL;
-        sigma_bs = -1i*(omega./force_invsec(jj)).*(1i*C_site_bs-S_site_bs);
+        sigma_bs = -1i*(omega(jj)./force_invsec(jj)).*(1i*C_site_bs-S_site_bs);
         rho_bs = 1./sigma_bs;
     end
-    
-
-
 end
 
 %% Bootstrap frequency dependent C-S into  sigma(omega) and rho(omega)
@@ -54,6 +57,20 @@ doRunBootstrap = true;
 if doRunBootstrap
     for nn=1:length(bs_moments)
         out(nn)=conductivity_fit_bootstrap(bs_moments(nn));
+    end
+end
+%% Rescale conductivities
+doRescale = true;
+if doRescale
+    bs_moments_rescaled = rescaleConductivity(out,bs_moments);
+end
+%% Run the bootstrap on the rescaled spectrum
+% Only do this if you really mean to, since it will take your computer a
+% few hours to run
+doRunRescaledBootstrap = true;
+if doRunRescaledBootstrap
+    for nn=1:length(bs_moments_rescaled)
+        rescaledOut(nn)=conductivity_fit_bootstrap(bs_moments_rescaled(nn));
     end
 end
 

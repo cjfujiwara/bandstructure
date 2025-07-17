@@ -1,4 +1,4 @@
-%% Analayzse Density and Hubbard U
+%% Analyze Density and Hubbard U
 U = zeros(length(bs_moments),1);
 peak_charge=zeros(length(bs_moments),1);
 
