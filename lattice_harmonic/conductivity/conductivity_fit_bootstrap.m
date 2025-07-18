@@ -49,7 +49,7 @@ lattice = calculateWannierMoments(lattice);     % Dipole matrix elements in wann
 normal_fit = conductivity_fit2(lattice,freq,sigma,sigma_err);
 
 %%
-nBootstraps =100;
+nBootstraps =1000;
 n=0;
 
      function fittedParams=fitModel(data)

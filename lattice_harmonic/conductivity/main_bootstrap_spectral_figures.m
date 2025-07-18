@@ -138,5 +138,10 @@ for gg=1:length(out)
         'units','normalized','verticalalignment','top')
     ylabel('occurences')
 
+    % Calculate geometric mean harmonic temperature
+    Txy(gg,1) = sqrt(Tx(gg,1).*Ty(gg,1));
+    Txy(gg,2) = (Ty(gg,1).*Tx(gg,2)+Tx(gg,1).*Ty(gg,2))./(2*sqrt(Tx(gg,1).*Ty(gg,1)));
+
+
 end
 

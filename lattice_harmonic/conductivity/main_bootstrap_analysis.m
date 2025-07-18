@@ -59,11 +59,13 @@ if doRunBootstrap
         out(nn)=conductivity_fit_bootstrap(bs_moments(nn));
     end
 end
+
 %% Rescale conductivities
 doRescale = true;
 if doRescale
     bs_moments_rescaled = rescaleConductivity(out,bs_moments);
 end
+
 %% Run the bootstrap on the rescaled spectrum
 % Only do this if you really mean to, since it will take your computer a
 % few hours to run

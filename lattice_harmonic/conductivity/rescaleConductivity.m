@@ -94,6 +94,7 @@ for ii = 1:length(out)
     bs_moments_rescaled(ii).sigmaErr = bs_moments(ii).sigmaErr.*rescaleFactor(ii);
     bs_moments_rescaled(ii).rho = bs_moments(ii).sigma./rescaleFactor(ii);
     bs_moments_rescaled(ii).rhoErr = bs_moments(ii).sigma./rescaleFactor(ii);
+    bs_moments_rescaled(ii).rescaleFactor = rescaleFactor(ii);
 end
 end
 
