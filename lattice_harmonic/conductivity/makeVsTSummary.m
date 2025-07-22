@@ -22,8 +22,8 @@ kappa = 0.5*(2^(-3/2)); % 0.5 for spin, 2^(3/2) for gauss
 kappa = 1;
 
 
-% T = Tx;     % harmonic  
-T = temp;   % spectra
+T = Txy;     % harmonic  
+% T = temp;   % spectra
 
 
 %% Gamma

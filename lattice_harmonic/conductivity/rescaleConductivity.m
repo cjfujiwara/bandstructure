@@ -55,6 +55,7 @@ if ~alreadyDone
         pH(gg).P      = [t*Txy(gg,1) gamma(gg,1) trap(gg,1)];
     end
 end
+
 %% Calculate sum rules/rescale factors
 
 for hh = 1:length(out)
@@ -74,28 +75,20 @@ for hh = 1:length(out)
     rescaleFactor(hh) = SH(hh)/SFit(hh);
     toc
 end
-%% Rescale conductivities and resistivities
-    % bs_moments(nn).sigma ...
-    %                 = -1i*(omega./force_invsec).*(-1i*C_site+S_site);
-    % bs_moments(nn).sigmaErr ...
-    %                 = 1i*(omega./force_invsec).*(-1i*CErr_site+SErr_site);
-    % bs_moments(nn).rho ...
-    %                 = (-1i*(omega./force_invsec).*(-1i*C_site+S_site)).^-1;
-    % bs_moments(nn).rhoErr ...
-    %                 = (force_invsec./omega).*((CErr_site-1i.*SErr_site)/...
-    %                 (C_site.^2+S_site.^2)-(C_site-1i.*S_site).*...
-    %                 (2*C_site.*CErr_site+2.*S_site.*SErr_site)/(C_site.^2+S_site.^2).^2);
 
-% Initialize rescaled structure
+%% Rescale conductivities and resistivities
+
+% Initialize rescaled moments structure
 bs_moments_rescaled = bs_moments;
 
 for ii = 1:length(out)
     bs_moments_rescaled(ii).sigma = bs_moments(ii).sigma.*rescaleFactor(ii);
     bs_moments_rescaled(ii).sigmaErr = bs_moments(ii).sigmaErr.*rescaleFactor(ii);
-    bs_moments_rescaled(ii).rho = bs_moments(ii).sigma./rescaleFactor(ii);
-    bs_moments_rescaled(ii).rhoErr = bs_moments(ii).sigma./rescaleFactor(ii);
+    bs_moments_rescaled(ii).rho = bs_moments(ii).rho./rescaleFactor(ii);
+    bs_moments_rescaled(ii).rhoErr = bs_moments(ii).rhoErr./rescaleFactor(ii);
     bs_moments_rescaled(ii).rescaleFactor = rescaleFactor(ii);
 end
+
 end
 
 
