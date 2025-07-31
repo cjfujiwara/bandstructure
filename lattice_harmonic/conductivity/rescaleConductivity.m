@@ -1,7 +1,8 @@
-function bs_moments_rescaled = rescaleConductivity(out,bs_moments)
+function [bs_moments_rescaled,bs_moments_Gibbs_rescaled,TG] = rescaleConductivity(out,bs_moments,cd)
 % Rescale conductivities (& resistivities) using sum rules
 
 %% Constants & definitions
+constants_conductivity;
 t = 563.4; % Hz
 DEPTH_ER = 2.5; % recoil
 
@@ -50,9 +51,26 @@ if ~alreadyDone
         Txy(gg,1) = sqrt(Tx(gg,1).*Ty(gg,1));
         Txy(gg,2) = (Ty(gg,1).*Tx(gg,2)+Tx(gg,1).*Ty(gg,2))./(2*sqrt(Tx(gg,1).*Ty(gg,1)));
 
+        % do Gibbs fit with bootstrap size
+        Gibbs_opts = struct;
+        Gibbs_opts.doGibbsRefit = 1;
+        Gibbs_opts.TrapOmega = 2*pi*[trap(gg,1) trap(gg,1)];
+        [cd,GibbsTemperature] = calculateGibbsTemperature(cd,Gibbs_opts);
+    
+        % Assign Gibbs fit properties
+        TG(gg,1)                = mean(GibbsTemperature(gg).T)*kB/t*1e-9/h;
+        TG(gg,2)                = std(GibbsTemperature(gg).T)*kB/t*1e-9/h;
+        fig5.Gnpeak_singlon     = mean(GibbsTemperature(gg).npeak_singlon);
+        fig5.Gnpeak_singlonErr  = std(GibbsTemperature(gg).npeak_singlon);
+        fig5.Gnpeak_doublon     = mean(GibbsTemperature(gg).npeak_doublon);
+        fig5.Gnpeak_doublonErr  = std(GibbsTemperature(gg).npeak_doublon);
+        nG(gg,1)                = mean(GibbsTemperature(gg).npeak_singlon+GibbsTemperature(gg).npeak_doublon);
+        nG(gg,2)                = std(GibbsTemperature(gg).npeak_singlon+GibbsTemperature(gg).npeak_doublon);
+
         % Create parameter arrays
-        pFit(gg).P    = [t*temp(gg,1) gamma(gg,1) trap(gg,1)];
-        pH(gg).P      = [t*Txy(gg,1) gamma(gg,1) trap(gg,1)];
+        pFit(gg).P  = [t*temp(gg,1) gamma(gg,1) trap(gg,1)];
+        pH(gg).P    = [t*Txy(gg,1) gamma(gg,1) trap(gg,1)];
+        pG(gg).P    = [t*TG(gg,1) gamma(gg,1) trap(gg,1)];
     end
 end
 
@@ -60,19 +78,16 @@ end
 
 for hh = 1:length(out)
     tic
-    % lineshapeFit    = @(f) conductivity_eval2(f,pFit(hh).P,DEPTH_ER);
-    % lineshapeH      = @(f) conductivity_eval2(f,pFit(hh).P,DEPTH_ER);
-    % 
-    % SFit(hh)        = integral(lineshapeFit,0,inf);
-    % SH(hh)          = integral(lineshapeH,0,inf);
-
     lineshapeFit    = conductivity_eval2(FREQ_HZ,pFit(hh).P,DEPTH_ER);
     lineshapeH      = conductivity_eval2(FREQ_HZ,pH(hh).P,DEPTH_ER);
+    lineshapeG      = conductivity_eval2(FREQ_HZ,pG(hh).P,DEPTH_ER);
     
     SFit(hh)        = trapz(real(lineshapeFit));
     SH(hh)          = trapz(real(lineshapeH));
+    SG(hh)          = trapz(real(lineshapeG));
 
     rescaleFactor(hh) = SH(hh)/SFit(hh);
+    rescaleFactorG(hh) = SG(hh)/SFit(hh);
     toc
 end
 
@@ -89,6 +104,19 @@ for ii = 1:length(out)
     bs_moments_rescaled(ii).rescaleFactor = rescaleFactor(ii);
 end
 
+%% Rescale conductivities and resistivities
+
+% Initialize rescaled moments structure
+bs_moments_Gibbs_rescaled = bs_moments;
+
+for ii = 1:length(out)
+    
+    bs_moments_Gibbs_rescaled(ii).sigma = bs_moments(ii).sigma.*rescaleFactorG(ii);
+    bs_moments_Gibbs_rescaled(ii).sigmaErr = bs_moments(ii).sigmaErr.*rescaleFactorG(ii);
+    bs_moments_Gibbs_rescaled(ii).rho = bs_moments(ii).rho./rescaleFactorG(ii);
+    bs_moments_Gibbs_rescaled(ii).rhoErr = bs_moments(ii).rhoErr./rescaleFactorG(ii);
+    bs_moments_Gibbs_rescaled(ii).rescaleFactor = rescaleFactorG(ii);
+end
 end
 
 
