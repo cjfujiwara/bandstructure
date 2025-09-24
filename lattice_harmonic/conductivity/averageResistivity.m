@@ -10,7 +10,9 @@ t           = 563.4;    % Hz
 FREQ_HZ     = 40:80;    % Hz
 DEPTH_ER    = 2.5;      % recoil
 
-freqThresh  = .4;        %
+freqThresh  = 0.6;      
+freqThreshL = 0.4;
+freqThreshU = 1.5;
 
 %% Get data
 for aa = 1:length(bs_moments)
@@ -49,8 +51,11 @@ for bb = 1:length(bs_moments)
     
     % Find frequencies within X% of fStar
     iFind = find(abs(1-bs_moments(bb).Frequency_Hz/fStar(bb)) < freqThresh);
-    % iFind = find(bs_moments(bb).Frequency_Hz < 80 & bs_moments(bb).Frequency_Hz > 50);
-    
+    % iFind = find(bs_moments(bb).Frequency_Hz/fStar(bb) > freqThreshL & bs_moments(bb).Frequency_Hz/fStar(bb) < freqThreshU);
+    % % iFind = find(bs_moments(bb).Frequency_Hz < 80 & bs_moments(bb).Frequency_Hz > 50);
+    % iFind = find((real(bs_moments(bb).sigma).^2+abs(imag(bs_moments(bb).sigma).^2)) > 60);
+    % iFind = find(sqrt((bs_moments(bb).C_um.^2+bs_moments(bb).S_um.^2)) > 0.9);
+
     N = length(iFind);
 
     % Real resistivities in frequency range

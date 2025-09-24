@@ -17,11 +17,11 @@ clf
 tg = uitabgroup(hF);
 t=563;
 
-tempRS=[];
-gammaRS=[];
-trapRS=[];
-rho0RS=[];
-rhoInfRS=[];
+tempGRS=[];
+gammaGRS=[];
+trapGRS=[];
+rho0GRS=[];
+rhoInfGRS=[];
 for gg=1:length(GibbsRescaledOut)
     
     tempGRS_me = GibbsRescaledOut(gg).bootstat(:,1)/t;

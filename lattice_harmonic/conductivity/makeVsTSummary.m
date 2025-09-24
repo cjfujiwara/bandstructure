@@ -1,6 +1,7 @@
 %% Analayzse Density and Hubbard U
 % U = zeros(length(bs_moments),1);
 peak_charge=zeros(length(bs_moments),1);
+fidelity = 0.88;
 
 for bb = 1:length(composite_data)
 %     U(bb)=composite_data(bb).Hubbard.U(1);

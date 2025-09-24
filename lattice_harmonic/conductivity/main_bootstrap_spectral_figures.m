@@ -11,7 +11,7 @@
 
 %% Create Bootstrap Summary Figures
 
-hF=figure(2);
+hF=figure(222);
 hF.Name='Bootstrap Summary';
 clf
 tg = uitabgroup(hF);
