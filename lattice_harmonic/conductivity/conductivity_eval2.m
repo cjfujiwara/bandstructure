@@ -16,7 +16,7 @@ TRAP_HZ         = P(3);
 
 Nsites = 601;
 TunnelOrder=15;
-HarmonicBands=1;
+HarmonicBands=2;
 
 %% Calculate Lattice Properties
 

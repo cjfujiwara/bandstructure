@@ -6,7 +6,7 @@
 
 %% Structure and Instruction
 %
-% You must load a variable called composite_data. It should at mininum have
+% You must load a variable called composite_data. It should at minimum have
 % the fields of composite data
 
 %% Create Bootstrap Summary Figures
@@ -123,6 +123,7 @@ for gg=1:length(out)
     pdTx = fitdist(out(gg).bootstat(:,6)/t,'normal');
     Tx(gg,1)=pdTx.mu; 
     Tx(gg,2)=pdTx.sigma;
+    Tx(gg,3)=pdTx.sigma/sqrt(1000);
     text(.01,.99,[num2str(round(pdTx.mu,2)) '\pm' num2str(round(pdTx.sigma,2))],...
         'units','normalized','verticalalignment','top')
     ylabel('occurences')
@@ -134,6 +135,7 @@ for gg=1:length(out)
     pdTy = fitdist(out(gg).bootstat(:,7)/t,'normal');
     Ty(gg,1)=pdTy.mu; 
     Ty(gg,2)=pdTy.sigma;
+    Ty(gg,3)=pdTy.sigma/sqrt(1000);
     text(.01,.99,[num2str(round(pdTy.mu,2)) '\pm' num2str(round(pdTy.sigma,2))],...
         'units','normalized','verticalalignment','top')
     ylabel('occurences')
@@ -141,6 +143,7 @@ for gg=1:length(out)
     % Calculate geometric mean harmonic temperature
     Txy(gg,1) = sqrt(Tx(gg,1).*Ty(gg,1));
     Txy(gg,2) = (Ty(gg,1).*Tx(gg,2)+Tx(gg,1).*Ty(gg,2))./(2*sqrt(Tx(gg,1).*Ty(gg,1)));
+    Txy(gg,3) = Txy(gg,2)/sqrt(1000);
 
 end
 

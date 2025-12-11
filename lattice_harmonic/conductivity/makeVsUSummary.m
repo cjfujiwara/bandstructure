@@ -14,12 +14,16 @@ for bb = 1:length(composite_data)
     pd_charge = fitdist(n_me,'normal');
     peak_charge(bb,1)=pd_charge.mu; 
     peak_charge(bb,2)=pd_charge.sigma;
+    peak_charge(bb,3)=pd_charge.sigma/sqrt(length(n_me));
     
 end
 
 %% Density Scalars
-kappa = 0.5*(2^(-3/2)); % 0.5 for spin, 2^(3/2) for gauss
-kappa = 1;
+kappa = 0.5*(2^(-3/2))/0.88; % 0.5 for spin, 2^(3/2) for gauss, 0.88 for fidelity
+% kappa = 1;
+n_up_peak = peak_charge/2/0.88;
+n3D = peak_charge*kappa;
+
 
 %% vsU figures
 
