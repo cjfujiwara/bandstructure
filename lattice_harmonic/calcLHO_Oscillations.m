@@ -13,7 +13,7 @@ wannier_opts.Bands          = [1];
 
 Nsites = 201;
 TunnelOrder = 11;
-HarmonicBands =1 ;
+HarmonicBands = 1;
 
 lattice = calculateBandStructure(lattice);      % calculate band structure
 lattice = calculateTunneling(lattice);          % calculate tunneling elements
@@ -30,7 +30,7 @@ Temperature_Hz(1) =0.01;
 
 [fff,ttt]=meshgrid(TrapFrequency_Hz,Temperature_Hz);
 
-gauss_radii      = zeros(size(fff,1),size(fff,2));
+gauss_radii     = zeros(size(fff,1),size(fff,2));
 osc_freq        = zeros(size(fff,1),size(fff,2));
 osc_tau         = zeros(size(fff,1),size(fff,2));
 osc_cen         = zeros(size(fff,1),size(fff,2));
@@ -70,14 +70,14 @@ for ff=1:length(TrapFrequency_Hz)
     [~,lho] = calculateLHOSpectrum_sband(lattice,opts);
 
     % Formatting
-    probEig = abs(lho.EigenVectors).^2;     % probabiity amplitude of each eigenstates
+    probEig = abs(lho.EigenVectors).^2;     % probability amplitude of each eigenstates
     eng_Hz = lho.EigenValues-lho.EigenValues(1); % recast energy
     X= lho.PositionVector;
     X = X(:);
     H=lho.Hamiltonian-eye(Nsites)*lho.EigenValues(1);
 
     % Time Evolution Operator
-    U_exp = expm(-1i*H*dt*2*pi);% exponentiaion time evolution
+    U_exp = expm(-1i*H*dt*2*pi);% exponentiation time evolution
     % U_cn = (1-1i*0.5*H*dt)/(1+1i*0.5*H*dt); % implicit crank nicolson
 
     CoM_all = zeros(length(Nsites),length(tVec));     
@@ -175,7 +175,7 @@ caxis([.9 1]);
 %%
 subplot(143);
 cla
-myslist = [6:.5:10];
+myslist = [5.5:.25:8.25];
 
 for ss = 1:length(myslist)
     s=myslist(ss);

@@ -24,7 +24,6 @@ kappa = 0.5*(2^(-3/2))/0.88; % 0.5 for spin, 2^(3/2) for gauss, 0.88 for fidelit
 n_up_peak = peak_charge/2/0.88;
 n3D = peak_charge*kappa;
 
-
 %% vsU figures
 
 hF_vs_U=figure(4);

@@ -4,8 +4,8 @@
 % Fit the 1st moment to sinuisoidal oscillation
 % Fit the 2nd moment to a linear increase (for fitting)
 
-doRunBootstrap_moments = false;
-if doRunBootstrap
+doRunBootstrap_moments = true;
+if doRunBootstrap_moments
     [bs_moments,hF]=bootstrap_com(composite_data);
 end
 
@@ -38,15 +38,24 @@ for nn=1:length(bs_moments)
     bs_moments(nn).rho ...
                     = (-1i*(omega./force_invsec).*(-1i*C_site+S_site)).^-1;
     bs_moments(nn).rhoErr ...
-                    = -(bs_moments(nn).sigmaErr./(bs_moments(nn).sigma.^2));
+                    = -(bs_moments(nn).sigmaErr./abs(bs_moments(nn).sigma.^2));                  
 end
 
-%% Bootstrap frequency dependent C-S into  sigma(omega) and rho(omega)
-
+%% Average real resistivity data near omega_star or real conductivity data peak
+doAverageResistivity = true;
+if doAverageResistivity
+    if (exist('bs_moments_Gibbs_rescaled','var') && exist('bs_moments_rescaled','var'))
+        [rhoAvg, rhoAvgRS, rhoAvgGRS] = averageResistivity(bs_moments,bs_moments_rescaled,bs_moments_Gibbs_rescaled);  
+    elseif exist('bs_moments_rescaled','var')
+        [rhoAvg, rhoAvgRS] = averageResistivity(bs_moments,bs_moments_rescaled);
+    else
+        [rhoAvg] = averageResistivity(bs_moments);
+    end
+end
 %% Run the Bootstrap on the Spectrum
 % Only do this if you really mean to, since it will take your computer a
 % few hours to run
-doRunBootstrap = false;
+doRunBootstrap = true;
 if doRunBootstrap
     for nn=1:length(bs_moments)
         out(nn)=conductivity_fit_bootstrap(bs_moments(nn));
@@ -58,21 +67,11 @@ doRescale = true;
 if doRescale
     [bs_moments_rescaled,bs_moments_Gibbs_rescaled,TG] = rescaleConductivity(out,bs_moments,composite_data);
 end
-%% Average real resistivity data near omega_star or real conductivity data peak
-doAverageResistivity = true;
-if doAverageResistivity
-    if (exist('bs_moments_Gibbs_rescaled','var') && exist('bs_moments_rescaled','var'))
-        [rhoAvg, rhoAvgRS, rhoAvgGRS] = averageResistivity(bs_moments,bs_moments_rescaled,bs_moments_Gibbs_rescaled);  
-    elseif exist('bs_moments_rescaled','var')
-        [rhoAvg, rhoAvgRS] = averageResistivity(bs_moments,bs_moments_rescaled);
-    else
-        [rhoAvg] = averageResistivity(bs_moments,out);
-    end
-end
+
 %% Run the bootstrap on the rescaled spectrum
 % Only do this if you really mean to, since it will take your computer a
 % few hours to run
-doRunRescaledBootstrap = false;
+doRunRescaledBootstrap = true;
 if doRunRescaledBootstrap
     for nn=1:length(bs_moments_rescaled)
         rescaledOut(nn)=conductivity_fit_bootstrap(bs_moments_rescaled(nn));
@@ -81,9 +80,9 @@ end
 %% Run the bootstrap on the Gibbs rescaled spectrum
 % Only do this if you really mean to, since it will take your computer a
 % few hours to run
-doRunGibbsRescaledBootstrap = true;
+doRunGibbsRescaledBootstrap = false;
 if doRunGibbsRescaledBootstrap
-    for nn=7:length(bs_moments_rescaled)
+    for nn=1:length(bs_moments_rescaled)
         GibbsRescaledOut(nn)=conductivity_fit_bootstrap(bs_moments_Gibbs_rescaled(nn));
     end
 end

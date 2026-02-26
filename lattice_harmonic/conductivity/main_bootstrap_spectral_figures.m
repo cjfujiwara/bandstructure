@@ -11,7 +11,7 @@
 
 %% Create Bootstrap Summary Figures
 
-hF=figure(222);
+hF=figure();
 hF.Name='Bootstrap Summary';
 clf
 tg = uitabgroup(hF);
@@ -133,8 +133,8 @@ for gg=1:length(out)
     xlabel('Ty size/t')
     title('temperature size y');
     pdTy = fitdist(out(gg).bootstat(:,7)/t,'normal');
-    Ty(gg,1)=pdTy.mu; 
-    Ty(gg,2)=pdTy.sigma;
+    Ty(gg,1)=pdTy.mu;%./64^2*62^2; 
+    Ty(gg,2)=pdTy.sigma;%./64^2*62^2;
     Ty(gg,3)=pdTy.sigma/sqrt(1000);
     text(.01,.99,[num2str(round(pdTy.mu,2)) '\pm' num2str(round(pdTy.sigma,2))],...
         'units','normalized','verticalalignment','top')

@@ -13,7 +13,7 @@ x2 = x.^2;          % position squared
 
 % blkdiag(diag(x),
 
-%% Initialize ouput
+%% Initialize output
 output = struct;
 output.Depth = npt.depth;
 output.Tunneling = npt.Tunneling;
@@ -25,7 +25,7 @@ output.omega = opts.omega;
 output.fr = fr;
 output.PositionVector = repmat(x,[1 nBands]);
 
-%% Interate over Lattice depths
+%% Iterate over Lattice depths
 output.EigenValues = zeros(output.NumSites*output.NumBands,length(npt.depth));
 output.EigenVectors = zeros(output.NumSites*output.NumBands,output.NumSites*output.NumBands,length(npt.depth));
 
@@ -79,7 +79,7 @@ for uu = 1:length(npt.depth)
                 mat1 = coupling_rc_dI*N_hop;
                 Vsub = Vsub + mat1;
             end
-            % Indeces in super matrix
+            % Indices in super matrix
             r1 = n*(rr-1)+1;r2 = n*rr;
             c1 = n*(cc-1)+1;c2 = n*cc;  
             Vdip(r1:r2,c1:c2) = Vsub;
@@ -90,7 +90,7 @@ for uu = 1:length(npt.depth)
     end
     V = (Vdiag + Vdip + Vdip2)*Omega;
 %% asdf 
-    % Energy offset Opeator for each band
+    % Energy offset Operator for each band
     E0 = zeros(n,n,nBands);
     for nn = 1:nBands
         % Ebar = mean(npt.bandEigenValue(nn,:,uu))*fr;

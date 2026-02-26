@@ -17,7 +17,7 @@ N               = 101;      % Number of eigenstates to include in fit
 
 %% Process Data
 
-% Make sure they are a colummn vector
+% Make sure they are a column vector
 FREQ        = FREQ(:);     
 SIGMA       = SIGMA(:);
 SIGMA_ERR   = SIGMA_ERR(:);
@@ -182,17 +182,21 @@ end
             y = sum(A,'all');
         end
         
-
         % Find Resitivity at zero imag cond
         fvec = linspace(F/4,2*F,20);
         sigma_fit = arrayfun(@(f) foo(f),fvec);         
         ig=find(sign(diff(sign(imag(sigma_fit))))==1,1);         
-        f0=fvec(ig);         
-        f0=fzero(@(f) imag(foo(f)),f0);  
+        f0=fvec(ig);     
+        if isempty(f0)
+            f0 = 60;
+        end
+        f0=fzero(@(f) imag(foo(f)),f0);
         rho0=real(1/foo(f0));      
+        % rho0 = 0.3;
 
         % find high freq rho
-        rhoinf = real(1/foo(1e3));   
+        rhoinf = real(1/foo(1e3)); 
+        % rhoinf = 0.3;
         tb=now;
         % disp((tb-ta)*24*60*60)
     end
@@ -203,9 +207,11 @@ options = optimoptions('lsqnonlin');
 options.FunctionTolerance=1e-9;
 options.OptimalityTolerance=1e-9;
 options.Display='off';
+lb = [1000 1 64];[0 0 0];
+ub = [3500 inf 64];
 
 [fout, resnorm, residual, exitflag, output0,...
-    lambda, jacobian] = lsqnonlin(@(P) error_function(P), P0,[],[],options);
+    lambda, jacobian] = lsqnonlin(@(P) error_function(P), P0,lb,ub,options);
 conf = nlparci(fout,residual,'jacobian',jacobian);
 
 
@@ -224,4 +230,3 @@ output.rho0=rho0;
 output.rhoinf=rhoinf;
 
 end
-

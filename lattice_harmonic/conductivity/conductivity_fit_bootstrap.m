@@ -85,6 +85,7 @@ n=0;
      end
 
 options.UseParallel	=true;
+options.UseParallel	=false;
 options.UseSubstreams	=false;
 
     FREQ_THEORY = linspace(0,200,200);

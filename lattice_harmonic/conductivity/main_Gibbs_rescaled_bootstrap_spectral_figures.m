@@ -6,12 +6,12 @@
 
 %% Structure and Instruction
 %
-% You must load a variable called composite_data. It should at mininum have
+% You must load a variable called composite_data. It should at minimum have
 % the fields of composite data
 
 %% Create Bootstrap Summary Figures
 
-hF=figure(667);
+hF=figure();
 hF.Name='Bootstrap Summary';
 clf
 tg = uitabgroup(hF);
