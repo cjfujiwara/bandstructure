@@ -28,7 +28,7 @@ else
     lattice.depth               = DEPTH_ER; 
     lattice.WannierBands        = [1];
     
-    lattice.numStates           = 101;       % must be odd
+    lattice.numStates           = 301;       % must be odd
     lattice.numK                = 301;      % must be odd    
     
     wannier_opts                = struct;
@@ -65,7 +65,7 @@ end
         [~,lho] = calculateLHOSpectrum_sband(lattice,opts);
         
         % Load Eigenvalues and Dipole Operator
-        N           = 101;
+        N           = 301;
         d2          = abs(lho.DipoleOperator).^2;
         eng         = lho.EigenValues;
         eng         = eng-eng(1);    

@@ -20,7 +20,7 @@ wannier_opts            = struct;
 wannier_opts.Bands      = [1];
 
 lattice                 = constants;
-lattice.depth           = [3.5]; 
+lattice.depth           = [2.5]; 
 lattice.WannierBands    = wannier_opts.Bands;
 
 %% Flags

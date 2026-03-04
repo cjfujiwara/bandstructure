@@ -24,7 +24,7 @@ lattice = calculateWannierMoments(lattice);     % Dipole matrix elements in wann
 m0star = lattice.BandMassGamma(1); % band mass in units of bare mass
 
 displacement_sites = 4;     % 10 sites is like 5 um
-TrapFrequency_Hz = 45:.5:80;
+TrapFrequency_Hz = 60;45:.5:80;
 Temperature_Hz   = 0:50:2500;
 Temperature_Hz(1) =0.01;
 
@@ -134,7 +134,7 @@ for ff=1:length(TrapFrequency_Hz)
     end      
     disp(' done')
 end
-
+keyboard
 %% Show Results
 hF_size = figure;
 hF_size.Color='w';
