@@ -20,7 +20,7 @@ if ~isfield(npt,'TunnelOrder')
     npt.TunnelOrder = 11;
 end
 if ~isfield(npt,'Bands')
-   npt.Bands = 1;
+   npt.Bands = 2;
 end
 %% Calculate Lattice
 
@@ -46,7 +46,7 @@ lho_opts.HarmonicBands      = npt.Bands;
 lho_opts.Omega              = 0.5*lattice.m*lho_opts.omega^2*...
     (lattice.lambda/2)^2/lattice.h;
 [lattice,lho] = ...
-    calculateLHOSpectrum_sband(lattice,lho_opts);
+    calculateLHOSpectrum(lattice,lho_opts);
 
 
 %% Fit to linear constant density of states

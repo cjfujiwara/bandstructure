@@ -1,7 +1,6 @@
 %% Analayzse Density and Hubbard U
 % U = zeros(length(bs_moments),1);
 peak_charge=zeros(length(bs_moments),1);
-fidelity = 0.88;
 
 for bb = 1:length(composite_data)
 %     U(bb)=composite_data(bb).Hubbard.U(1);
@@ -23,13 +22,13 @@ kappa = 0.5*(2^(-3/2)); % 0.5 for spin, 2^(3/2) for gauss
 kappa = 1;
 
 
-T = Txy;     % harmonic  
-% T = temp;   % spectra
+% T = TxyRS;     % harmonic  
+T = tempRS;   % spectra
 
 
 %% Gamma
 
-hF_vs_T=figure(104);
+hF_vs_T=figure(1040);
 hF_vs_T.Color='w';
 clf
 hF_vs_T.Name='Gamma';
@@ -38,7 +37,7 @@ set(gcf,'color','w');
 
 ax1=axes;
 co=get(gca,'colororder');
-errorbar(T(:,1),gamma(:,1)/t/(2*pi),gamma(:,2)/t/(2*pi),...
+errorbar(T(:,1),gammaRS(:,1)/t/(2*pi),gammaRS(:,2)/t/(2*pi),...
     'o','color','k','markerfacecolor',[.5 .5 .5],...
     'linewidth',1)
 
@@ -49,7 +48,7 @@ xlim([0 3.5])
 ylim([0 .05]);
 hold on
 %% Temperature and Density
-hF_vs_T_density=figure(105);
+hF_vs_T_density=figure(1050);
 hF_vs_T_density.Color='w';
 clf
 hF_vs_T_density.Name='TempDensity';
@@ -59,7 +58,7 @@ set(gcf,'color','w');
 
 ax_sub=axes;
 yyaxis left
-errorbar(T(:,1),temp(:,1),temp(:,2),...
+errorbar(T(:,1),tempRS(:,1),tempRS(:,2),...
     'o','color',.5*co(1,:),'markerfacecolor',co(1,:),'markersize',6)
 ylabel('spectral T/t')
 set(gca,'fontsize',8)
@@ -77,12 +76,12 @@ linkaxes([ax1 ax_sub],'x');
 xlabel('T/t')
 
 %% Gamma over nt
-hF_vsT_Gamman=figure(106);
+hF_vsT_Gamman=figure(1060);
 hF_vsT_Gamman.Color='w';
 hF_vsT_Gamman.Name= 'Gamma_n0';
 hF_vsT_Gamman.Position=[50 50 400 250];
 clf
-errorbar(T(:,1),gamma(:,1)/t/(2*pi)./peak_charge(:,1),gamma(:,2)/t/(2*pi),...
+errorbar(T(:,1),gammaRS(:,1)/t/(2*pi)./peak_charge(:,1),gammaRS(:,2)/t/(2*pi),...
     'o','color','k','markerfacecolor',[.5 .5 .5],...
     'linewidth',1)
 xlabel('T/t');
@@ -91,7 +90,7 @@ xlim([0 3.5])
 ylim([0 .35]);
 %% Temperature Comparison
 
-hF_vsT_Temp_Compare=figure(107);
+hF_vsT_Temp_Compare=figure(1070);
 hF_vsT_Temp_Compare.Color='w';
 hF_vsT_Temp_Compare.Position=[50 50 250 250];
 hF_vsT_Temp_Compare.Name='TemperatureCompare';
@@ -100,7 +99,7 @@ set(gcf,'color','w');
 
 plot([0 5],[0 5],'k--');
 hold on
-errorbar(temp(:,1),Tx(:,1),Tx(:,2),Tx(:,2),temp(:,2),temp(:,2),...
+errorbar(tempRS(:,1),TxyRS(:,1),TxyRS(:,2),TxyRS(:,2),tempRS(:,2),tempRS(:,2),...
     'o','color',co(1,:),'markerfacecolor',co(1,:));
 axis equal tight
 hold on
@@ -111,12 +110,12 @@ ylabel('gaussian size T/t');
 
 %% Central Resistivity
 
-hF_vs_T_resistivity=figure(108);
+hF_vs_T_resistivity=figure(1080);
 hF_vs_T_resistivity.Color='w';
 hF_vs_T_resistivity.Position=[100 100 400 250];
 clf
 axes
-p0=errorbar(T(:,1),rho0(:,1),rho0(:,2),rho0(:,2),T(:,2),T(:,2),...
+p0=errorbar(T(:,1),rho0RS(:,1),rho0RS(:,2),rho0RS(:,2),T(:,2),T(:,2),...
     'o','color',.5*co(3,:),'markerfacecolor',co(3,:));
 hold on
 xlabel('T/t')

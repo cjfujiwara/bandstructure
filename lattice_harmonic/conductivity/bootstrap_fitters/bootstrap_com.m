@@ -158,7 +158,7 @@ for jj=1:length(composite_data)
         bs_heatX=bootstrap_linear(Ttot,Xvar,N_boot_heating);
         bs_heatY=bootstrap_linear(Ttot,Yvar,N_boot_heating);
     
-         fprintf('oscillations... ')
+        fprintf('oscillations... ')
 
 
         bs_osc=bootstrap_oscillations_fit(Ttot,Xcom,freq*1e-3,N_boot_oscillations);
