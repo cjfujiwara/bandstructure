@@ -62,7 +62,17 @@ for bb = 1:length(bs_moments)
     rho = real(bs_moments(bb).rho(iFind));
     
     % Uncertainties
-    drho = abs(real(bs_moments(bb).rhoErr(iFind)/2));
+%     drho = abs(real(bs_moments(bb).rhoErr(iFind)/2));
+    
+    %Propagate uncertainty
+    re = real(bs_moments(bb).sigma(iFind));
+    im = imag(bs_moments(bb).sigma(iFind));
+    rerr = real(bs_moments(bb).sigmaErr(iFind)/2); %divide by 2 to get 67% confidence
+    ierr = imag(bs_moments(bb).sigmaErr(iFind)/2); %divide by 2 to get 67% confidence
+    rhoErr = sqrt(rerr.^2.*(im.^2-re.^2).^2 + 4*re.^2.*im.^2.*ierr.^2)./(re.^2+im.^2).^2 + 1j*sqrt(ierr.^2.*(im.^2-re.^2).^2 + 4*re.^2.*im.^2.*rerr.^2)./(re.^2+im.^2).^2;
+    
+    % Uncertainties in Re[rho] (67% confidence)
+    drho = abs(real(rhoErr));
     
     % Weights
     w = (1./drho).^2;
@@ -91,6 +101,8 @@ for bb = 1:length(bs_moments)
 
     % Propagated error
     rhoAvg(bb,2) = sqrt(sum(drho.^2))/length(iFind);
+    
+%     rhoAvg(bb,2) = std(drho)/sqrt(N);
     
 end
 
