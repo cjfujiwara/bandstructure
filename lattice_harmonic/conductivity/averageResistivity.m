@@ -73,34 +73,50 @@ for bb = 1:length(bs_moments)
     
     % Uncertainties in Re[rho] (67% confidence)
     drho = abs(real(rhoErr));
-    
-    % Weights
-    w = (1./drho).^2;
-    w = w/sum(w); % normalize weights to sum to 1
 
+    % Weights
+    w = drho.^(-2);
+
+    wrho  = struct;
+    for loop = 1:length(rho)
+        wrho(loop).rho = rho(loop);
+        wrho(loop).w = w(loop);
+    end
+    
+    %Define weighted average function
+    rhoAvg_bs = bootstrp(2000,@rhoAvgfn,wrho);
+    rhoAvg_pd = fitdist(rhoAvg_bs,'Normal');
+    % keyboard
+    %Output bootstrap weighted avg rho with bs dist sigma width as uncertainty
+    rhoAvg(bb,1) = rhoAvg_pd.mu;
+    rhoAvg(bb,2) = rhoAvg_pd.sigma;
+    
+    % w = w/sum(w); % normalize weights to sum to 1
+    % keyboard
     % Weighted average of real resistivities in frequency range
-    rhoAvg(bb,1) = sum(rho.*w)/sum(w);
+    % rhoAvg(bb,1) = sum(rho.*w)/sum(w);
     
     % Propagated uncertainty of weighted average
-    rhoAvg(bb,2) = sqrt(sum((w.*drho).^2))/sum(w);
+    % rhoAvg(bb,2) = sqrt(sum((w.*drho).^2))/sum(w);
+    % rhoAvg(bb,2) = 1/sqrt(sum(w));
 
     % Kish's design effect variance
-    wbar = sum(w)/N;        
-    w2bar = sum(w.^2)/N;
-    unwVar = (sum(drho.^2))/N;  % unweighted variance
-    wVar = unwVar*w2bar/wbar^2;             % approximate weighted variance
+    % wbar = sum(w)/N;        
+    % w2bar = sum(w.^2)/N;
+    % unwVar = (sum(drho.^2))/N;  % unweighted variance
+    % wVar = unwVar*w2bar/wbar^2;             % approximate weighted variance
     % rhoAvg(bb,2) = sqrt(wVar);
 
     % Unbiased standard error
-    nunbias = w2bar*N/((wbar*N)^2-w2bar*N);
-    wVar = sum(w.*drho.^2)/sum(w);
-    rhoAvg(bb,2) = sqrt(wVar*nunbias);
+    % nunbias = w2bar*N/((wbar*N)^2-w2bar*N);
+    % wVar = sum(w.*drho.^2)/sum(w);
+    % rhoAvg(bb,2) = sqrt(wVar*nunbias);
 
     % % Unweighted average
-    rhoAvg(bb,1) = mean(rho);
+    % rhoAvg(bb,1) = mean(rho);
 
     % Propagated error
-    rhoAvg(bb,2) = sqrt(sum(drho.^2))/length(iFind);
+    % rhoAvg(bb,2) = sqrt(sum(drho.^2))/length(iFind);
     
 %     rhoAvg(bb,2) = std(drho)/sqrt(N);
     
@@ -204,4 +220,10 @@ if exist('bs_moments_Gibbs_rescaled','var')
 
     end
 end
+end
+
+%Define weighted sum function that renormalizes for bootstrap fitting
+function [wsum] = rhoAvgfn(wrho_list)
+        wsum= sum([wrho_list.rho].*[wrho_list.w])/sum([wrho_list.w]);
+        % keyboard
 end
