@@ -84,21 +84,21 @@ for bb = 1:length(bs_moments)
     end
     
     %Define weighted average function
-    rhoAvg_bs = bootstrp(2000,@rhoAvgfn,wrho);
-    rhoAvg_pd = fitdist(rhoAvg_bs,'Normal');
+    % rhoAvg_bs = bootstrp(2000,@rhoAvgfn,wrho);
+    % rhoAvg_pd = fitdist(rhoAvg_bs,'Normal');
     % keyboard
     %Output bootstrap weighted avg rho with bs dist sigma width as uncertainty
-    rhoAvg(bb,1) = rhoAvg_pd.mu;
-    rhoAvg(bb,2) = rhoAvg_pd.sigma;
+    % rhoAvg(bb,1) = rhoAvg_pd.mu;
+    % rhoAvg(bb,2) = rhoAvg_pd.sigma;
     
     % w = w/sum(w); % normalize weights to sum to 1
     % keyboard
     % Weighted average of real resistivities in frequency range
-    % rhoAvg(bb,1) = sum(rho.*w)/sum(w);
+    rhoAvg(bb,1) = sum(rho.*w)/sum(w);
     
     % Propagated uncertainty of weighted average
     % rhoAvg(bb,2) = sqrt(sum((w.*drho).^2))/sum(w);
-    % rhoAvg(bb,2) = 1/sqrt(sum(w));
+    rhoAvg(bb,2) = 1/sqrt(sum(w));
 
     % Kish's design effect variance
     % wbar = sum(w)/N;        
